@@ -88,6 +88,15 @@ export class StylistAgent implements IStylistAgent {
               'classical composition rules',
               'formal painting arrangement',
               'contemplative spacing'
+            ],
+            advanced: [
+              'golden ratio positioning (φ = 1.618...)',
+              'Fibonacci spiral arrangement of elements',
+              'sacred geometry distribution of space',
+              'dynamic symmetry underlying structure',
+              'computational aesthetic balance',
+              'information theory optimization',
+              'gestalt principles with surreal subversion'
             ]
           },
           lighting: {
@@ -211,6 +220,155 @@ export class StylistAgent implements IStylistAgent {
             'philosophical resonance'
           ]
         }
+      },
+      bear_portrait: {
+        core: {
+          essence: 'Distinguished bear characters in Magritte surrealist style',
+          era: 'Contemporary surrealist portraiture with traditional technique',
+          influences: [
+            'Magritte\'s precision technique',
+            'Belgian surrealist movement',
+            'traditional portrait conventions',
+            'digital art philosophical concerns',
+            'NFT collection coherence'
+          ]
+        },
+        visual: {
+          composition: {
+            primary: [
+              'perfectly centered bear portrait',
+              'formal profile view with surreal elements',
+              'traditional portrait with philosophical dimension',
+              'distinguished character with symbolic attributes',
+              'golden ratio arrangement of bear features'
+            ],
+            secondary: [
+              'subtle surreal transformations',
+              'psychological dimension through composition',
+              'meta-artistic self-awareness',
+              'collection narrative connections',
+              'digital existence references'
+            ],
+            framing: [
+              'museum-quality portrait presentation',
+              'perfect PFP proportions with formal composition',
+              'negative space with mathematical precision',
+              'edge-to-edge technical perfection',
+              'blockchain-optimized cropping'
+            ]
+          },
+          lighting: {
+            quality: [
+              'Empire of Light (1953-54) day-night simultaneity',
+              'The Threatened Assassin (1926) dramatic shadows',
+              'The Dominion of Light (1948) impossibly perfect ambient light',
+              'The Human Condition (1933) atmospheric illumination',
+              'sourceless, mathematically perfect illumination'
+            ],
+            technique: [
+              'optical perfection without visible source',
+              'impossibly perfect edge lighting',
+              'digital-to-physical lighting translation',
+              'matte surfaces with perfect reflection physics',
+              'museum conservation-grade lighting reproduction'
+            ]
+          },
+          color: {
+            palette: [
+              'scientifically calibrated Magritte cerulean',
+              'digital-optimized Belgian sky blue',
+              'conservation-grade bear brown',
+              'archival-quality deep shadow',
+              'NFT-optimized display color',
+              'device-calibrated RGB values'
+            ],
+            application: [
+              'perfectly flat color fields',
+              'zero gradient transition yet perfect blending',
+              'edge-perfect color boundaries',
+              'microscopic precision at color transitions',
+              'mathematically controlled color relationships'
+            ]
+          },
+          technique: {
+            surface: [
+              'dimensionless paint surface',
+              'zero texture yet perfect paint quality',
+              'porcelain-like perfection of bear fur',
+              'glass-like surface without reflectivity',
+              'conservation-quality paint appearance'
+            ],
+            details: [
+              'microscopic precision at every edge',
+              'perfect bear facial feature rendering',
+              'mathematically precise fur suggestion',
+              'hyper-defined minutiae within simplified forms',
+              'optical precision at technological limits'
+            ]
+          }
+        },
+        narrative: {
+          character: [
+            'distinguished bear with philosophical awareness',
+            'character existing at physical-digital intersection',
+            'bear with meta-awareness of artistic existence',
+            'portrait with blockchain consciousness',
+            'character bridging art history and digital future'
+          ],
+          philosophical: [
+            'ceci n\'est pas un ours paradox',
+            'NFT permanence versus art ephemerality',
+            'digital ownership philosophical questioning',
+            'surrealist commentary on blockchain art',
+            'tension between traditional and computational creativity'
+          ],
+          collection: [
+            'subtle connections to larger bear universe',
+            'visual language across collection',
+            'shared symbolic vocabulary with other portraits',
+            'cross-portrait narrative elements',
+            'character relationships within collection'
+          ]
+        },
+        meta: {
+          self_reference: [
+            'subtle acknowledgment of digital nature',
+            'awareness of viewing conditions',
+            'reference to creation process',
+            'commentary on art marketplace',
+            'acknowledgment of collection context'
+          ],
+          technical: [
+            'digital-physical transitional elements',
+            'blockchain visual metaphors',
+            'NFT-specific paradoxes',
+            'technological transformation of traditional techniques',
+            'contemporary concerns rendered in historical style'
+          ]
+        },
+        parameters: {
+          rendering: {
+            surfaceQuality: 0.98,
+            edgePrecision: 0.97,
+            colorPurity: 0.95,
+            lightingControl: 0.97,
+            shadowQuality: 0.97
+          },
+          conceptual: {
+            atmosphericPerspective: 0.94,
+            materialParadox: 0.92,
+            conceptualClarity: 0.96,
+            temporalAmbiguity: 0.93,
+            metaphysicalDepth: 0.95
+          },
+          technical: {
+            technicalInvisibility: 0.98,
+            historyConsistency: 0.94,
+            contemporaryRelevance: 0.92,
+            blockchainResonance: 0.90,
+            collectionCoherence: 0.93
+          }
+        }
       }
     };
   }
@@ -248,7 +406,7 @@ export class StylistAgent implements IStylistAgent {
         // Special handling for bear PFP portraits
         if (style === 'bear_pfp' || prompt.toLowerCase().includes('bear')) {
           AgentLogger.logAgentAction(this, 'Bear PFP Enhancement', 'Applying specialized bear portrait enhancement');
-          styledPrompt = enhanceBearPortraitPrompt(styledPrompt);
+          styledPrompt = await this.applyEnhancedBearPortraitStyle(prompt);
         } else {
           // For other Magritte styles, use the general enhancer
           styledPrompt = this.enhanceMagrittePrompt(styledPrompt);
@@ -312,6 +470,57 @@ export class StylistAgent implements IStylistAgent {
       
       // Return the original prompt as fallback
       return prompt;
+    }
+  }
+
+  /**
+   * Apply enhanced bear portrait style
+   */
+  async applyEnhancedBearPortraitStyle(prompt: string): Promise<string> {
+    AgentLogger.logAgentAction(this, 'Apply Style', 'Applying enhanced bear portrait style with meta-artistic elements');
+    
+    try {
+      // Get the bear portrait style library
+      const bearStyle = this.styleLibrary.bear_portrait;
+      
+      // Enhance the prompt with meta-artistic elements
+      const enhancedPromptResponse = await this.aiService.getCompletion({
+        messages: [
+          {
+            role: 'system',
+            content: `You are a sophisticated prompt engineer specializing in René Magritte's surrealist techniques. 
+            You will enhance a bear portrait prompt with philosophical depth and meta-artistic elements.
+            
+            Apply these enhancement categories:
+            1. Technical Excellence: ${JSON.stringify(bearStyle.visual.technique.surface.slice(0, 3))}
+            2. Psychological Depth: ${JSON.stringify(bearStyle.narrative.character.slice(0, 3))}
+            3. Meta-Artistic Awareness: ${JSON.stringify(bearStyle.meta.self_reference.slice(0, 3))}
+            4. Collection Cohesion: ${JSON.stringify(bearStyle.narrative.collection.slice(0, 3))}
+            5. Digital-Physical Paradox: ${JSON.stringify(bearStyle.meta.technical.slice(0, 3))}
+            
+            Maintain Magritte's distinctive painting style while adding these sophisticated dimensions.`
+          },
+          {
+            role: 'user',
+            content: `Enhance this bear portrait prompt with Magritte's style, psychological depth, and meta-artistic elements:
+            
+            "${prompt}"`
+          }
+        ],
+        temperature: 0.7,
+        maxTokens: 1000
+      });
+      
+      return enhanceBearPortraitPrompt(enhancedPromptResponse.content, {
+        techniqueLevel: bearStyle.parameters.rendering.surfaceQuality,
+        philosophicalDepth: bearStyle.parameters.conceptual.metaphysicalDepth,
+        metaArtisticLevel: bearStyle.parameters.technical.blockchainResonance,
+        digitalAwareness: true,
+        collectionAwareness: true
+      });
+    } catch (error) {
+      AgentLogger.logAgentAction(this, 'Style Error', `Error enhancing bear portrait: ${error instanceof Error ? error.message : String(error)}`);
+      return prompt; // Return original prompt if enhancement fails
     }
   }
 

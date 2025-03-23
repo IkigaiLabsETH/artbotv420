@@ -107,6 +107,55 @@ async function demonstrateEnhancedMagritteStyle() {
           "shadow blue (RGB: 68, 85, 90)"
         ]
       }
+    },
+    {
+      name: "Philosophical Meta-Awareness Bear",
+      concept: "a distinguished philosophical bear contemplating its own existence as digital art",
+      options: {
+        seriesId: "philosophical",
+        templateId: "meta_artistic",
+        preferredVisualElements: [
+          "eyes containing miniature paradoxical landscape (Magritte's False Mirror technique)",
+          "bear silhouette containing impossible interior landscape (Personal Values technique)",
+          "subtle ceci n'est pas un ours paradox in composition",
+          "digital meta-awareness suggested through frame-breaking elements",
+          "NFT-specific visual paradoxes rendered in Magritte's technical style"
+        ],
+        colorPalette: [
+          "Magritte Cerulean (RGB: 0, 123, 167) (Guaranteed to render accurately on digital displays)",
+          "Precise Shadow Grey (RGB: 64, 64, 64) (Calibrated to match Magritte's museum display lighting)",
+          "Belgian Museum White (RGB: 253, 253, 253) (Spectrally optimized for digital reproduction)",
+          "Quantum Blue (non-natural blue impossible in physical pigments)"
+        ],
+        compositionGuidelines: [
+          "Golden ratio positioning of all bear portrait elements (φ = 1.618...)",
+          "Fibonacci spiral arrangement of visual weight and color emphasis",
+          "Zero visual noise in color field transitions",
+          "Perfect edge acutance at mathematical maximum"
+        ],
+        narrativeElements: [
+          "Distinguished bear character exists at intersection of physical and digital reality",
+          "Bear portrait serves as gateway between metaverse and traditional art history",
+          "Portrait serves as philosophical exploration of NFT permanence vs. ephemeral art"
+        ],
+        metaArtisticElements: [
+          "Portrait contains subtle acknowledgment of its digital nature",
+          "Image includes Magritte-style paradox about NFT art status",
+          "Composition references its existence in a larger collection"
+        ],
+        enhancedTechnicalParams: {
+          surfaceQuality: 0.98,
+          edgePrecision: 0.97,
+          colorPurity: 0.95,
+          lightingControl: 0.97,
+          atmosphericPerspective: 0.94,
+          materialParadox: 0.92,
+          conceptualClarity: 0.96,
+          metaphysicalDepth: 0.95,
+          technicalInvisibility: 0.98,
+          blockchainResonance: 0.90
+        }
+      }
     }
   ];
   
@@ -187,6 +236,46 @@ async function demonstrateEnhancedMagritteStyle() {
   
   console.log('\n📝 FINAL COMBINED PROMPT:');
   console.log(formatPrompt(comprehensiveExample.prompt));
+  
+  // Add a section for generating and showing the meta-artistic philosophical bear
+  console.log('\n🧠 META-ARTISTIC PHILOSOPHICAL BEAR:');
+  const philosophicalBearExample = examples.find(ex => ex.name === "Philosophical Meta-Awareness Bear");
+  if (philosophicalBearExample) {
+    console.log(`\n📝 Concept: ${philosophicalBearExample.concept}`);
+    
+    console.log('\n🔍 Enhanced Meta-Artistic Elements:');
+    philosophicalBearExample.options.metaArtisticElements?.forEach(element => 
+      console.log(`  - ${element}`)
+    );
+    
+    console.log('\n🧩 Narrative Elements:');
+    philosophicalBearExample.options.narrativeElements?.forEach(element => 
+      console.log(`  - ${element}`)
+    );
+    
+    console.log('\n⚙️ Advanced Technical Parameters:');
+    Object.entries(philosophicalBearExample.options.enhancedTechnicalParams || {}).forEach(([key, value]) => 
+      console.log(`  - ${key}: ${value}`)
+    );
+    
+    // Generate the enhanced prompt
+    console.log('\n🎨 Generating enhanced philosophical bear prompt...');
+    try {
+      const result: any = await promptService.generateEnhancedPrompt(
+        philosophicalBearExample.concept,
+        philosophicalBearExample.options
+      );
+      
+      console.log('\n📋 Enhanced Meta-Artistic Philosophical Bear Prompt:');
+      if (result && typeof result === 'object' && 'prompt' in result) {
+        console.log(formatPrompt(result.prompt));
+      } else {
+        console.log(formatPrompt(String(result)));
+      }
+    } catch (error) {
+      console.error('Error generating enhanced prompt:', error);
+    }
+  }
   
   console.log('\n🏁 ENHANCED MAGRITTE STYLE EXAMPLES COMPLETE');
 }

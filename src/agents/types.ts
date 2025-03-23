@@ -109,6 +109,20 @@ export interface CharacterIdentity {
   specialItems?: string[];
   category?: CategoryDefinition;
   seriesType?: SeriesType;
+  metaArtisticElements?: string[];
+  digitalIdentity?: string[];
+  collectionConnections?: string[];
+  philosophicalDepth?: number;
+}
+
+/**
+ * Extended options for enhanced character generation
+ */
+export interface EnhancedCharacterOptions extends CharacterGenerationOptions {
+  philosophicalDepth?: number;
+  metaArtisticAwareness?: boolean;
+  collectionCohesion?: boolean;
+  digitalIdentity?: boolean;
 }
 
 /**
@@ -172,7 +186,7 @@ export interface CriticAgent extends Agent {
  */
 export interface CharacterGeneratorAgent extends Agent {
   role: AgentRole.CHARACTER_GENERATOR;
-  generateCharacter(concept: string, options?: CharacterGenerationOptions): Promise<CharacterIdentity>;
+  generateCharacter(concept: string, options?: EnhancedCharacterOptions): Promise<CharacterIdentity>;
 }
 
 /**

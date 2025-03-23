@@ -493,61 +493,321 @@ export class MagrittePromptEnhancer {
 }
 
 /**
- * Enhance a Magritte-style prompt specifically for bear portraits
+ * Enhanced options for bear portrait prompt generation
  */
-export function enhanceBearPortraitPrompt(basePrompt: string): string {
-  // Import style elements
-  const { magritteStyleElements } = require('./magritteStyleElements');
-  const { magrittePatterns } = require('./magrittePatterns');
+export interface BearPortraitEnhancementOptions {
+  techniqueLevel?: number; // 0-1 scale of technical sophistication
+  philosophicalDepth?: number; // 0-1 scale of philosophical complexity
+  metaArtisticLevel?: number; // 0-1 scale of self-referential art elements
+  digitalAwareness?: boolean; // Include digital/NFT awareness
+  collectionAwareness?: boolean; // Include collection cohesion elements
+}
+
+/**
+ * Enhances a bear portrait prompt with Magritte-style elements
+ */
+export function enhanceBearPortraitPrompt(
+  basePrompt: string, 
+  options?: BearPortraitEnhancementOptions
+): string {
+  // Set default options
+  const enhancementOptions: Required<BearPortraitEnhancementOptions> = {
+    techniqueLevel: options?.techniqueLevel ?? 0.9,
+    philosophicalDepth: options?.philosophicalDepth ?? 0.8,
+    metaArtisticLevel: options?.metaArtisticLevel ?? 0.7,
+    digitalAwareness: options?.digitalAwareness ?? false,
+    collectionAwareness: options?.collectionAwareness ?? false
+  };
   
-  // Select elements from our enhanced collections
-  const portraitStyle = selectRandomElement(magritteStyleElements.bearPfpElements.portraitStyle);
-  const attire = selectRandomElement(magritteStyleElements.bearPfpElements.attire);
-  const accessory = selectRandomElement(magritteStyleElements.bearPfpElements.accessories);
-  const expression = selectRandomElement(magritteStyleElements.bearPfpElements.expressions);
-  const pose = selectRandomElement(magritteStyleElements.bearPfpElements.poses);
+  // Extract key elements from prompt
+  const elements = extractBearElements(basePrompt);
   
-  // Select conceptual elements
-  const concept = selectRandomElement(magrittePatterns.conceptualThemes);
-  const paradox = selectRandomElement(magrittePatterns.paradoxes);
-  const composition = selectRandomElement(magrittePatterns.compositions);
+  // Select technical enhancements based on technique level
+  const technicalElements = selectBearTechnicalElements(enhancementOptions.techniqueLevel);
   
-  // Select technical elements
-  const technicalAspect = selectRandomElement(magrittePatterns.technicalAspects);
-  const colorPalette = selectRandomElement(magrittePatterns.colorPalettes);
+  // Select philosophical elements based on depth
+  const philosophicalElements = selectBearPhilosophicalElements(enhancementOptions.philosophicalDepth);
   
-  // Reference to a famous work
-  const famousWork = selectRandomElement(magrittePatterns.famousWorks);
+  // Add meta-artistic elements if requested
+  const metaArtisticElements = enhancementOptions.metaArtisticLevel > 0.5 ? 
+    selectBearMetaArtisticElements(enhancementOptions.metaArtisticLevel) : [];
   
-  // Construct enhanced prompt
-  let enhancedPrompt = basePrompt;
+  // Add digital awareness elements if requested
+  const digitalElements = enhancementOptions.digitalAwareness ? 
+    selectBearDigitalElements() : [];
   
-  // Add portrait elements if not already present
-  if (!enhancedPrompt.includes("bear") && !enhancedPrompt.includes("ursine")) {
-    enhancedPrompt = `${portraitStyle}, ${enhancedPrompt}`;
-  }
+  // Add collection cohesion elements if requested
+  const collectionElements = enhancementOptions.collectionAwareness ? 
+    selectBearCollectionElements() : [];
   
-  // Add attire if not specified
-  if (!containsAnyKeyword(enhancedPrompt, ["suit", "attire", "dressed", "wearing", "clothes"])) {
-    enhancedPrompt += `, wearing ${attire}`;
-  }
-  
-  // Add accessory
-  enhancedPrompt += `, with ${accessory}`;
-  
-  // Add expression and pose
-  enhancedPrompt += `, with ${expression} and ${pose}`;
-  
-  // Add conceptual depth
-  enhancedPrompt += `. The portrait ${concept} through ${paradox}`;
-  
-  // Add composition and technical details
-  enhancedPrompt += `. Composed with ${composition}, rendered with ${technicalAspect} and ${colorPalette}`;
-  
-  // Add reference
-  enhancedPrompt += `. Inspired by Magritte's "${famousWork}"`;
+  // Combine all elements into enhanced prompt
+  const enhancedPrompt = constructEnhancedBearPrompt(
+    basePrompt,
+    elements,
+    technicalElements,
+    philosophicalElements,
+    metaArtisticElements,
+    digitalElements,
+    collectionElements
+  );
   
   return enhancedPrompt;
+}
+
+/**
+ * Legacy version for backward compatibility
+ */
+export function enhanceBearPortraitPromptLegacy(basePrompt: string): string {
+  // Extract what kind of bear character is being described
+  const bearTypeMatch = basePrompt.match(/bear (with|wearing|holding|in) ([^,.]+)/i);
+  const bearType = bearTypeMatch ? bearTypeMatch[2].trim() : "distinguished";
+
+  // Determine if there's a specific profession or role
+  const professionMatch = basePrompt.match(/(doctor|chef|artist|musician|scientist|professor|writer|explorer|farmer|architect)/i);
+  const profession = professionMatch ? professionMatch[1].toLowerCase() : "";
+
+  // Check for existing Magritte elements
+  const hasExistingMagritte = containsAnyKeyword(basePrompt, [
+    "magritte", "surreal", "surrealist", "belgian", "bowler hat", "apple", "clouds", "pipe"
+  ]);
+
+  // Select appropriate Magritte elements
+  const magritteElements = selectMagritteElements(profession, bearType);
+
+  // Format the enhanced prompt
+  let enhancedPrompt = basePrompt;
+
+  // Only add Magritte elements if they're not already present
+  if (!hasExistingMagritte) {
+    enhancedPrompt += ` ${magritteElements}`;
+  }
+
+  // Add technical painting instructions if not already present
+  if (!basePrompt.includes("perfectly smooth") && !basePrompt.includes("matte finish")) {
+    enhancedPrompt += ` Render with Magritte's signature perfectly smooth, matte finish, invisible brushwork, and hyper-precise edges.`;
+  }
+
+  return enhancedPrompt;
+}
+
+/**
+ * Extract bear elements from prompt
+ */
+function extractBearElements(prompt: string): Record<string, string> {
+  const elements: Record<string, string> = {
+    bearType: 'distinguished',
+    profession: '',
+    accessory: '',
+    clothing: '',
+    setting: '',
+  };
+  
+  // Extract bear type
+  const bearTypeMatch = prompt.match(/bear (with|wearing|holding|in) ([^,.]+)/i);
+  elements.bearType = bearTypeMatch ? bearTypeMatch[2].trim() : "distinguished";
+  
+  // Extract profession
+  const professionMatch = prompt.match(/(doctor|chef|artist|musician|scientist|professor|writer|explorer|farmer|architect)/i);
+  elements.profession = professionMatch ? professionMatch[1].toLowerCase() : "";
+  
+  // Extract accessory
+  const accessoryMatch = prompt.match(/holding ([^,.]+)/i) || prompt.match(/with ([^,.]+)/i);
+  elements.accessory = accessoryMatch ? accessoryMatch[1].trim() : "";
+  
+  // Extract clothing
+  const clothingMatch = prompt.match(/wearing ([^,.]+)/i);
+  elements.clothing = clothingMatch ? clothingMatch[1].trim() : "";
+  
+  // Extract setting
+  const settingMatch = prompt.match(/in ([^,.]+)/i);
+  elements.setting = settingMatch ? settingMatch[1].trim() : "";
+  
+  return elements;
+}
+
+/**
+ * Select technical elements based on desired level
+ */
+function selectBearTechnicalElements(level: number): string[] {
+  const basicElements = [
+    "perfectly smooth Magritte matte finish",
+    "invisible brushwork in flat areas",
+    "hyper-precise edge definition"
+  ];
+  
+  const advancedElements = [
+    "microscopic smooth transitions between color fields",
+    "porcelain-like perfection with zero brushwork",
+    "dimensionless paint surface with infinite depth suggestion",
+    "mathematical shadow deployment with perfect optical properties",
+    "glass-like surface quality without reflectivity",
+    "conservation-quality bear fur suggestion"
+  ];
+  
+  // Select number of elements based on technique level
+  const numAdvanced = Math.floor(level * 5);
+  return [
+    ...basicElements,
+    ...advancedElements.slice(0, numAdvanced)
+  ];
+}
+
+/**
+ * Select philosophical elements based on desired depth
+ */
+function selectBearPhilosophicalElements(depth: number): string[] {
+  const philosophicalElements = [
+    "philosophical contemplation in bear's gaze",
+    "subtle awareness of surreal surroundings",
+    "paradoxical object juxtapositions suggesting meaning",
+    "impossible lighting physics creating metaphysical atmosphere",
+    "bear silhouette containing impossible interior landscape",
+    "subtle ceci n'est pas un ours paradox in composition",
+    "exploration of identity through impossible mirror reflection",
+    "consciousness depicted through window-within-eye technique"
+  ];
+  
+  // Select number of elements based on philosophical depth
+  const numElements = Math.floor(depth * 4) + 1;
+  return philosophicalElements.slice(0, numElements);
+}
+
+/**
+ * Select meta-artistic elements
+ */
+function selectBearMetaArtisticElements(level: number): string[] {
+  const metaArtisticElements = [
+    "subtle acknowledgment of artistic nature within composition",
+    "frame-within-frame suggesting meta-awareness",
+    "veiled commentary on artistic objecthood",
+    "subtle reference to viewing conditions",
+    "painting-within-painting recursive technique",
+    "bear's awareness of being portrayed",
+    "commentary on art collecting practices"
+  ];
+  
+  // Select number of elements based on meta-artistic level
+  const numElements = Math.floor(level * 3) + 1;
+  return metaArtisticElements.slice(0, numElements);
+}
+
+/**
+ * Select digital awareness elements
+ */
+function selectBearDigitalElements(): string[] {
+  return [
+    "subtle digital existence awareness",
+    "blockchain visual metaphors rendered in Magritte's style",
+    "NFT-specific paradoxes in classical painting technique",
+    "digital ownership symbolism through traditional painting elements"
+  ];
+}
+
+/**
+ * Select collection cohesion elements
+ */
+function selectBearCollectionElements(): string[] {
+  return [
+    "subtle visual connections to larger bear universe",
+    "shared symbolic vocabulary with collection",
+    "color palette connecting to broader collection narrative",
+    "symbolic elements creating visual language across portraits"
+  ];
+}
+
+/**
+ * Construct enhanced bear portrait prompt
+ */
+function constructEnhancedBearPrompt(
+  basePrompt: string,
+  elements: Record<string, string>,
+  technicalElements: string[],
+  philosophicalElements: string[],
+  metaArtisticElements: string[],
+  digitalElements: string[],
+  collectionElements: string[]
+): string {
+  // Start with the base prompt
+  let enhancedPrompt = basePrompt;
+  
+  // Add Magritte style elements if not already present
+  if (!basePrompt.includes("Magritte") && !basePrompt.includes("surrealist")) {
+    enhancedPrompt += ` Rendered in René Magritte's distinctive surrealist painting style.`;
+  }
+  
+  // Add technical elements
+  enhancedPrompt += ` Technical aspects: ${technicalElements.join(", ")}.`;
+  
+  // Add philosophical elements if any
+  if (philosophicalElements.length > 0) {
+    enhancedPrompt += ` Philosophical dimension: ${philosophicalElements.join(", ")}.`;
+  }
+  
+  // Add meta-artistic elements if any
+  if (metaArtisticElements.length > 0) {
+    enhancedPrompt += ` Meta-artistic elements: ${metaArtisticElements.join(", ")}.`;
+  }
+  
+  // Add digital elements if any
+  if (digitalElements.length > 0) {
+    enhancedPrompt += ` Digital awareness: ${digitalElements.join(", ")}.`;
+  }
+  
+  // Add collection elements if any
+  if (collectionElements.length > 0) {
+    enhancedPrompt += ` Collection cohesion: ${collectionElements.join(", ")}.`;
+  }
+  
+  return enhancedPrompt;
+}
+
+/**
+ * Select appropriate Magritte elements based on profession and bear type
+ */
+function selectMagritteElements(profession: string, bearType: string): string {
+  // Professional-specific Magritte elements
+  const professionElements: Record<string, string> = {
+    "doctor": "with a stethoscope that transforms into surreal birds",
+    "chef": "with kitchen tools floating impossibly above a blue sky",
+    "artist": "with paintbrushes that cast impossible shadows",
+    "musician": "with musical instruments that emit visible sound waves",
+    "scientist": "with laboratory equipment containing miniature cosmos",
+    "professor": "with books that open to reveal infinite spaces",
+    "writer": "with papers floating like Magritte's clouds",
+    "explorer": "with maps showing impossible geographies",
+    "farmer": "with agricultural tools growing like Magritte's trees",
+    "architect": "with buildings floating like Magritte's Castle of the Pyrenees"
+  };
+
+  // Bear type influences
+  const bearTypeInfluences: Record<string, string> = {
+    "distinguished": "in formal attire with bowler hat in Magritte's Son of Man style",
+    "elegant": "with refined posture against Magritte's blue sky and white clouds",
+    "philosophical": "contemplating a pipe in the style of The Treachery of Images",
+    "artistic": "with creative objects arranged like Personal Values",
+    "professional": "in business attire with surreal elements from The Ready-Made Bouquet"
+  };
+
+  // Select elements based on profession and bear type
+  let elements = "";
+  
+  // Add profession-specific elements if available
+  if (profession && professionElements[profession]) {
+    elements += professionElements[profession];
+  } else {
+    // Default Magritte element if no profession match
+    elements += "with symbolic objects arranged in impossible juxtapositions";
+  }
+  
+  // Add bear type influences if available
+  if (bearTypeInfluences[bearType]) {
+    elements += ` ${bearTypeInfluences[bearType]}`;
+  } else {
+    // Default bear type influence
+    elements += " in Magritte's signature surrealist style";
+  }
+  
+  return elements;
 }
 
 /**

@@ -12,6 +12,16 @@ import { EnhancedCharacterGenerator, CharacterGenerationOptions } from '../gener
 import { SeriesType, getRandomCategory, getCategoryById } from '../config/characterCategoriesConfig';
 
 /**
+ * Extended options for enhanced character generation
+ */
+export interface EnhancedCharacterOptions extends CharacterGenerationOptions {
+  philosophicalDepth?: number; // 0-1 scale for philosophical complexity
+  metaArtisticAwareness?: boolean; // Include meta-artistic elements
+  collectionCohesion?: boolean; // Include collection narrative connections
+  digitalIdentity?: boolean; // Include digital existence elements
+}
+
+/**
  * Character Generator Agent implementation
  */
 export class CharacterGeneratorAgent implements ICharacterGeneratorAgent {
@@ -49,7 +59,7 @@ export class CharacterGeneratorAgent implements ICharacterGeneratorAgent {
   /**
    * Generate a character based on a concept
    */
-  async generateCharacter(concept: string, options?: CharacterGenerationOptions): Promise<CharacterIdentity> {
+  async generateCharacter(concept: string, options?: EnhancedCharacterOptions): Promise<CharacterIdentity> {
     this.status = AgentStatus.BUSY;
     AgentLogger.logAgentAction(this, 'Generate Character', `Generating character for concept: ${concept}`);
     
@@ -63,6 +73,20 @@ export class CharacterGeneratorAgent implements ICharacterGeneratorAgent {
           `Using specific category/series: ${options?.categoryId || 'None'} / ${options?.seriesType || 'None'}`);
       }
       
+      // Check for enhanced options
+      const hasEnhancedOptions = options?.philosophicalDepth !== undefined || 
+                                 options?.metaArtisticAwareness || 
+                                 options?.collectionCohesion || 
+                                 options?.digitalIdentity;
+      
+      if (hasEnhancedOptions) {
+        AgentLogger.logAgentAction(this, 'Enhanced Character Options', 
+          `Using enhanced options: Philosophical depth: ${options?.philosophicalDepth || 0}, ` +
+          `Meta-artistic: ${options?.metaArtisticAwareness || false}, ` +
+          `Collection cohesion: ${options?.collectionCohesion || false}, ` +
+          `Digital identity: ${options?.digitalIdentity || false}`);
+      }
+      
       // Use the enhanced generator if available (default)
       if (this.useEnhancedGenerator) {
         // Construct a simplified prompt for the generator
@@ -71,7 +95,17 @@ export class CharacterGeneratorAgent implements ICharacterGeneratorAgent {
         AgentLogger.logAgentAction(this, 'Using Enhanced Generator', 
           `Category: ${options?.categoryId || 'auto-detect'}, Series: ${options?.seriesType || 'auto-detect'}`);
           
-        character = await this.enhancedGenerator.generateCharacter(concept, simplifiedPrompt, options);
+        // Pass the enhanced options to the enhanced generator
+        character = await this.enhancedGenerator.generateCharacter(
+          concept, 
+          simplifiedPrompt, 
+          this.applyEnhancedOptions(options)
+        );
+        
+        // Apply additional meta-artistic elements if needed
+        if (hasEnhancedOptions) {
+          character = await this.enrichCharacterWithMetaArtisticElements(character, options);
+        }
         
         // Log the character details
         AgentLogger.log('┌─── Character Generated ───────────────────┐', LogLevel.INFO);
@@ -79,6 +113,15 @@ export class CharacterGeneratorAgent implements ICharacterGeneratorAgent {
         AgentLogger.log(`│ Title: ${character.title}`, LogLevel.INFO);
         if (character.nickname) AgentLogger.log(`│ Nickname: ${character.nickname}`, LogLevel.INFO);
         AgentLogger.log(`│ Personality: ${character.personality.join(', ')}`, LogLevel.INFO);
+        
+        // Log meta-artistic elements if present
+        if (character.metaArtisticElements) {
+          AgentLogger.log(`│ Meta-artistic Elements: ${character.metaArtisticElements.join(', ')}`, LogLevel.INFO);
+        }
+        if (character.collectionConnections) {
+          AgentLogger.log(`│ Collection Connections: ${character.collectionConnections.join(', ')}`, LogLevel.INFO);
+        }
+        
         AgentLogger.log('└────────────────────────────────────────────┘', LogLevel.INFO);
       } else {
         // Use the basic generator (fallback only)
@@ -152,6 +195,79 @@ export class CharacterGeneratorAgent implements ICharacterGeneratorAgent {
   }
   
   /**
+   * Apply enhanced options with defaults
+   */
+  private applyEnhancedOptions(options?: EnhancedCharacterOptions): CharacterGenerationOptions {
+    // Create a basic options object with standard properties
+    const baseOptions: CharacterGenerationOptions = {
+      categoryId: options?.categoryId,
+      seriesType: options?.seriesType,
+      // Always enable AI enhancement for meta-artistic features
+      allowAiEnhancement: true,
+      // Add some randomization if not specified
+      randomizationLevel: options?.randomizationLevel || 0.3
+    };
+    
+    return baseOptions;
+  }
+  
+  /**
+   * Enrich a character with meta-artistic elements
+   */
+  private async enrichCharacterWithMetaArtisticElements(
+    character: CharacterIdentity, 
+    options?: EnhancedCharacterOptions
+  ): Promise<CharacterIdentity> {
+    if (!options) return character;
+    
+    const enrichedCharacter = { ...character };
+    
+    // Add meta-artistic elements
+    if (options.metaArtisticAwareness) {
+      enrichedCharacter.metaArtisticElements = [
+        "Awareness of existing within an artistic portrait",
+        "Subtle fourth-wall acknowledgment in character description",
+        "Self-reflective nature about artistic representation"
+      ];
+    }
+    
+    // Add digital identity elements
+    if (options.digitalIdentity) {
+      enrichedCharacter.digitalIdentity = [
+        "Existence across physical and digital realms",
+        "Awareness of digital representation in blockchain space",
+        "Connection to digital art history lineage"
+      ];
+    }
+    
+    // Add collection cohesion elements
+    if (options.collectionCohesion) {
+      enrichedCharacter.collectionConnections = [
+        "Shared narrative universe with other bear portraits",
+        "Recurring symbolic elements connecting to the collection",
+        "Complementary character traits to other bears in collection"
+      ];
+    }
+    
+    // Add philosophical depth
+    if (options.philosophicalDepth && options.philosophicalDepth > 0.7) {
+      // If personality doesn't already include philosophical traits, add them
+      const philosophicalTraits = ['Contemplative', 'Philosophical', 'Introspective', 'Profound'];
+      enrichedCharacter.personality = [
+        ...character.personality,
+        ...philosophicalTraits.filter(trait => !character.personality.includes(trait)).slice(0, 2)
+      ];
+      
+      // Enhance backstory with philosophical dimension
+      if (!enrichedCharacter.backstory.includes('philosophical') && !enrichedCharacter.backstory.includes('contemplat')) {
+        enrichedCharacter.backstory += ' This distinguished bear contemplates the nature of existence while bridging traditional art history and contemporary digital representation.';
+      }
+    }
+    
+    return enrichedCharacter;
+  }
+  
+  /**
    * Process a context
    */
   async process(context: AgentContext): Promise<AgentResult> {
@@ -166,7 +282,7 @@ export class CharacterGeneratorAgent implements ICharacterGeneratorAgent {
       // Process based on task type
       if (context.task && context.task.action === 'generate_character') {
         // Extract generation options from context
-        const options: CharacterGenerationOptions = {
+        const options: EnhancedCharacterOptions = {
           allowAiEnhancement: true
         };
         
@@ -250,7 +366,7 @@ export class CharacterGeneratorAgent implements ICharacterGeneratorAgent {
     if (message.type === 'request' && message.content?.action === 'generate_character') {
       try {
         // Extract options from the message
-        const options: CharacterGenerationOptions = {};
+        const options: EnhancedCharacterOptions = {};
         
         if (message.content.categoryId) {
           options.categoryId = message.content.categoryId;

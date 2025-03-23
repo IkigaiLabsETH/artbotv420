@@ -412,6 +412,259 @@ export const characterCategories: CategoryDefinition[] = [
     ]
   },
   
+  // Adventure Series - Additional Categories
+  {
+    id: "bear_pfp_snowboarder",
+    name: "Snowboarder Bear",
+    description: "A distinguished bear portrait featuring a winter sports enthusiast with vintage goggles and gear",
+    series: SeriesType.ADVENTURE,
+    accessories: [
+      "vintage ski resort map",
+      "competition medals",
+      "snow condition journal",
+      "mountain pass identification",
+      "avalanche safety card"
+    ],
+    headwear: [
+      "vintage ski goggles",
+      "winter sports beanie",
+      "retro snowboard helmet",
+      "classic winter cap",
+      "mountain lodge headband"
+    ],
+    clothing: [
+      "vintage snowboard jacket",
+      "retro winter sports outfit",
+      "classic mountain wear",
+      "thermal expedition layer",
+      "alpine competition uniform"
+    ],
+    tools: [
+      "vintage snowboard",
+      "hand-carved wax applicator",
+      "slope angle measure",
+      "traditional binding tools",
+      "avalanche safety equipment"
+    ],
+    personalityTraits: [
+      "Adventurous",
+      "Balanced",
+      "Fearless",
+      "Mountain-wise",
+      "Free-spirited"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_skater",
+    name: "Skater Bear",
+    description: "A distinguished bear portrait featuring a vintage skateboard culture enthusiast with classic board",
+    series: SeriesType.ADVENTURE,
+    accessories: [
+      "vintage skateboard deck",
+      "classic skate magazine",
+      "retro skate stickers",
+      "competition medals",
+      "skate spot map"
+    ],
+    headwear: [
+      "classic skater's helmet",
+      "vintage flat cap",
+      "retro skate brand cap",
+      "bandana",
+      "old-school headphones"
+    ],
+    clothing: [
+      "vintage skate team jacket",
+      "classic skate brand t-shirt",
+      "padded skate vest",
+      "retro knee pads",
+      "classic skate shoes"
+    ],
+    tools: [
+      "skateboard maintenance kit",
+      "wheel change tools",
+      "grip tape cutter",
+      "skatepark blueprint",
+      "ramp design chart"
+    ],
+    personalityTraits: [
+      "Adventurous",
+      "Independent",
+      "Persistent",
+      "Creative",
+      "Nonconformist"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_cyclist",
+    name: "Cyclist Bear",
+    description: "A distinguished bear portrait featuring a classic cycling enthusiast with vintage gear",
+    series: SeriesType.ADVENTURE,
+    accessories: [
+      "classic cycling cap",
+      "vintage route map",
+      "team water bottle",
+      "historic race medal",
+      "traditional cycling gloves"
+    ],
+    headwear: [
+      "vintage cycling cap",
+      "classic wool team hat",
+      "traditional tour cap",
+      "leather strap helmet",
+      "cycling club visor"
+    ],
+    clothing: [
+      "vintage wool cycling jersey",
+      "classic team racing kit",
+      "traditional cycling jacket",
+      "historic team colors",
+      "vintage cycling pants"
+    ],
+    tools: [
+      "classic steel frame bicycle",
+      "traditional leather tool kit",
+      "vintage bicycle pump",
+      "historic race manual",
+      "traditional route marker flags"
+    ],
+    personalityTraits: [
+      "Enduring",
+      "Strategic",
+      "Disciplined",
+      "Detail-oriented",
+      "Tradition-minded"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_caver",
+    name: "Cave Explorer Bear",
+    description: "A distinguished bear portrait featuring a spelunking specialist with mapping tools and headlamp",
+    series: SeriesType.ADVENTURE,
+    accessories: [
+      "cave survey notebook",
+      "underground mineral samples",
+      "cave system maps",
+      "expedition log",
+      "subterranean ecology guide"
+    ],
+    headwear: [
+      "spelunker's headlamp",
+      "cave explorer's helmet",
+      "subterranean safety cap",
+      "mining-inspired headwear",
+      "crystal cave protective gear"
+    ],
+    clothing: [
+      "cave exploration suit",
+      "spelunking coveralls",
+      "subterranean expedition jacket",
+      "moisture-resistant garments",
+      "cave environment protection wear"
+    ],
+    tools: [
+      "cave mapping equipment",
+      "specialized survey tools",
+      "climbing carabiners",
+      "underground navigation device",
+      "specialized rope systems"
+    ],
+    personalityTraits: [
+      "Methodical",
+      "Patient",
+      "Detail-oriented",
+      "Adventurous",
+      "Contemplative"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_racer",
+    name: "Racing Bear",
+    description: "A distinguished bear portrait featuring a vintage motorsport enthusiast with leather racing gear",
+    series: SeriesType.ADVENTURE,
+    accessories: [
+      "vintage racing goggles",
+      "classic racing gloves",
+      "track map collection",
+      "competition medallions",
+      "race timing device"
+    ],
+    headwear: [
+      "vintage racing helmet",
+      "classic driver's cap",
+      "motorsport headgear",
+      "protective racing headwear",
+      "speed record headpiece"
+    ],
+    clothing: [
+      "classic racing leather jacket",
+      "vintage driver's suit",
+      "traditional motorsport uniform",
+      "speed record attempt gear",
+      "historic racing team colors"
+    ],
+    tools: [
+      "vintage steering wheel",
+      "mechanical stopwatch",
+      "traditional lap counter",
+      "classic racing tool kit",
+      "mechanical engine tester"
+    ],
+    personalityTraits: [
+      "Focused",
+      "Precise",
+      "Strategic",
+      "Speed-conscious",
+      "Competitive"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_alpinist",
+    name: "Alpinist Bear",
+    description: "A distinguished bear portrait featuring an alpine climbing specialist with technical gear",
+    series: SeriesType.ADVENTURE,
+    accessories: [
+      "alpine summit log",
+      "mountain first ascent records",
+      "climbing chalk bag",
+      "mountain range panoramic map",
+      "traditional climbing pegs"
+    ],
+    headwear: [
+      "alpine climbing helmet",
+      "mountain summit cap",
+      "cold weather climbing hood",
+      "alpinist's protective headwear",
+      "traditional climbing headgear"
+    ],
+    clothing: [
+      "technical climbing jacket",
+      "alpine expedition suit",
+      "traditional mountaineering attire",
+      "summit attempt layers",
+      "mountain windbreaker"
+    ],
+    tools: [
+      "traditional ice axe",
+      "alpinist rope system",
+      "classic climbing cams",
+      "summit navigation tools",
+      "high-alpine protection gear"
+    ],
+    personalityTraits: [
+      "Determined",
+      "Strategic",
+      "Methodical",
+      "Self-reliant",
+      "Mountain-wise"
+    ]
+  },
+  
   // Artistic Series
   {
     id: "bear_pfp_painter",
@@ -749,6 +1002,217 @@ export const characterCategories: CategoryDefinition[] = [
     ]
   },
   
+  // Artistic Series - Additional Categories
+  {
+    id: "bear_pfp_poet",
+    name: "Poet Bear",
+    description: "A distinguished bear portrait featuring a bohemian writer with notebook and traditional pen",
+    series: SeriesType.ARTISTIC,
+    accessories: [
+      "leather-bound poetry journal",
+      "collection of classic poems",
+      "writer's inspiration trinkets",
+      "poetry competition medals",
+      "literary society membership"
+    ],
+    headwear: [
+      "poetic bohemian beret",
+      "writer's slouch cap",
+      "literary society hat",
+      "contemplative poet's headwear",
+      "author's signature cap"
+    ],
+    clothing: [
+      "bohemian poet's jacket",
+      "artistic writer's attire",
+      "literary salon outfit",
+      "contemplative author's wear",
+      "poetic tradition-inspired clothes"
+    ],
+    tools: [
+      "vintage fountain pen",
+      "handcrafted writing desk",
+      "antique ink well",
+      "poetry composition guides",
+      "writer's reference books"
+    ],
+    personalityTraits: [
+      "Contemplative",
+      "Expressive",
+      "Observant",
+      "Thoughtful",
+      "Emotionally deep"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_dancer",
+    name: "Ballet Dancer Bear",
+    description: "A distinguished bear portrait featuring a classical ballet performer with traditional tutu",
+    series: SeriesType.ARTISTIC,
+    accessories: [
+      "performance program",
+      "ballet competition medals",
+      "choreography notes",
+      "theater access passes",
+      "performance schedule"
+    ],
+    headwear: [
+      "ballet performance tiara",
+      "classical dance headpiece",
+      "rehearsal hair band",
+      "swan lake crown",
+      "dancer's formal headwear"
+    ],
+    clothing: [
+      "classical ballet tutu",
+      "rehearsal outfit",
+      "performance costume",
+      "traditional dancer's attire",
+      "ballet company uniform"
+    ],
+    tools: [
+      "ballet slippers",
+      "dance floor rosin box",
+      "performance soundtrack",
+      "choreography notation book",
+      "stretching equipment"
+    ],
+    personalityTraits: [
+      "Graceful",
+      "Disciplined",
+      "Expressive",
+      "Perfectionist",
+      "Artistic"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_filmmaker",
+    name: "Filmmaker Bear",
+    description: "A distinguished bear portrait featuring a director with vintage camera and film equipment",
+    series: SeriesType.ARTISTIC,
+    accessories: [
+      "director's screenplay",
+      "film festival badges",
+      "shot composition guide",
+      "film reel collection",
+      "movie production schedule"
+    ],
+    headwear: [
+      "director's beret",
+      "filmmaker's cap",
+      "vintage camera headstrap",
+      "production headset",
+      "classic cinema-inspired hat"
+    ],
+    clothing: [
+      "director's jacket",
+      "film set vest with pockets",
+      "cinematographer's outfit",
+      "production team attire",
+      "classic filmmaker's clothes"
+    ],
+    tools: [
+      "vintage film camera",
+      "director's viewfinder",
+      "clapperboard",
+      "editing equipment",
+      "storyboard sketches"
+    ],
+    personalityTraits: [
+      "Visionary",
+      "Detail-oriented",
+      "Expressive",
+      "Commanding",
+      "Storytelling"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_woodblock",
+    name: "Woodblock Artist Bear",
+    description: "A distinguished bear portrait featuring a traditional woodblock print master with carving tools",
+    series: SeriesType.ARTISTIC,
+    accessories: [
+      "woodblock print collection",
+      "print technique manual",
+      "edition numbering journal",
+      "traditional art society membership",
+      "print exhibition invitations"
+    ],
+    headwear: [
+      "traditional printer's cap",
+      "woodblock artist's bandana",
+      "carving protection headwear",
+      "print studio headpiece",
+      "ink-stained work cap"
+    ],
+    clothing: [
+      "traditional printer's uniform",
+      "woodblock carver's apron",
+      "ink-stained work clothes",
+      "print studio jacket",
+      "traditional artisan wear"
+    ],
+    tools: [
+      "carved wooden blocks",
+      "traditional carving tools",
+      "natural pigment set",
+      "baren printing disk",
+      "handmade paper stack"
+    ],
+    personalityTraits: [
+      "Patient",
+      "Precise",
+      "Traditional",
+      "Detailed",
+      "Methodical"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_jeweler",
+    name: "Jeweler Bear",
+    description: "A distinguished bear portrait featuring a jewelry maker with precious gems and precision tools",
+    series: SeriesType.ARTISTIC,
+    accessories: [
+      "gemstone collection",
+      "jewelry design sketchbook",
+      "precision scale",
+      "goldsmith's certificates",
+      "gem authentication documents"
+    ],
+    headwear: [
+      "jeweler's loupe headband",
+      "precision work cap",
+      "gemstone appraiser's visor",
+      "traditional goldsmith's headwear",
+      "craftsman's protective eyewear"
+    ],
+    clothing: [
+      "jeweler's precision apron",
+      "gemstone handler's coat",
+      "traditional goldsmith's uniform",
+      "fine craftsmanship jacket",
+      "metal working protective wear"
+    ],
+    tools: [
+      "precision jeweler's tools",
+      "gemstone setting equipment",
+      "metal working instruments",
+      "polishing wheels",
+      "precious metal testing kit"
+    ],
+    personalityTraits: [
+      "Meticulous",
+      "Precise",
+      "Detail-oriented",
+      "Patient",
+      "Perfectionistic"
+    ]
+  },
+  
   // Hipster Series
   {
     id: "bear_pfp_barista",
@@ -1044,7 +1508,218 @@ export const characterCategories: CategoryDefinition[] = [
     ]
   },
   
-  // Blockchain & Web3 Series
+  // Hipster Series - Additional Categories
+  {
+    id: "bear_pfp_vintagegame",
+    name: "Vintage Game Collector Bear",
+    description: "A distinguished bear portrait featuring a retro game enthusiast with classic consoles and cartridges",
+    series: SeriesType.HIPSTER,
+    accessories: [
+      "rare game cartridge collection",
+      "gaming magazine archive",
+      "retro console catalog",
+      "game preservation guide",
+      "pixel art design book"
+    ],
+    headwear: [
+      "vintage gaming headset",
+      "retro developer cap",
+      "classic gaming tournament visor",
+      "pixel art branded beanie",
+      "arcade champion crown"
+    ],
+    clothing: [
+      "vintage game developer jacket",
+      "retro arcade uniform",
+      "classic console brand shirt",
+      "gaming competition vest",
+      "pixelated design outfit"
+    ],
+    tools: [
+      "game restoration kit",
+      "cartridge repair equipment",
+      "console modification tools",
+      "game testing devices",
+      "preservation storage system"
+    ],
+    personalityTraits: [
+      "Nostalgic",
+      "Detail-oriented",
+      "Preservationist",
+      "Technological",
+      "Community-minded"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_apiarist",
+    name: "Urban Beekeeper Bear",
+    description: "A distinguished bear portrait featuring an urban apiculturist with hive tools and honey production",
+    series: SeriesType.HIPSTER,
+    accessories: [
+      "urban honey variety samples",
+      "bee population tracking journal",
+      "hive management calendar",
+      "honey production awards",
+      "pollinator habitat maps"
+    ],
+    headwear: [
+      "traditional beekeeper's hat",
+      "urban apiarist veil",
+      "protective mesh headwear",
+      "honey harvester's cap",
+      "pollinator conservation headpiece"
+    ],
+    clothing: [
+      "traditional beekeeper suit",
+      "urban apiary jacket",
+      "honey harvesting overalls",
+      "bee-friendly gardener's outfit",
+      "artisanal honey producer's uniform"
+    ],
+    tools: [
+      "handcrafted smoker",
+      "traditional hive tools",
+      "honey extraction equipment",
+      "urban apiary blueprints",
+      "bee health testing kit"
+    ],
+    personalityTraits: [
+      "Patient",
+      "Nurturing",
+      "Observant",
+      "Ecological",
+      "Methodical"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_teasmith",
+    name: "Tea Ceremony Master Bear",
+    description: "A distinguished bear portrait featuring a traditional tea ceremony specialist with ceremonial tools",
+    series: SeriesType.HIPSTER,
+    accessories: [
+      "rare tea collection",
+      "ceremonial tea journal",
+      "tasting evaluation notes",
+      "traditional ceremony scroll",
+      "tea master certification"
+    ],
+    headwear: [
+      "tea master's cap",
+      "ceremonial headwear",
+      "traditional tea house hat",
+      "meditation practice headpiece",
+      "tea garden sun visor"
+    ],
+    clothing: [
+      "traditional tea ceremony robes",
+      "tea master's formal attire",
+      "ceremonial practice garments",
+      "tea garden work clothes",
+      "tasting session uniform"
+    ],
+    tools: [
+      "handcrafted tea whisk",
+      "ceremonial tea bowls",
+      "traditional heating vessel",
+      "bamboo water ladle",
+      "tea ceremony tatami mat"
+    ],
+    personalityTraits: [
+      "Centered",
+      "Mindful",
+      "Disciplined",
+      "Harmonious",
+      "Tradition-honoring"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_analogphoto",
+    name: "Analog Photography Bear",
+    description: "A distinguished bear portrait featuring a film photography artist with vintage cameras and darkroom equipment",
+    series: SeriesType.HIPSTER,
+    accessories: [
+      "rare film collection",
+      "vintage camera manual",
+      "film development journal",
+      "photo exhibition catalogs",
+      "analog technique guides"
+    ],
+    headwear: [
+      "darkroom protective cap",
+      "film photographer's beret",
+      "light meter headband",
+      "camera strap harness",
+      "focusing cloth"
+    ],
+    clothing: [
+      "darkroom apron",
+      "film photographer's vest",
+      "chemical-resistant lab coat",
+      "vintage camera workshop jacket",
+      "analog enthusiast uniform"
+    ],
+    tools: [
+      "vintage large format camera",
+      "traditional film developing tanks",
+      "darkroom enlarger",
+      "chemical mixing station",
+      "printing easel and trays"
+    ],
+    personalityTraits: [
+      "Patient",
+      "Methodical",
+      "Detail-oriented",
+      "Process-minded",
+      "Artistic"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_letterpress",
+    name: "Letterpress Bear",
+    description: "A distinguished bear portrait featuring a traditional printing press artist with type and ink",
+    series: SeriesType.HIPSTER,
+    accessories: [
+      "metal type collection",
+      "letterpress sample book",
+      "print registration guides",
+      "paper stock samples",
+      "typography manuals"
+    ],
+    headwear: [
+      "printer's cap",
+      "ink-stained bandana",
+      "traditional press operator's hat",
+      "typesetter's visor",
+      "print shop headwear"
+    ],
+    clothing: [
+      "traditional printer's apron",
+      "letterpress shop coat",
+      "ink-stained work clothes",
+      "type drawer carrier vest",
+      "paper handling overalls"
+    ],
+    tools: [
+      "vintage printing press",
+      "lead type set",
+      "composing stick",
+      "ink brayer",
+      "paper cutter"
+    ],
+    personalityTraits: [
+      "Precise",
+      "Patient",
+      "Traditional",
+      "Detail-oriented",
+      "Craftsman-minded"
+    ]
+  },
+  
+  // Blockchain Series
   {
     id: "bear_pfp_defi",
     name: "DeFi Bear",
@@ -1631,6 +2306,217 @@ export const characterCategories: CategoryDefinition[] = [
       "Analytical",
       "Solution-oriented",
       "Self-sufficient"
+    ]
+  },
+  
+  // Blockchain Series - Additional Categories
+  {
+    id: "bear_pfp_hodler",
+    name: "HODL Bear",
+    description: "A distinguished bear portrait featuring a long-term cryptocurrency investor with cold storage devices",
+    series: SeriesType.BLOCKCHAIN,
+    accessories: [
+      "early bitcoin whitepaper",
+      "vintage crypto conference badges",
+      "market cycle charts",
+      "investment thesis journal",
+      "crypto industry pioneer photos"
+    ],
+    headwear: [
+      "diamond hands crown",
+      "long-term investor cap",
+      "crypto winter survivor hat",
+      "bull market celebration headpiece",
+      "blockchain pioneer headwear"
+    ],
+    clothing: [
+      "relaxed hodler's jacket",
+      "long-term investor vest",
+      "crypto conference hoodie",
+      "blockchain early adopter shirt",
+      "patient investor uniform"
+    ],
+    tools: [
+      "hardware wallet collection",
+      "seed phrase storage system",
+      "private key backup devices",
+      "cold storage solution",
+      "secure recovery system"
+    ],
+    personalityTraits: [
+      "Patient",
+      "Long-term focused",
+      "Conviction-driven",
+      "Resilient",
+      "Community-oriented"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_dapp",
+    name: "DApp Developer Bear",
+    description: "A distinguished bear portrait featuring a decentralized application developer with coding tools",
+    series: SeriesType.BLOCKCHAIN,
+    accessories: [
+      "smart contract architecture diagrams",
+      "decentralized protocol whitepapers",
+      "dapp user experience wireframes",
+      "developer hackathon medals",
+      "blockchain optimization research"
+    ],
+    headwear: [
+      "web3 developer's headset",
+      "decentralized builder's cap",
+      "smart contract debugging visor",
+      "protocol engineer's headwear",
+      "blockchain coder's thinking cap"
+    ],
+    clothing: [
+      "dapp developer's jacket",
+      "smart contract engineer attire",
+      "decentralized protocol builder coat",
+      "web3 hackathon uniform",
+      "blockchain development suit"
+    ],
+    tools: [
+      "decentralized development environment",
+      "smart contract testing framework",
+      "blockchain node simulator",
+      "protocol optimization tools",
+      "dapp user interface builder"
+    ],
+    personalityTraits: [
+      "Innovative",
+      "Technical",
+      "Solution-oriented",
+      "Decentralized-thinking",
+      "Community-focused"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_tokenomics",
+    name: "Tokenomics Designer Bear",
+    description: "A distinguished bear portrait featuring a token economy architect with economic models and distribution charts",
+    series: SeriesType.BLOCKCHAIN,
+    accessories: [
+      "token distribution models",
+      "economic incentive diagrams",
+      "game theory textbook",
+      "token velocity research",
+      "governance mechanism comparisons"
+    ],
+    headwear: [
+      "token economist's thinking cap",
+      "incentive design crown",
+      "mechanism design helmet",
+      "governance architect's headwear",
+      "economic model visor"
+    ],
+    clothing: [
+      "token architect's formal jacket",
+      "economic designer's attire",
+      "incentive structures lab coat",
+      "game theorist's vest",
+      "distribution modeling uniform"
+    ],
+    tools: [
+      "token simulation software",
+      "economic modeling tools",
+      "distribution visualization system",
+      "governance structure designer",
+      "incentive alignment calculator"
+    ],
+    personalityTraits: [
+      "Analytical",
+      "Strategic",
+      "Balanced",
+      "System-oriented",
+      "Forward-thinking"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_onchain",
+    name: "On-Chain Analyst Bear",
+    description: "A distinguished bear portrait featuring a blockchain data expert with visualization tools and metrics",
+    series: SeriesType.BLOCKCHAIN,
+    accessories: [
+      "blockchain transaction patterns",
+      "network visualization models",
+      "address clustering research",
+      "on-chain metric dashboard",
+      "data analysis journal"
+    ],
+    headwear: [
+      "blockchain data visor",
+      "data analyst's headset",
+      "on-chain visualization glasses",
+      "metrics monitoring crown",
+      "pattern recognition headwear"
+    ],
+    clothing: [
+      "data visualization jacket",
+      "on-chain analyst uniform",
+      "blockchain pattern recognition coat",
+      "network flow modeling vest",
+      "metrics researcher attire"
+    ],
+    tools: [
+      "blockchain explorer interface",
+      "on-chain pattern visualization system",
+      "transaction flow analyzer",
+      "wallet clustering software",
+      "metric correlation detector"
+    ],
+    personalityTraits: [
+      "Analytical",
+      "Pattern-recognizing",
+      "Detail-oriented",
+      "Methodical",
+      "Insightful"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_tradfi",
+    name: "TradFi Bridge Bear",
+    description: "A distinguished bear portrait featuring a financial expert bridging traditional and crypto finance",
+    series: SeriesType.BLOCKCHAIN,
+    accessories: [
+      "regulatory framework guides",
+      "institutional adoption roadmap",
+      "compliance procedure manual",
+      "crypto-asset classification system",
+      "cross-industry integration models"
+    ],
+    headwear: [
+      "financial bridge builder's cap",
+      "institutional adoption crown",
+      "regulatory navigation headset",
+      "cross-industry connector headwear",
+      "integration specialist visor"
+    ],
+    clothing: [
+      "institutional bridge jacket",
+      "traditional finance ambassador suit",
+      "regulatory navigation uniform",
+      "cross-industry connector blazer",
+      "market integration formal wear"
+    ],
+    tools: [
+      "compliance framework builder",
+      "institutional onboarding system",
+      "regulatory navigation maps",
+      "market integration platforms",
+      "cross-industry translation guide"
+    ],
+    personalityTraits: [
+      "Diplomatic",
+      "Integrative",
+      "Strategic",
+      "Balanced",
+      "Forward-thinking"
     ]
   }
 ];
