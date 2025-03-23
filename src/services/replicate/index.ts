@@ -7,7 +7,7 @@ export { ModelPrediction };
 // Define the models
 const FLUX_PRO_MODEL = 'black-forest-labs/flux-1.1-pro';
 const STABILITY_MODEL = 'stability-ai/stable-diffusion-xl-base-1.0';
-const FALLBACK_MODEL = 'stability-ai/sdxl';
+const FALLBACK_MODEL = 'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b';
 
 export class ReplicateService {
   private apiKey: string;
@@ -28,9 +28,16 @@ export class ReplicateService {
     this.defaultGuidanceScale = config.defaultGuidanceScale || parseFloat(process.env.GUIDANCE_SCALE || '3.0');
     this.defaultOutputFormat = config.defaultOutputFormat || process.env.OUTPUT_FORMAT || 'png';
     
-    // Ensure dimensions are within limits
-    this.defaultWidth = Math.min(this.defaultWidth, 1440);
-    this.defaultHeight = Math.min(this.defaultHeight, 1440);
+    // Ensure dimensions are within limits for all models
+    if (this.defaultModel.includes('flux')) {
+      // FLUX model can handle up to 1440x1440
+      this.defaultWidth = Math.min(Math.max(this.defaultWidth, 768), 1440); 
+      this.defaultHeight = Math.min(Math.max(this.defaultHeight, 768), 1440);
+    } else {
+      // For other models, use standard limits
+      this.defaultWidth = Math.min(this.defaultWidth, 1024);
+      this.defaultHeight = Math.min(this.defaultHeight, 1024);
+    }
   }
   
   async initialize(): Promise<void> {
@@ -90,8 +97,14 @@ export class ReplicateService {
       const isStabilityModel = selectedModel.includes('stability-ai');
       
       // For any model, make sure dimensions are within limits
-      input.width = Math.min(input.width || this.defaultWidth, 1440);
-      input.height = Math.min(input.height || this.defaultHeight, 1440);
+      if (isFluxModel) {
+        input.width = Math.min(Math.max(input.width || this.defaultWidth, 768), 1440);
+        input.height = Math.min(Math.max(input.height || this.defaultHeight, 768), 1440);
+      } else {
+        // For any other model, enforce strict limits
+        input.width = Math.min(input.width || this.defaultWidth, 1024);
+        input.height = Math.min(input.height || this.defaultHeight, 1024);
+      }
       
       // If this is the FLUX model, add default parameters if not provided
       if (isFluxModel) {
@@ -236,9 +249,9 @@ export class ReplicateService {
       
       console.log(`📝 Prompt: ${prompt.substring(0, 100)}...`);
       
-      // Ensure dimensions are within limits
-      options.width = Math.min(options.width || this.defaultWidth, 2048); // Increased max dimensions
-      options.height = Math.min(options.height || this.defaultHeight, 2048);
+      // Ensure dimensions are within API limits
+      options.width = Math.min(options.width || this.defaultWidth, 1440);
+      options.height = Math.min(options.height || this.defaultHeight, 1440);
       
       console.log(`📏 Dimensions: ${options.width}x${options.height}`);
       
@@ -308,6 +321,10 @@ export class ReplicateService {
           // Adjust parameters for the fallback model
           const fallbackInput = { ...input };
           
+          // Ensure dimensions are within limits for SDXL
+          fallbackInput.width = Math.min(fallbackInput.width, 1024);
+          fallbackInput.height = Math.min(fallbackInput.height, 1024);
+          
           // Update parameters for the fallback model
           if (fallbackInput.guidance_scale) {
             fallbackInput.guidance = fallbackInput.guidance_scale;
@@ -318,6 +335,14 @@ export class ReplicateService {
             fallbackInput.num_steps = fallbackInput.num_inference_steps;
             delete fallbackInput.num_inference_steps;
           }
+          
+          // Remove FLUX-specific parameters that might cause errors
+          delete fallbackInput.clip_skip;
+          delete fallbackInput.controlnet_conditioning_scale;
+          
+          // Set SDXL-specific parameters
+          fallbackInput.scheduler = "K_EULER";
+          fallbackInput.num_outputs = 1;
           
           // Try with fallback model
           try {
@@ -411,6 +436,11 @@ export class ReplicateService {
         }
       }
       
+      console.log(`📊 Using DALL-E with size: ${size}`);
+      
+      // Determine the model to use (try dall-e-3 first)
+      const model = 'dall-e-3';
+      
       // Call OpenAI API
       const response = await fetch('https://api.openai.com/v1/images/generations', {
         method: 'POST',
@@ -419,17 +449,56 @@ export class ReplicateService {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'dall-e-3',
+          model: model,
           prompt: prompt,
           n: 1,
           size: size,
-          quality: 'standard'
+          quality: 'standard',
+          response_format: 'url'
         })
       });
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(`OpenAI API error: ${JSON.stringify(errorData)}`);
+        console.error(`⚠️ OpenAI API error: ${JSON.stringify(errorData)}`);
+        
+        // Try dall-e-2 if dall-e-3 fails
+        if (model === 'dall-e-3') {
+          console.log('⚠️ Falling back to DALL-E 2');
+          
+          // DALL-E 2 only supports specific sizes
+          const dalle2Size = options.width <= 512 ? '512x512' : '1024x1024';
+          
+          const dalle2Response = await fetch('https://api.openai.com/v1/images/generations', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              model: 'dall-e-2',
+              prompt: prompt,
+              n: 1,
+              size: dalle2Size,
+              response_format: 'url'
+            })
+          });
+          
+          if (!dalle2Response.ok) {
+            const dalle2Error = await dalle2Response.json();
+            console.error(`⚠️ DALL-E 2 API error: ${JSON.stringify(dalle2Error)}`);
+            throw new Error(`OpenAI API error: ${JSON.stringify(dalle2Error)}`);
+          }
+          
+          const dalle2Data = await dalle2Response.json();
+          
+          if (dalle2Data.data && dalle2Data.data.length > 0 && dalle2Data.data[0].url) {
+            console.log(`✅ DALL-E 2 generated image URL: ${dalle2Data.data[0].url.substring(0, 50)}...`);
+            return dalle2Data.data[0].url;
+          }
+        } else {
+          throw new Error(`OpenAI API error: ${JSON.stringify(errorData)}`);
+        }
       }
       
       const data = await response.json();

@@ -432,7 +432,7 @@ export class DirectorAgent implements IDirectorAgent {
         total
       };
       
-      AgentLogger.logGenerationProgress(progress, total, stage);
+      AgentLogger.logGenerationProcess(stage, progress / total);
     }
   }
 } 

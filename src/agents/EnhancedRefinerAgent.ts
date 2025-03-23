@@ -446,7 +446,7 @@ export class EnhancedRefinerAgent implements IRefinerAgent {
       temperature: 0.3
     });
     
-    // Get just the prompt from the response
+    // Process the response
     let optimizedPrompt = response.content.trim();
     
     // Ensure the prompt isn't too long
@@ -921,6 +921,96 @@ export class EnhancedRefinerAgent implements IRefinerAgent {
         error: error instanceof Error ? error : new Error(String(error)),
         messages: [errorMessage]
       };
+    }
+  }
+
+  /**
+   * Optimize a prompt specifically for the FLUX model
+   */
+  async optimizeForFluxModel(prompt: string, additionalRequirements: string[] = []): Promise<string> {
+    try {
+      AgentLogger.log(`${this.role} optimizing prompt for FLUX model`, LogLevel.INFO);
+      AgentLogger.logAgentAction(this, 'FLUX Optimization', 'Refining prompt for FLUX model');
+
+      // This prefix helps with FLUX model optimization
+      const fluxPrefix = "IKIGAI:";
+      
+      // Style parameters known to work well with FLUX for Magritte-style images
+      const fluxStyleParameters = [
+        "meticulously detailed",
+        "dreamlike clarity",
+        "photorealistic hyperdetail",
+        "philosophical",
+        "mysterious",
+        "contemplative"
+      ];
+      
+      // Create a system message with specific instructions for FLUX prompt optimization
+      const systemMessage = `You are a specialized AI fine-tuning prompts specifically for the black-forest-labs/flux-1.1-pro model to create Magritte-style surrealist bear portraits. 
+      
+Your task is to transform the given prompt into an optimized version that will produce the best results with the FLUX model while maintaining the René Magritte stylistic elements.
+
+Follow these specific guidelines when refining the prompt:
+1. Start the prompt with the prefix "IKIGAI:" (this helps with FLUX model control)
+2. Maintain the bear portrait concept but enhance descriptive elements
+3. Add philosophical and contemplative undertones typical of Magritte's work
+4. Include specific technical terms that work well with FLUX: "meticulously detailed", "dreamlike clarity", "photorealistic hyperdetail"
+5. Keep a balanced description focused on the visual style, composition, and mood
+6. Add subtle surrealist elements that juxtapose ordinary objects in extraordinary ways
+7. Incorporate specific Magritte styling: flat Belgian sky blue backgrounds, perfect matte finish, precise edge definition
+8. End with style keywords: "philosophical, mysterious, contemplative"
+9. Keep the prompt concise but richly descriptive (under 200 words)
+
+Make sure the prompt maintains the original concept but is optimized specifically for the strengths of the FLUX model.`;
+
+      // User message template with the original prompt
+      const userMessage = `Original prompt: "${prompt}"
+
+Please transform this into an optimized prompt for the FLUX model that will create a stunning Magritte-style bear portrait.
+
+Additional requirements to incorporate:
+${additionalRequirements.map(req => `- ${req}`).join('\n')}`;
+
+      // Get the response using AI service
+      if (!this.aiService) {
+        throw new Error('AI service not initialized');
+      }
+
+      const response = await this.aiService.getCompletion({
+        messages: [
+          { role: "system", content: systemMessage },
+          { role: "user", content: userMessage }
+        ],
+        model: "claude-3-sonnet-20240229"
+      });
+
+      // Process the response
+      let optimizedPrompt = response.content.trim();
+      
+      // Ensure the FLUX prefix is present
+      if (!optimizedPrompt.startsWith(fluxPrefix)) {
+        optimizedPrompt = `${fluxPrefix} ${optimizedPrompt}`;
+      }
+      
+      // Ensure style parameters are present
+      const missingStyleParams = fluxStyleParameters.filter(param => 
+        !optimizedPrompt.toLowerCase().includes(param.toLowerCase())
+      );
+      
+      if (missingStyleParams.length > 0) {
+        optimizedPrompt = `${optimizedPrompt}, ${missingStyleParams.join(", ")}`;
+      }
+      
+      AgentLogger.log(`${this.role} optimized prompt for FLUX model:`, LogLevel.INFO);
+      AgentLogger.log(`Original: ${prompt.substring(0, 100)}...`, LogLevel.INFO);
+      AgentLogger.log(`Optimized: ${optimizedPrompt.substring(0, 100)}...`, LogLevel.INFO);
+      
+      return optimizedPrompt;
+    } catch (error) {
+      AgentLogger.log(`Error in ${this.role}.optimizeForFluxModel: ${error}`, LogLevel.ERROR);
+      
+      // If optimization fails, add a simple prefix and return
+      return `IKIGAI: ${prompt}, philosophical, mysterious, contemplative`;
     }
   }
 } 

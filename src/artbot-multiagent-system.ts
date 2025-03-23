@@ -249,35 +249,92 @@ export class ArtBotMultiAgentSystem {
             options.negative_prompt = output.negativePrompt;
           }
           
-          // Add art direction parameters if specified
-          if (output.artDirection?.highQuality) {
-            options.num_inference_steps = output.artDirection.modelParams?.inferenceSteps || 40;
-            options.guidance_scale = output.artDirection.modelParams?.guidanceScale || 4.5;
-          }
+          // Log the settings for better debugging
+          AgentLogger.logGenerationSettings({
+            model: output.model || this.replicateService.getDefaultModel(),
+            dimensions: {
+              width: options.width || 2048,
+              height: options.height || 2048
+            },
+            inferenceSteps: options.num_inference_steps || 28,
+            guidanceScale: options.guidance_scale || 3
+          });
           
-          // Generate the image
-          AgentLogger.log(`Generating image with prompt: ${output.prompt.substring(0, 100)}...`, LogLevel.INFO);
+          // Set the generation process to start
+          AgentLogger.logGenerationProcess('Starting image generation', 0);
           
-          const prediction = await this.replicateService.runPrediction(
-            undefined, // This will use the default model
-            {
-              prompt: output.prompt,
-              ...options
-            }
-          );
+          // Generate the image using the Replicate service
+          const imageResult = await this.replicateService.generateImage(output.prompt, {
+            ...options,
+            model: output.model
+          });
           
-          if (prediction.status === 'succeeded' && prediction.output) {
-            // Get the image URL
-            const imageUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
-            output.imageUrl = imageUrl;
+          // Update progress
+          AgentLogger.logGenerationProcess('Image generation complete', 1);
+          
+          // If we have an image result, update the output
+          if (imageResult) {
+            output.imageUrl = imageResult;
             
-            AgentLogger.log(`Image generated: ${imageUrl}`, LogLevel.INFO);
+            // Log the successful generation
+            AgentLogger.log(`Artwork generated: ${output.imageUrl}`, LogLevel.SUCCESS);
           } else {
-            throw new Error(`Image generation failed: ${prediction.error || 'Unknown error'}`);
+            throw new Error('Image generation failed');
           }
         } catch (error) {
+          // Log the error
           AgentLogger.log(`Error generating image: ${error instanceof Error ? error.message : String(error)}`, LogLevel.ERROR);
-          // Continue with the process, but without an image
+          
+          // Try one more time with fallback settings
+          try {
+            AgentLogger.log('Attempting image generation with fallback settings...', LogLevel.WARNING);
+            
+            // Use more conservative settings for the fallback attempt
+            const fallbackOptions = {
+              width: 768,
+              height: 768,
+              num_inference_steps: 28,
+              guidance_scale: 3,
+              negative_prompt: output.negativePrompt || 'low quality, bad anatomy, blurry, pixelated'
+            };
+            
+            // Log the fallback settings
+            AgentLogger.logGenerationSettings({
+              model: 'black-forest-labs/flux-1.1-pro',
+              dimensions: {
+                width: fallbackOptions.width,
+                height: fallbackOptions.height
+              },
+              inferenceSteps: fallbackOptions.num_inference_steps,
+              guidanceScale: fallbackOptions.guidance_scale
+            });
+            
+            // Try with simplified model specification
+            const imageResult = await this.replicateService.generateImage(output.prompt, fallbackOptions);
+            
+            if (imageResult) {
+              output.imageUrl = imageResult;
+              AgentLogger.log(`Artwork generated successfully with fallback settings: ${output.imageUrl}`, LogLevel.SUCCESS);
+            } else {
+              throw new Error('Image generation failed with fallback settings');
+            }
+          } catch (fallbackError) {
+            AgentLogger.log(`Error generating image with fallback settings: ${fallbackError instanceof Error ? fallbackError.message : String(fallbackError)}`, LogLevel.ERROR);
+            
+            // Return partial results even if image generation failed
+            return {
+              success: false,
+              error: new Error(`Image generation failed: ${fallbackError instanceof Error ? fallbackError.message : String(fallbackError)}`),
+              artwork: {
+                prompt: output.prompt,
+                negativePrompt: output.negativePrompt,
+                imageUrl: null,
+                files: {},
+                character: output.character,
+                metadata: output.metadata
+              }
+            };
+          }
         }
       }
       

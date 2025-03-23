@@ -41,6 +41,45 @@ export class IdeatorAgent implements IIdeatorAgent {
   }
 
   /**
+   * Identify potential series types from concept content
+   */
+  private identifySeriesFromConcept(concept: string): string | null {
+    // Check for series-specific keywords
+    const seriesKeywords: Record<string, string[]> = {
+      'hipster': ['hipster', 'artisanal', 'sustainable', 'craft', 'brewing', 'urban', 'vintage', 'foraging'],
+      'adventure': ['adventure', 'explorer', 'wilderness', 'expedition', 'navigation', 'diving', 'climbing', 'exploration'],
+      'artistic': ['artistic', 'artist', 'creative', 'painting', 'sculpture', 'craft', 'composition', 'design'],
+      'academic': ['academic', 'scholarly', 'professor', 'scientific', 'research', 'studied', 'intellectual', 'knowledge'],
+      'steampunk': ['steampunk', 'mechanical', 'brass', 'victorian', 'gear', 'clockwork', 'contraption', 'invention']
+    };
+    
+    // Check each series for keyword matches
+    const conceptLower = concept.toLowerCase();
+    const matches: Record<string, number> = {};
+    
+    for (const [series, keywords] of Object.entries(seriesKeywords)) {
+      let matchCount = 0;
+      for (const keyword of keywords) {
+        if (conceptLower.includes(keyword)) {
+          matchCount++;
+        }
+      }
+      
+      if (matchCount > 0) {
+        matches[series] = matchCount;
+      }
+    }
+    
+    // Return the series with the most matches, if any
+    if (Object.keys(matches).length > 0) {
+      const seriesSorted = Object.entries(matches).sort((a, b) => b[1] - a[1]);
+      return seriesSorted[0][0]; // Return the series with most matches
+    }
+    
+    return null;
+  }
+
+  /**
    * Generate a creative idea based on a concept
    */
   async generateIdea(concept: string): Promise<string> {
@@ -48,6 +87,13 @@ export class IdeatorAgent implements IIdeatorAgent {
     AgentLogger.logAgentAction(this, 'Generate Idea', `Generating idea for concept: ${concept}`);
     
     try {
+      // Check if we can identify any series information from the concept
+      const identifiedSeries = this.identifySeriesFromConcept(concept);
+      if (identifiedSeries && !concept.toLowerCase().includes(identifiedSeries)) {
+        AgentLogger.logAgentAction(this, 'Series Identified', `Detected ${identifiedSeries} series from concept content`);
+        concept = `${concept} with ${identifiedSeries} series elements`;
+      }
+      
       // If we have an AI service, use it to generate an idea
       if (this.aiService) {
         const enhancedPrompt = await this.aiService.generateCreativeExploration(concept, {
@@ -154,10 +200,24 @@ Variations:`;
         throw new Error('No concept provided in context');
       }
       
+      // Check for series information in the context or project
+      let seriesInfo = '';
+      if (context.project && context.project.characterOptions && context.project.characterOptions.seriesType) {
+        seriesInfo = context.project.characterOptions.seriesType;
+        AgentLogger.logAgentAction(this, 'Series Detected', `Found series in context: ${seriesInfo}`);
+      }
+      
+      // Incorporate series information into the concept if available
+      let conceptToUse = context.concept;
+      if (seriesInfo && !conceptToUse.toLowerCase().includes(seriesInfo.toLowerCase())) {
+        conceptToUse = `${conceptToUse} with ${seriesInfo} series elements`;
+        AgentLogger.logAgentAction(this, 'Enhance Concept', `Added series information: ${seriesInfo}`);
+      }
+      
       // Process based on task type
       if (context.task && (context.task.action === 'generate_idea' || context.task.action === 'enhance_prompt')) {
         // Generate an enhanced prompt
-        const enhancedPrompt = await this.generateIdea(context.concept);
+        const enhancedPrompt = await this.generateIdea(conceptToUse);
         
         // Create a result message
         const resultMessage: AgentMessage = {
@@ -234,9 +294,48 @@ Variations:`;
       .replace(/style of/i, 'authentic painterly style of')
       .replace(/René Magritte/i, 'René Magritte, with his signature smooth oil technique, unmodulated color fields, and philosophical surrealism');
     
-    // Add Magritte-specific artistic elements if they're not already included
+    // Check if the prompt contains specific series references
+    const hasHipster = concept.toLowerCase().includes('hipster');
+    const hasAdventure = concept.toLowerCase().includes('adventure');
+    const hasArtistic = concept.toLowerCase().includes('artistic');
+    
+    // Add series-specific elements
+    let seriesElement = '';
+    if (hasHipster) {
+      const hipsterElements = [
+        'with artisanal craft tools and sustainable materials',
+        'featuring specialized hipster brewing equipment',
+        'with vintage record collection and analog audio devices',
+        'carrying handcrafted foraging tools and botanical specimens',
+        'adorned with carefully curated urban farming implements',
+        'with an assortment of sustainable craft materials'
+      ];
+      seriesElement = hipsterElements[Math.floor(Math.random() * hipsterElements.length)];
+    } else if (hasAdventure) {
+      const adventureElements = [
+        'with specialized exploration gear and navigational instruments',
+        'equipped with vintage adventure tools and map-making implements',
+        'featuring wilderness survival equipment and scientific tools',
+        'with specialized diving apparatus and marine exploration tools',
+        'outfitted with mountaineering equipment and measurement devices',
+        'with cartography tools and geographical instruments'
+      ];
+      seriesElement = adventureElements[Math.floor(Math.random() * adventureElements.length)];
+    } else if (hasArtistic) {
+      const artisticElements = [
+        'with specialized artist tools and creative implements',
+        'featuring traditional painting supplies and color palette',
+        'with sculpting tools and artistic materials',
+        'carrying precision artistic instruments and crafting tools',
+        'surrounded by creative materials and artistic implements',
+        'with professional artistic equipment and media'
+      ];
+      seriesElement = artisticElements[Math.floor(Math.random() * artisticElements.length)];
+    }
+    
+    // Magritte-specific artistic elements
     const magritteElements = [
-      'against a perfectly rendered sky blue background',
+      'against a perfectly rendered Belgian sky blue background',
       'with carefully balanced surreal elements',
       'featuring clean, precise edges and smooth paint application',
       'with mathematically perfect composition',
@@ -249,13 +348,14 @@ Variations:`;
       enhancedConcept.toLowerCase().includes(element.toLowerCase().substring(0, 20))
     );
     
-    // Add a random Magritte element if none are present
-    if (!hasMagritteElement) {
-      const randomElement = magritteElements[Math.floor(Math.random() * magritteElements.length)];
-      return `${enhancedConcept}, ${randomElement}, high quality artwork with painterly precision`;
-    }
+    // Add Magritte element if needed
+    const magritteElement = hasMagritteElement ? '' : 
+      `, ${magritteElements[Math.floor(Math.random() * magritteElements.length)]}`;
     
-    return `${enhancedConcept}, high quality artwork with painterly precision`;
+    // Add series-specific element if found
+    const seriesAddition = seriesElement ? `, ${seriesElement}` : '';
+    
+    return `${enhancedConcept}${magritteElement}${seriesAddition}, high quality artwork with painterly precision`;
   }
   
   /**

@@ -54,18 +54,18 @@ export interface GenerationConfig {
  */
 export const defaultGenerationConfig: GenerationConfig = {
   default: {
-    inferenceSteps: 50,
-    guidanceScale: 7.5,
+    inferenceSteps: 200,
+    guidanceScale: 35,
     dimensions: {
-      width: 1024,
-      height: 1024
+      width: 2048,
+      height: 2048
     },
     scheduler: "DPMSolverMultistep"
   },
   models: {
     "black-forest-labs/flux-1.1-pro": {
-      inferenceSteps: 45,
-      guidanceScale: 4.5,
+      inferenceSteps: 28,
+      guidanceScale: 3,
       dimensions: {
         width: 2048,
         height: 2048
