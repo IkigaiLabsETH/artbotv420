@@ -19,6 +19,77 @@
 
 </div>
 
+## Installation & Quick Start
+
+```ascii
+    ╭──────────────────────────────────────╮
+    │    ArtBotV420 Plugin Setup           │
+    ├──────────────────────────────────────┤
+    │ 1. Clone repository                  │
+    │ 2. Install dependencies              │
+    │ 3. Configure API keys                │
+    │ 4. Generate Surrealist Bear Portraits │
+    ╰──────────────────────────────────────╯
+```
+
+### Prerequisites
+
+- Node.js 16+ and npm/yarn/pnpm
+- ElizaOS CLI (`npm install -g @elizaos/cli`)
+- Replicate API key (for image generation)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/ikigailabsETH/artbotv420.git
+cd artbotv420
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env
+```
+
+Edit the `.env` file to add your Replicate API key:
+
+```
+REPLICATE_API_KEY=your_api_key_here
+```
+
+### Quick Start
+
+```bash
+# Start development server with hot reloading
+npm run dev
+
+# Generate a single Surrealist Bear Portrait
+npm run generate
+
+# Generate a batch of portraits
+npm run generate:batch 5
+
+# Preview generated images
+npm run preview
+```
+
+### Integration with ElizaOS
+
+To use as an ElizaOS plugin:
+
+```bash
+# Build the plugin
+npm run build
+
+# Link to your ElizaOS project
+cd your-elizaos-project
+npx @elizaos/cli project add-plugin ../artbotv420
+
+# Start your ElizaOS project with the plugin
+npx @elizaos/cli start
+```
+
 ## Vision
 
 ```ascii
@@ -45,11 +116,11 @@ BEAR ICONS: The Ultimate Adventure & Art PFP Collection
 
 A curated fusion of adventure, artistry, and culture—BEAR ICONS is an AI-generated PFP collection that embodies the spirit of exploration and creativity. Each bear is a unique digital icon, infused with the essence of legendary explorers, daring athletes, visionary artists, and cultural pioneers.
 
-🌍 Adventure Series: From the frozen poles to the depths of the ocean, these bears live on the edge. Whether it’s the arctic explorer braving subzero temperatures, the astronaut reaching for the stars, or the wingsuit flyer soaring through the skies, each bear is crafted for those who chase the extraordinary.
+🌍 Adventure Series: From the frozen poles to the depths of the ocean, these bears live on the edge. Whether it's the arctic explorer braving subzero temperatures, the astronaut reaching for the stars, or the wingsuit flyer soaring through the skies, each bear is crafted for those who chase the extraordinary.
 
-🎨 Artistic Series: A tribute to the creators and dreamers shaping the world. Whether wielding a painter’s brush, sculpting with precision, capturing moments through photography, or pushing the limits of generative AI art, these bears celebrate the boundless power of human expression.
+🎨 Artistic Series: A tribute to the creators and dreamers shaping the world. Whether wielding a painter's brush, sculpting with precision, capturing moments through photography, or pushing the limits of generative AI art, these bears celebrate the boundless power of human expression.
 
-☕ Hipster & Maker Series: For the modern pioneers—urban farmers, vinyl collectors, coffee artisans, and digital innovators—these bears embody the fusion of tradition and cutting-edge culture. Whether it’s the mixologist, the NFT artist, or the analog photographer, every bear tells a story of craft and passion.
+☕ Hipster & Maker Series: For the modern pioneers—urban farmers, vinyl collectors, coffee artisans, and digital innovators—these bears embody the fusion of tradition and cutting-edge culture. Whether it's the mixologist, the NFT artist, or the analog photographer, every bear tells a story of craft and passion.
 
 🔮 Mystical & Steampunk Series: Alchemists, astrologers, time travelers, and mechanical inventors bring a fantastical twist to the collection. Gears turn, potions brew, and celestial secrets unfold—each bear carries an air of mystery and wonder.
 
@@ -282,6 +353,227 @@ The Surrealist Bear Portraits collection spans 15 distinct series, each explorin
 - Metadata: Rich NFT-standard Information
 - Blockchain: Multiple Platform Support
 - Special Features: Detailed Attribute Tracking
+
+## Developer Guide: ArtBotV420 ElizaOS Plugin
+
+```ascii
+    ╭─────────────────────────────────────────╮
+    │     ArtBotV420: ElizaOS Plugin          │
+    ├─────────────────┬───────────────────────┤
+    │  Multi-Agent    │  NFT Generation       │
+    │  Architecture   │  Framework            │
+    ├─────────────────┴───────────────────────┤
+    │ ▢ Custom Agent System                   │
+    │ ▢ Magritte-Style Generation             │
+    │ ▢ Metadata Management                   │
+    │ ▢ Thirdweb Integration                  │
+    ╰─────────────────────────────────────────╯
+```
+
+### Plugin Architecture
+
+The ArtBotV420 project is structured as an ElizaOS plugin, allowing for seamless integration with the ElizaOS ecosystem. This plugin implements a sophisticated multi-agent system for generating unique AI artwork in the style of René Magritte's surrealist bear portraits.
+
+#### Key Components
+
+1. **Multi-Agent System**:
+   - Director Agent - Coordinates the creative process
+   - Ideator Agent - Generates creative ideas
+   - Stylist Agent - Develops artistic styles
+   - Refiner Agent - Refines artwork
+   - Critic Agent - Evaluates artwork
+
+2. **Art Generation Pipeline**:
+   - Concept generation
+   - Style application
+   - Image synthesis via Replicate API
+   - Metadata creation
+   - NFT preparation
+
+3. **Plugin Integration Points**:
+   - Custom actions for art generation
+   - Service integration with ElizaOS
+   - Web routes for image preview and management
+
+### Setting Up Development Environment
+
+1. **Prerequisites**:
+   ```bash
+   # Install dependencies
+   npm install
+   
+   # Setup environment variables (copy from example)
+   cp .env.example .env
+   ```
+
+2. **Environment Variables**:
+   - `REPLICATE_API_KEY` - Your API key for Replicate
+   - Add custom API keys in the `.env` file
+
+3. **Development Workflow**:
+   ```bash
+   # Start development server with hot reloading
+   npm run dev
+   
+   # Build the plugin
+   npm run build
+   
+   # Run tests
+   npm run test
+   ```
+
+### Plugin Structure
+
+```
+artbotv420/
+├── src/                         # Source code
+│   ├── index.ts                 # Plugin entry point
+│   ├── services/                # Service implementations
+│   │   ├── multiagent/          # Multi-agent system
+│   │   ├── ai/                  # AI services
+│   │   ├── replicate/           # Image generation
+│   │   ├── memory/              # System memory
+│   │   └── style/               # Style definitions
+│   └── styles/                  # Style configurations
+├── dist/                        # Compiled code (generated)
+├── data/                        # Training data
+├── generatedImages/             # Output directory
+├── package.json                 # Dependencies and scripts
+└── tsconfig.json                # TypeScript configuration
+```
+
+### Extending the Plugin
+
+#### Adding New Art Styles
+
+To add a new artistic style to the generator:
+
+1. Create a new style definition in `src/styles/`
+2. Register the style in the style manager
+3. Add style-specific prompt engineering in the appropriate agent
+
+#### Creating a New Agent
+
+To implement a specialized agent:
+
+```typescript
+// src/services/multiagent/MyCustomAgent.ts
+import { Agent } from '../multiagent';
+
+export class MyCustomAgent extends Agent {
+  constructor() {
+    super('my_custom_agent');
+  }
+
+  async process(input: any): Promise<any> {
+    // Implement agent-specific logic
+    return processedResult;
+  }
+}
+```
+
+#### Modifying Generation Parameters
+
+To adjust the image generation parameters:
+
+1. Update the model configuration in the Replicate service
+2. Modify the default parameters in the art direction settings
+
+### Publishing the Plugin
+
+To publish this plugin to the ElizaOS registry:
+
+```bash
+# Ensure you're logged in with GitHub credentials
+npm run publish
+```
+
+For npm publication:
+
+```bash
+# Login to npm first
+npm login
+
+# Then publish with npm flag
+npx @elizaos/cli plugin publish --npm
+```
+
+### Contributing Guidelines
+
+When contributing to the ArtBotV420 plugin:
+
+1. Follow the ElizaOS plugin structure and naming conventions
+2. Maintain the multi-agent system architecture
+3. Document new features and agents thoroughly
+4. Add tests for new functionality
+5. Respect Magritte's artistic style in all generation pipelines
+
+For more detailed information on ElizaOS plugin development, refer to the [official documentation](https://eliza.how/docs/cli/plugins).
+
+### Upcoming Refactoring Plans
+
+The ArtBotV420 plugin is undergoing significant refactoring to improve its architecture, usability, and output quality. The following key improvements are planned:
+
+```ascii
+    ╭────────────────────────────────────╮
+    │     Refactoring Roadmap            │
+    ├────────────────┬───────────────────┤
+    │  System        │  User             │
+    │  Architecture  │  Experience       │
+    ├────────────────┴───────────────────┤
+    │ ▢ Configuration Standardization    │
+    │ ▢ Multi-Agent System Logging       │
+    │ ▢ Enhanced Terminal Output         │
+    │ ▢ Character Generation Pipeline    │
+    │ ▢ Thirdweb Integration             │
+    │ ▢ Curation & Preview System        │
+    ╰────────────────────────────────────╯
+```
+
+#### 1. Configuration Standardization
+
+- Creating centralized configuration management
+- Standardizing model-specific settings
+- Resolving inconsistencies in generation parameters
+
+#### 2. Multi-Agent Logging and Visualization
+
+- Implementing structured agent logging
+- Visualizing agent interactions
+- Adding agent status tracking
+- Creating a clear information hierarchy
+
+#### 3. Enhanced Character Generation
+
+- Building a character naming pipeline
+- Adding personality trait generation
+- Creating backstories for each bear portrait
+- Improving metadata richness
+
+#### 4. Thirdweb Integration
+
+- Creating standardized NFT metadata export
+- Building batch minting support
+- Implementing trait standardization
+- Adding collection organization tools
+
+#### 5. Preview and Curation System
+
+- Building a visual preview server
+- Adding curation controls for batch generation
+- Implementing quality assessment tools
+- Creating export pipelines for approved images
+
+#### 6. Feedback and Learning System
+
+- Creating a generation feedback loop
+- Building prompt optimization from curation decisions
+- Implementing quality tracking
+- Adding continuous improvement systems
+
+These refactoring plans aim to enhance the plugin's capabilities, improve code quality, and create a more seamless user experience when generating Surrealist Bear Portrait NFTs.
+
+Contributors are encouraged to review the detailed refactoring plans in the `REFACTOR.md` file before submitting changes to ensure alignment with the project's direction.
 
 ## Artistic Style
 
