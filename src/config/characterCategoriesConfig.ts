@@ -24,12 +24,7 @@ export interface CategoryDefinition {
 export enum SeriesType {
   ADVENTURE = 'adventure',
   ARTISTIC = 'artistic',
-  ACADEMIC = 'academic',
   HIPSTER = 'hipster',
-  MYSTICAL = 'mystical',
-  STEAMPUNK = 'steampunk',
-  CLASSICAL = 'classical',
-  DIPLOMATIC = 'diplomatic',
   BLOCKCHAIN = 'blockchain',
   SUSTAINABLE = 'sustainable'
 }
@@ -124,49 +119,6 @@ export const characterCategories: CategoryDefinition[] = [
     ]
   },
   
-  // Academic Series
-  {
-    id: "bear_pfp_professor",
-    name: "Professor Bear",
-    description: "A distinguished bear portrait featuring an academic with scholarly accessories",
-    series: SeriesType.ACADEMIC,
-    accessories: [
-      "antique fountain pen",
-      "leather notebook",
-      "polished magnifying glass",
-      "pocket watch",
-      "academic seal"
-    ],
-    headwear: [
-      "mortarboard cap",
-      "reading glasses",
-      "tweed flat cap",
-      "velvet academic tam",
-      "scholarly beret"
-    ],
-    clothing: [
-      "tweed jacket with elbow patches",
-      "academic robes",
-      "formal waistcoat and bow tie",
-      "corduroy jacket",
-      "departmental scarf"
-    ],
-    tools: [
-      "antique books",
-      "scrolled diploma",
-      "brass telescope",
-      "scientific measuring devices",
-      "globe of antiquity"
-    ],
-    personalityTraits: [
-      "Erudite",
-      "Analytical",
-      "Methodical",
-      "Philosophical",
-      "Curious"
-    ]
-  },
-  
   // Hipster Series
   {
     id: "bear_pfp_barista",
@@ -207,49 +159,6 @@ export const characterCategories: CategoryDefinition[] = [
       "Discerning",
       "Patient",
       "Passionate"
-    ]
-  },
-  
-  // Mystical Series
-  {
-    id: "bear_pfp_alchemist",
-    name: "Alchemist Bear",
-    description: "A distinguished bear portrait featuring an alchemist with mystical accessories",
-    series: SeriesType.MYSTICAL,
-    accessories: [
-      "philosopher's stone pendant",
-      "celestial charts",
-      "crystal vials",
-      "astrological compass",
-      "ancient grimoire"
-    ],
-    headwear: [
-      "alchemist's hood",
-      "stargazer's cap",
-      "midnight blue veil",
-      "mystical crown",
-      "third eye circlet"
-    ],
-    clothing: [
-      "mystical robe with symbols",
-      "alchemist's apron",
-      "star-patterned cloak",
-      "celestial vestments",
-      "transformation coat"
-    ],
-    tools: [
-      "alchemical apparatus",
-      "mortar and pestle",
-      "scales of balance",
-      "element vessels",
-      "transformation crucible"
-    ],
-    personalityTraits: [
-      "Enigmatic",
-      "Visionary",
-      "Esoteric",
-      "Patient",
-      "Intuitive"
     ]
   },
 

@@ -139,12 +139,7 @@ export class EnhancedCharacterGenerator {
     const seriesKeywords: Record<SeriesType, string[]> = {
       [SeriesType.ADVENTURE]: ['pilot', 'explorer', 'adventure', 'journey', 'expedition', 'sailor', 'mountaineer', 'climber', 'diver'],
       [SeriesType.ARTISTIC]: ['artist', 'painter', 'sculptor', 'creative', 'artistic', 'designer', 'composer', 'musician'],
-      [SeriesType.ACADEMIC]: ['professor', 'academic', 'scholar', 'scientist', 'researcher', 'historian', 'librarian'],
       [SeriesType.HIPSTER]: ['barista', 'artisanal', 'craft', 'vintage', 'coffee', 'vinyl', 'organic', 'sustainable'],
-      [SeriesType.MYSTICAL]: ['mystic', 'alchemist', 'occult', 'spiritual', 'magical', 'wizard', 'mysterious'],
-      [SeriesType.STEAMPUNK]: ['steampunk', 'inventor', 'mechanical', 'clockwork', 'gear', 'brass', 'victorian'],
-      [SeriesType.CLASSICAL]: ['classical', 'composer', 'conductor', 'orchestra', 'symphony', 'concerto', 'sonata'],
-      [SeriesType.DIPLOMATIC]: ['diplomat', 'ambassador', 'envoy', 'consul', 'emissary', 'attaché', 'delegate'],
       [SeriesType.BLOCKCHAIN]: ['blockchain', 'crypto', 'nft', 'token', 'defi', 'web3', 'dao', 'validator'],
       [SeriesType.SUSTAINABLE]: ['sustainable', 'eco', 'green', 'organic', 'environmental', 'recycled', 'renewable']
     };
@@ -276,20 +271,14 @@ export class EnhancedCharacterGenerator {
     if (category) {
       // Use series-appropriate prefix
       switch (category.series) {
-        case SeriesType.ACADEMIC:
-          return `Professor ${middleNames[Math.floor(Math.random() * middleNames.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`;
-          
         case SeriesType.ADVENTURE:
           return `Captain ${middleNames[Math.floor(Math.random() * middleNames.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`;
           
         case SeriesType.ARTISTIC:
           return `Maestro ${middleNames[Math.floor(Math.random() * middleNames.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`;
           
-        case SeriesType.DIPLOMATIC:
-          return `Ambassador ${middleNames[Math.floor(Math.random() * middleNames.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`;
-          
-        case SeriesType.MYSTICAL:
-          return `${middleNames[Math.floor(Math.random() * middleNames.length)]} the ${prefixes[Math.floor(Math.random() * prefixes.length)]}`;
+        case SeriesType.HIPSTER:
+          return `Monsieur ${middleNames[Math.floor(Math.random() * middleNames.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`;
           
         case SeriesType.BLOCKCHAIN:
           const cryptoNames = ["Satoshi", "Vitalik", "Nakamoto", "Blockchain", "Cipher"];
@@ -357,8 +346,8 @@ export class EnhancedCharacterGenerator {
         case SeriesType.ARTISTIC:
           domains = ["Creative", "Artistic", "Expressive", "Aesthetic", "Visionary"];
           break;
-        case SeriesType.ACADEMIC:
-          domains = ["Academic", "Scholarly", "Intellectual", "Research", "Scientific"];
+        case SeriesType.HIPSTER:
+          domains = ["Barista", "Artisanal", "Craft", "Vintage", "Coffee", "Vinyl", "Organic", "Sustainable"];
           break;
         case SeriesType.BLOCKCHAIN:
           domains = ["Decentralized", "Distributed", "Tokenized", "On-Chain", "Cryptographic"];
@@ -640,10 +629,10 @@ Limit to 2-3 concise sentences that capture the essence of the character.
           ending = "is renowned for creating works of profound metaphysical significance.";
           break;
           
-        case SeriesType.ACADEMIC:
-          beginning = "Following decades of scholarly research,";
-          middle = `contributed groundbreaking insights to the field of ${this.deriveOccupation(category).toLowerCase()}`;
-          ending = "continues to mentor distinguished students while pursuing philosophical inquiries.";
+        case SeriesType.HIPSTER:
+          beginning = "After years of dedicated study and practice,";
+          middle = `became renowned for her expertise in`;
+          ending = "continues to inspire admirers across the globe.";
           break;
           
         case SeriesType.BLOCKCHAIN:
