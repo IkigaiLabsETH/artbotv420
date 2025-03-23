@@ -244,6 +244,174 @@ export const characterCategories: CategoryDefinition[] = [
     ]
   },
   
+  {
+    id: "bear_pfp_surfer",
+    name: "Surfer Bear",
+    description: "A distinguished bear portrait featuring a retro surf culture enthusiast with classic board",
+    series: SeriesType.ADVENTURE,
+    accessories: [
+      "vintage surf wax",
+      "shell necklace",
+      "retro tide watch",
+      "classic surf magazine",
+      "wave forecasting chart"
+    ],
+    headwear: [
+      "surf culture bandana",
+      "vintage lifeguard cap",
+      "classic surf hat",
+      "retro surfing visor",
+      "sun-bleached flat cap"
+    ],
+    clothing: [
+      "vintage surf poncho",
+      "classic striped wetsuit",
+      "retro boardshorts",
+      "surf culture jacket",
+      "traditional surfer's shirt"
+    ],
+    tools: [
+      "handcrafted longboard",
+      "vintage fin system",
+      "classic leash",
+      "antique surf wax comb",
+      "traditional surf compass"
+    ],
+    personalityTraits: [
+      "Free-spirited",
+      "Patient",
+      "Balanced",
+      "Wave-wise",
+      "Harmonious"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_astronaut",
+    name: "Astronaut Bear",
+    description: "A distinguished bear portrait featuring a space explorer with specialized equipment",
+    series: SeriesType.ADVENTURE,
+    accessories: [
+      "star chart",
+      "mission patch collection",
+      "space navigation device",
+      "gravity measurement tool",
+      "cosmic radiation monitor"
+    ],
+    headwear: [
+      "vintage space helmet",
+      "mission commander's cap",
+      "spacewalk visor",
+      "communication headset",
+      "lunar exploration headgear"
+    ],
+    clothing: [
+      "classic space suit",
+      "mission flight jacket",
+      "pressure garment",
+      "thermal protection layer",
+      "space agency uniform"
+    ],
+    tools: [
+      "celestial navigation equipment",
+      "specimen collection containers",
+      "space telescope",
+      "gravity measurement device",
+      "experimental propulsion module"
+    ],
+    personalityTraits: [
+      "Meticulous",
+      "Courageous",
+      "Scientific",
+      "Visionary",
+      "Resourceful"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_polarexplorer",
+    name: "Polar Explorer Bear",
+    description: "A distinguished bear portrait featuring an arctic expedition leader with specialized gear",
+    series: SeriesType.ADVENTURE,
+    accessories: [
+      "polar route map",
+      "expedition chronometer",
+      "aurora observation journal",
+      "ice core sample container",
+      "polar climate measurement tools"
+    ],
+    headwear: [
+      "fur-lined expedition hat",
+      "traditional arctic hood",
+      "polar research cap",
+      "snow goggles",
+      "thermal insulated headgear"
+    ],
+    clothing: [
+      "traditional fur parka",
+      "expedition snow suit",
+      "polar research uniform",
+      "arctic expedition jacket",
+      "traditional inuit-inspired coat"
+    ],
+    tools: [
+      "ice measurement equipment",
+      "traditional snow shoes",
+      "polar navigation compass",
+      "aurora research spectrometer",
+      "ice core drilling equipment"
+    ],
+    personalityTraits: [
+      "Resilient",
+      "Methodical",
+      "Enduring",
+      "Observant",
+      "Wilderness-wise"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_freediver",
+    name: "Freediver Bear",
+    description: "A distinguished bear portrait featuring a breath-hold diving specialist with monofin",
+    series: SeriesType.ADVENTURE,
+    accessories: [
+      "depth gauge watch",
+      "marine life identification chart",
+      "breath training journal",
+      "underwater navigation tools",
+      "marine conservation badge"
+    ],
+    headwear: [
+      "low-volume dive mask",
+      "traditional diving hood",
+      "streamlined swim cap",
+      "freediving nose clip",
+      "marine biologist's cap"
+    ],
+    clothing: [
+      "classic freediving wetsuit",
+      "gradient camouflage suit",
+      "traditional breath-hold diver's jacket",
+      "marine conservationist vest",
+      "underwater photographer's gear"
+    ],
+    tools: [
+      "carbon fiber monofin",
+      "underwater camera housing",
+      "dive computer",
+      "marine specimen collection bag",
+      "underwater photography lights"
+    ],
+    personalityTraits: [
+      "Focused",
+      "Serene",
+      "Patient",
+      "Deep-thinking",
+      "Harmonious"
+    ]
+  },
+  
   // Artistic Series
   {
     id: "bear_pfp_painter",
@@ -413,6 +581,174 @@ export const characterCategories: CategoryDefinition[] = [
     ]
   },
   
+  {
+    id: "bear_pfp_musician",
+    name: "Musician Bear",
+    description: "A distinguished bear portrait featuring a jazz musician with classic instrument",
+    series: SeriesType.ARTISTIC,
+    accessories: [
+      "vintage sheet music",
+      "custom instrument case",
+      "metronome",
+      "composition notebook",
+      "performance medallion"
+    ],
+    headwear: [
+      "jazz performer's cap",
+      "classic musician's beret",
+      "vintage stage fedora",
+      "composer's signature hat",
+      "orchestra member's cap"
+    ],
+    clothing: [
+      "performer's tailcoat",
+      "jazz club suit",
+      "concert attire",
+      "vintage performance vest",
+      "musician's formal wear"
+    ],
+    tools: [
+      "handcrafted saxophone",
+      "vintage trumpet",
+      "classic double bass",
+      "antique piano keys",
+      "conductor's baton"
+    ],
+    personalityTraits: [
+      "Expressive",
+      "Rhythmic",
+      "Improvisational",
+      "Passionate",
+      "Harmonious"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_architect",
+    name: "Architect Bear",
+    description: "A distinguished bear portrait featuring a modernist designer with drafting tools",
+    series: SeriesType.ARTISTIC,
+    accessories: [
+      "blueprint case",
+      "scale ruler",
+      "architectural references",
+      "design awards",
+      "building model"
+    ],
+    headwear: [
+      "modernist glasses",
+      "architectural beret",
+      "site visit hard hat",
+      "designer's cap",
+      "drafting visor"
+    ],
+    clothing: [
+      "black turtleneck",
+      "modernist suit",
+      "architectural studio coat",
+      "design firm blazer",
+      "site inspection jacket"
+    ],
+    tools: [
+      "drafting compass",
+      "technical pens",
+      "precision scale ruler",
+      "building measurement tools",
+      "architectural model supplies"
+    ],
+    personalityTraits: [
+      "Visionary",
+      "Precise",
+      "Spatial",
+      "Structural",
+      "Innovative"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_glassblower",
+    name: "Glassblower Bear",
+    description: "A distinguished bear portrait featuring a glass artist with specialized tools",
+    series: SeriesType.ARTISTIC,
+    accessories: [
+      "glass color samples",
+      "heat-resistant gloves",
+      "design sketches",
+      "annealing schedule",
+      "glass formula notebook"
+    ],
+    headwear: [
+      "heat-resistant work cap",
+      "glassblower's bandana",
+      "protective eyewear",
+      "traditional studio headwear",
+      "furnace worker's hat"
+    ],
+    clothing: [
+      "heat-resistant work jacket",
+      "traditional glass studio apron",
+      "flame-resistant smock",
+      "handmade artisan vest",
+      "historic glasshouse uniform"
+    ],
+    tools: [
+      "handcrafted blowpipe",
+      "glass shears",
+      "marver plate",
+      "punty rod",
+      "glass gathering tools"
+    ],
+    personalityTraits: [
+      "Patient",
+      "Heat-wise",
+      "Precise",
+      "Balanced",
+      "Tradition-minded"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_digitalartist",
+    name: "Digital Artist Bear",
+    description: "A distinguished bear portrait featuring a digital art pioneer with creative technology",
+    series: SeriesType.ARTISTIC,
+    accessories: [
+      "digital portfolio display",
+      "stylus collection",
+      "interactive art reference",
+      "creative algorithm notebook",
+      "digital exhibition invitations"
+    ],
+    headwear: [
+      "digital creator's visor",
+      "studio headphones",
+      "augmented reality glasses",
+      "virtual workspace headset",
+      "projection interface cap"
+    ],
+    clothing: [
+      "minimalist design coat",
+      "digital studio jacket",
+      "computational fashion piece",
+      "creative technologist vest",
+      "digital art lab coat"
+    ],
+    tools: [
+      "custom digital pen",
+      "haptic feedback device",
+      "algorithmic generation tools",
+      "interactive display tablet",
+      "digital art visualization system"
+    ],
+    personalityTraits: [
+      "Innovative",
+      "Technical",
+      "Futuristic",
+      "Boundary-pushing",
+      "Visionary"
+    ]
+  },
+  
   // Hipster Series
   {
     id: "bear_pfp_barista",
@@ -537,6 +873,174 @@ export const characterCategories: CategoryDefinition[] = [
       "Scientific",
       "Tradition-minded",
       "Sensory"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_botanist",
+    name: "Botanist Bear",
+    description: "A distinguished bear portrait featuring a plant enthusiast with specialized terrarium",
+    series: SeriesType.HIPSTER,
+    accessories: [
+      "rare seed collection",
+      "plant identification guide",
+      "botanical journal",
+      "humidity measurement tools",
+      "specimen preservation kit"
+    ],
+    headwear: [
+      "botanical sun hat",
+      "greenhouse visor",
+      "plant explorer's cap",
+      "specimen collection bandana",
+      "botanical society hat"
+    ],
+    clothing: [
+      "botanical work shirt",
+      "greenhouse apron",
+      "plant society vest",
+      "expedition-inspired jacket",
+      "specimen collection coat"
+    ],
+    tools: [
+      "precision pruning shears",
+      "handcrafted terrarium",
+      "botanical illustration supplies",
+      "seedling propagation tools",
+      "microclimate measurement device"
+    ],
+    personalityTraits: [
+      "Nurturing",
+      "Patient",
+      "Observant",
+      "Cataloguing",
+      "Growth-minded"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_mixologist",
+    name: "Mixologist Bear",
+    description: "A distinguished bear portrait featuring a craft cocktail creator with specialized tools",
+    series: SeriesType.HIPSTER,
+    accessories: [
+      "bitters collection",
+      "recipe journal",
+      "artisanal ice molds",
+      "botanical infusion jars",
+      "vintage cocktail books"
+    ],
+    headwear: [
+      "mixologist's newsboy cap",
+      "speakeasy-inspired hat",
+      "craft bartender's cap",
+      "prohibition-era headwear",
+      "distillery tour hat"
+    ],
+    clothing: [
+      "classic bartender's vest",
+      "craft cocktail apron",
+      "prohibition-era attire",
+      "speakeasy-inspired outfit",
+      "botanical mixology jacket"
+    ],
+    tools: [
+      "handcrafted cocktail shaker",
+      "precision jigger",
+      "artisanal bar spoon",
+      "small-batch botanical infuser",
+      "hand-carved ice tools"
+    ],
+    personalityTraits: [
+      "Precise",
+      "Creative",
+      "Hospitable",
+      "Experimental",
+      "Flavor-focused"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_bookshop",
+    name: "Bookshop Bear",
+    description: "A distinguished bear portrait featuring an independent bookstore owner with literary accessories",
+    series: SeriesType.HIPSTER,
+    accessories: [
+      "first edition collection",
+      "book recommendation journal",
+      "author-signed memorabilia",
+      "reading list catalog",
+      "rare bookmark collection"
+    ],
+    headwear: [
+      "bookshop reading glasses",
+      "literary festival cap",
+      "author society hat",
+      "publishing house beanie",
+      "book club visor"
+    ],
+    clothing: [
+      "independent bookstore cardigan",
+      "literary-themed vest",
+      "small publisher's jacket",
+      "book fair attire",
+      "rare book dealer's coat"
+    ],
+    tools: [
+      "book classification system",
+      "first edition verification tools",
+      "author event planning notebook",
+      "book repair kit",
+      "literary society membership cards"
+    ],
+    personalityTraits: [
+      "Well-read",
+      "Curatorial",
+      "Contemplative",
+      "Community-minded",
+      "Literary"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_sourdough",
+    name: "Sourdough Baker Bear",
+    description: "A distinguished bear portrait featuring an artisanal bread baker with traditional tools",
+    series: SeriesType.HIPSTER,
+    accessories: [
+      "sourdough starter jar",
+      "fermentation schedule",
+      "flour variety collection",
+      "heritage grain samples",
+      "bread scoring designs"
+    ],
+    headwear: [
+      "baker's linen cap",
+      "flour-dusted bandana",
+      "traditional baker's hat",
+      "bread guild cap",
+      "artisanal bakery beret"
+    ],
+    clothing: [
+      "traditional baker's apron",
+      "heritage bakery coat",
+      "flour-dusted work shirt",
+      "artisanal bakery vest",
+      "bread craftsman uniform"
+    ],
+    tools: [
+      "handcrafted banneton basket",
+      "traditional scoring lame",
+      "wooden bread peel",
+      "fermentation monitoring tools",
+      "heritage grain mill"
+    ],
+    personalityTraits: [
+      "Patient",
+      "Nurturing",
+      "Traditional",
+      "Methodical",
+      "Community-focused"
     ]
   },
   
@@ -708,7 +1212,133 @@ export const characterCategories: CategoryDefinition[] = [
       "Community-minded"
     ]
   },
-
+  
+  {
+    id: "bear_pfp_cryptominer",
+    name: "Crypto Miner Bear",
+    description: "A distinguished bear portrait featuring a cryptocurrency mining operation specialist",
+    series: SeriesType.BLOCKCHAIN,
+    accessories: [
+      "mining hash rate monitor",
+      "blockchain reward calculator",
+      "power efficiency analyzer",
+      "mining pool membership badge",
+      "hardware performance charts"
+    ],
+    headwear: [
+      "miner's cooling headset",
+      "heat dissipation cap",
+      "hashrate monitoring visor",
+      "overclocking specialist's goggles",
+      "mining farm supervisor hat"
+    ],
+    clothing: [
+      "mining operation jacket",
+      "hardware maintenance uniform",
+      "cooling system technician vest",
+      "power management coat",
+      "blockchain mining suit"
+    ],
+    tools: [
+      "mining rig diagnostic kit",
+      "specialized cooling equipment",
+      "power consumption optimizer",
+      "hardware tuning devices",
+      "blockchain node connectivity tools"
+    ],
+    personalityTraits: [
+      "Persistent",
+      "Technical",
+      "Methodical",
+      "Efficiency-minded",
+      "Resourceful"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_metaverse",
+    name: "Metaverse Architect Bear",
+    description: "A distinguished bear portrait featuring a virtual world designer and builder",
+    series: SeriesType.BLOCKCHAIN,
+    accessories: [
+      "virtual land deed collection",
+      "metaverse mapping system",
+      "digital asset portfolio",
+      "virtual world accessibility tools",
+      "cross-platform integration guides"
+    ],
+    headwear: [
+      "VR development headset",
+      "virtual world designer's visor",
+      "metaverse exploration goggles",
+      "spatial computing interface",
+      "digital realm architect's crown"
+    ],
+    clothing: [
+      "cross-platform design coat",
+      "virtual identity specialist's jacket",
+      "metaverse builder's uniform",
+      "digital reality architect's vest",
+      "virtual world navigation suit"
+    ],
+    tools: [
+      "virtual space modeling devices",
+      "metaverse integration tools",
+      "digital physics simulator",
+      "virtual architecture software",
+      "cross-platform experience designer"
+    ],
+    personalityTraits: [
+      "Imaginative",
+      "Boundary-pushing",
+      "Spatial",
+      "Interconnected",
+      "Future-focused"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_smartcontract",
+    name: "Smart Contract Developer Bear",
+    description: "A distinguished bear portrait featuring a blockchain code specialist with development tools",
+    series: SeriesType.BLOCKCHAIN,
+    accessories: [
+      "code repository access card",
+      "security audit results",
+      "gas optimization metrics",
+      "contract deployment checklist",
+      "blockchain developer conference badges"
+    ],
+    headwear: [
+      "debugging visor",
+      "code optimization glasses",
+      "blockchain IDE headset",
+      "security mindset cap",
+      "gas-efficient coding hat"
+    ],
+    clothing: [
+      "developer hackathon jacket",
+      "code review coat",
+      "immutable deployment uniform",
+      "blockchain engineer's vest",
+      "decentralized application builder's attire"
+    ],
+    tools: [
+      "secure coding environment",
+      "contract testing framework",
+      "formal verification tools",
+      "blockchain deployment panel",
+      "version control system"
+    ],
+    personalityTraits: [
+      "Precise",
+      "Security-conscious",
+      "Logical",
+      "Methodical",
+      "Innovative"
+    ]
+  },
+  
   // Sustainable Living Series
   {
     id: "bear_pfp_urbanfarm",
@@ -875,6 +1505,132 @@ export const characterCategories: CategoryDefinition[] = [
       "Patient",
       "Educational",
       "Community-minded"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_zerowaste",
+    name: "Zero Waste Bear",
+    description: "A distinguished bear portrait featuring a sustainable living enthusiast with waste reduction tools",
+    series: SeriesType.SUSTAINABLE,
+    accessories: [
+      "package-free shopping kit",
+      "waste audit journal",
+      "home composting guide",
+      "plastic-free alternatives collection",
+      "community zero-waste initiative badges"
+    ],
+    headwear: [
+      "natural fiber cap",
+      "plastic-free awareness bandana",
+      "waste reduction advocate's hat",
+      "compost education visor",
+      "community clean-up headwear"
+    ],
+    clothing: [
+      "long-lasting sustainable uniform",
+      "minimal-waste designed jacket",
+      "naturally dyed durable coat",
+      "plastic-free advocate's vest",
+      "repaired and reinforced clothing"
+    ],
+    tools: [
+      "reusable container collection",
+      "home composting tools",
+      "biodegradable packaging alternatives",
+      "waste stream separation system",
+      "DIY cleaning product equipment"
+    ],
+    personalityTraits: [
+      "Mindful",
+      "Systematic",
+      "Resourceful",
+      "Determined",
+      "Community-oriented"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_permaculture",
+    name: "Permaculture Designer Bear",
+    description: "A distinguished bear portrait featuring a sustainable ecosystem designer with natural systems tools",
+    series: SeriesType.SUSTAINABLE,
+    accessories: [
+      "permaculture design certificate",
+      "ecological system mapping tools",
+      "natural patterns reference guide",
+      "water flow observation notebook",
+      "soil health testing kit"
+    ],
+    headwear: [
+      "wide-brimmed field hat",
+      "natural systems observer's cap",
+      "practical permaculturist's headwear",
+      "ecosystem designer's visor",
+      "plant guild identifier hat"
+    ],
+    clothing: [
+      "many-pocketed field vest",
+      "practical design work coat",
+      "natural fiber earth worker's jacket",
+      "durable implementation uniform",
+      "season-appropriate layered attire"
+    ],
+    tools: [
+      "a-frame level",
+      "swale design templates",
+      "plant guild charts",
+      "sector analysis tools",
+      "earthworks surveying equipment"
+    ],
+    personalityTraits: [
+      "Observant",
+      "Ecological",
+      "Systems-minded",
+      "Patient",
+      "Regenerative"
+    ]
+  },
+  
+  {
+    id: "bear_pfp_renewableenergy",
+    name: "Renewable Energy Bear",
+    description: "A distinguished bear portrait featuring a sustainable energy specialist with alternative power tools",
+    series: SeriesType.SUSTAINABLE,
+    accessories: [
+      "solar power calculator",
+      "wind assessment tools",
+      "energy independence planning guide",
+      "small-scale renewable models",
+      "off-grid system designs"
+    ],
+    headwear: [
+      "solar technician's cap",
+      "wind engineer's helmet",
+      "hydro specialist's protective headwear",
+      "energy assessor's visor",
+      "renewables researcher's headset"
+    ],
+    clothing: [
+      "solar installer's vest",
+      "wind turbine technician's jacket",
+      "hydro system designer's coat",
+      "battery storage specialist's uniform",
+      "sustainable energy consultant's attire"
+    ],
+    tools: [
+      "energy audit equipment",
+      "solar angle optimizer",
+      "wind speed measurement devices",
+      "battery storage calculators",
+      "microhydro assessment kit"
+    ],
+    personalityTraits: [
+      "Technical",
+      "Forward-thinking",
+      "Analytical",
+      "Solution-oriented",
+      "Self-sufficient"
     ]
   }
 ];
