@@ -8,6 +8,7 @@ import path from 'path';
 import { ArtBotMultiAgentSystem } from './artbot-multiagent-system';
 import { ElizaLogger, LogLevel } from './utils/elizaLogger';
 import { AIService } from './services/ai';
+import { ReplicateService } from './services/replicate';
 import { IdeatorAgent } from './agents/IdeatorAgent';
 import { StylistAgent } from './agents/StylistAgent';
 import { RefinerAgent } from './agents/RefinerAgent';
@@ -35,10 +36,24 @@ async function main() {
       openaiApiKey: process.env.OPENAI_API_KEY
     });
     
+    // Create Replicate service
+    const replicateService = new ReplicateService({
+      apiKey: process.env.REPLICATE_API_KEY,
+      defaultModel: 'black-forest-labs/flux-1.1-pro',
+      defaultWidth: 1024,
+      defaultHeight: 1024,
+      defaultNumInferenceSteps: 28,
+      defaultGuidanceScale: 3.0
+    });
+    
+    // Initialize services
+    await aiService.initialize();
+    await replicateService.initialize();
+    
     // Create the multi-agent system
     const system = new ArtBotMultiAgentSystem({
       aiService, 
-      replicateService: null, // Will be created internally
+      replicateService,
       outputDir: path.join(process.cwd(), 'output', 'test')
     });
     

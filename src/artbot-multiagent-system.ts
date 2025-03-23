@@ -9,6 +9,7 @@ import { DirectorAgent as DirectorAgentImpl } from './agents/DirectorAgent';
 import { CharacterGenerator } from './generators/CharacterGenerator';
 import { AgentLogger, LogLevel } from './utils/agentLogger';
 import { defaultGenerationConfig, GenerationConfig } from './config/generationConfig';
+import { ReplicateService } from './services/replicate';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -23,6 +24,7 @@ export class ArtBotMultiAgentSystem {
   private initialized: boolean = false;
   private generationConfig: GenerationConfig;
   private outputDir: string;
+  private replicateService: ReplicateService | null;
   
   /**
    * Constructor
@@ -32,6 +34,7 @@ export class ArtBotMultiAgentSystem {
     this.agents = new Map();
     this.generationConfig = defaultGenerationConfig;
     this.outputDir = config.outputDir || path.join(process.cwd(), 'output');
+    this.replicateService = config.replicateService;
     
     // Create the director agent
     this.director = new DirectorAgentImpl(this.generationConfig);
@@ -68,7 +71,7 @@ export class ArtBotMultiAgentSystem {
     AgentLogger.logSystemStart({
       outputDir: this.outputDir,
       aiService: this.config.aiService ? 'Available' : 'Unavailable',
-      replicateService: this.config.replicateService ? 'Available' : 'Unavailable',
+      replicateService: this.replicateService ? 'Available' : 'Unavailable',
       memorySystem: this.config.memorySystem ? 'Available' : 'Unavailable',
       styleService: this.config.styleService ? 'Available' : 'Unavailable',
       agentCount: this.agents.size
@@ -167,15 +170,61 @@ export class ArtBotMultiAgentSystem {
     try {
       const output = result.output;
       
-      // Ensure we have a prompt and imageUrl
+      // Ensure we have a prompt
       if (!output.prompt) {
         // Use the refined prompt from the last stage if available
         output.prompt = output.refinedPrompt || output.concept || 'Default prompt';
         AgentLogger.log(`Using fallback prompt: ${output.prompt.substring(0, 50)}...`, LogLevel.WARNING);
       }
       
-      // In test mode, if no imageUrl, use a placeholder
-      if (!output.imageUrl) {
+      // Generate the image if we have a Replicate service and no imageUrl yet
+      if (!output.imageUrl && this.replicateService) {
+        try {
+          // Get any model-specific options from the context
+          const options: Record<string, any> = {};
+          
+          // Add model configuration if available
+          if (output.modelConfig) {
+            if (output.modelConfig.dimensions) {
+              options.width = output.modelConfig.dimensions.width;
+              options.height = output.modelConfig.dimensions.height;
+            }
+            
+            if (output.modelConfig.inferenceSteps) {
+              options.num_inference_steps = output.modelConfig.inferenceSteps;
+            }
+            
+            if (output.modelConfig.guidanceScale) {
+              options.guidance_scale = output.modelConfig.guidanceScale;
+            }
+          }
+          
+          // Add negative prompt if specified
+          if (output.negativePrompt) {
+            options.negative_prompt = output.negativePrompt;
+          }
+          
+          // Log that we're generating an image
+          AgentLogger.log(`🖼️ Generating image using Replicate...`, LogLevel.INFO);
+          
+          // Generate the image
+          const imageUrl = await this.replicateService.generateImage(output.prompt, options);
+          
+          if (imageUrl) {
+            output.imageUrl = imageUrl;
+            AgentLogger.log(`✅ Image generated: ${imageUrl.substring(0, 50)}...`, LogLevel.INFO);
+          } else {
+            throw new Error('Failed to generate image URL');
+          }
+        } catch (error) {
+          AgentLogger.log(`❌ Error generating image: ${error instanceof Error ? error.message : String(error)}`, LogLevel.ERROR);
+          
+          // Use a placeholder image URL in case of failure
+          output.imageUrl = 'https://placehold.co/1024x1024/EEE/31343C?text=ArtBot+Test+Image';
+          AgentLogger.log('Using placeholder image URL due to generation error', LogLevel.WARNING);
+        }
+      } else if (!output.imageUrl) {
+        // No Replicate service and no imageUrl, use a placeholder
         output.imageUrl = 'https://placehold.co/1024x1024/EEE/31343C?text=ArtBot+Test+Image';
         AgentLogger.log('Using placeholder image URL for test', LogLevel.WARNING);
       }
