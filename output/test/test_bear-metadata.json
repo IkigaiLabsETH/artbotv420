@@ -1,0 +1,20 @@
+{
+  "id": "fd2c6b30-2727-4bea-9c41-4490dec91d64",
+  "title": "Test Bear Portrait",
+  "description": "A test of the ArtBot multi-agent system",
+  "prompt": "Create a formal portrait of a distinguished bear wearing a black bowler hat and necktie, in the distinctive style of René Magritte. The bear should have an anthropomorphized, dignified expression and be rendered with Magritte's characteristic smooth, matte finish and subtle visible brushwork. Use soft edges with precise control, deliberate paint application with minimal texture, and careful gradients reminiscent of Belgian skies. Employ an oil painting technique with minimal impasto.\n\nThe composition should be a tightly cropped, centered bust portrait against a simple background of muted color fields with subtle tonal transitions. Pay careful attention to realistic light and shadow on the bear's features while maintaining Magritte's precise yet painterly edges. The bowler hat and necktie should have photorealistic detail to create a surreal contrast with the stylized bear form. The overall image must be perfectly centered and formatted appropriately for use as a profile picture.",
+  "style": "bear_pfp",
+  "imageUrl": "https://placehold.co/1024x1024/EEE/31343C?text=ArtBot+Test+Image",
+  "character": {
+    "name": "Sir Percival W. Braunbear, Esq.",
+    "title": "The Distinguished Gent",
+    "personality": [
+      "Distinguished",
+      "Dignified",
+      "Contemplative",
+      "Precise"
+    ],
+    "backstory": "Born into a family of celebrated philosophers, Ursus Distinguis defied societal conventions by embracing the art of being rather than mere thinking. His bowler hat, a nod to the intellectuals of yesteryear, serves as a reminder that true distinction lies not in outward adornments but in the cultivation of an inquisitive mind. Renowned for his seminal work \"On the Essence of Honey,\" Distinguis challenged the very notion of reality, positing that the sweetness we perceive is but a fleeting illusion cast by the universe's eternal dance."
+  },
+  "createdAt": "2025-03-23T09:31:51.033Z"
+}

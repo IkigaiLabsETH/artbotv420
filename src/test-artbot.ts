@@ -7,6 +7,11 @@ import * as dotenv from 'dotenv';
 import path from 'path';
 import { ArtBotMultiAgentSystem } from './artbot-multiagent-system';
 import { ElizaLogger, LogLevel } from './utils/elizaLogger';
+import { AIService } from './services/ai';
+import { IdeatorAgent } from './agents/IdeatorAgent';
+import { StylistAgent } from './agents/StylistAgent';
+import { RefinerAgent } from './agents/RefinerAgent';
+import { CharacterGeneratorAgent } from './agents/CharacterGeneratorAgent';
 
 // Load environment variables
 dotenv.config();
@@ -24,12 +29,42 @@ async function main() {
   console.log('╰───────────────────────────────────────────╯');
   
   try {
+    // Create AI service
+    const aiService = new AIService({
+      anthropicApiKey: process.env.ANTHROPIC_API_KEY,
+      openaiApiKey: process.env.OPENAI_API_KEY
+    });
+    
     // Create the multi-agent system
     const system = new ArtBotMultiAgentSystem({
-      aiService: null, // No AI service for this test
+      aiService, 
       replicateService: null, // Will be created internally
       outputDir: path.join(process.cwd(), 'output', 'test')
     });
+    
+    // Create and register the Ideator agent
+    const ideatorAgent = new IdeatorAgent(aiService);
+    system.registerAgent(ideatorAgent);
+    
+    // Create and register the Stylist agent
+    const stylistAgent = new StylistAgent(aiService);
+    system.registerAgent(stylistAgent);
+    
+    // Create and register the Refiner agent
+    const refinerAgent = new RefinerAgent(aiService);
+    system.registerAgent(refinerAgent);
+    
+    // Create and register the Character Generator agent
+    const characterGeneratorAgent = new CharacterGeneratorAgent(aiService);
+    system.registerAgent(characterGeneratorAgent);
+    
+    // Log registered agents
+    console.log('╭───────────────────────────────────────────╮');
+    console.log('│ Registered Agents:                        │');
+    system.getAllAgents().forEach(agent => {
+      console.log(`│ - ${agent.role} (${agent.id})                 │`);
+    });
+    console.log('╰───────────────────────────────────────────╯');
     
     // Initialize the system
     await system.initialize();
