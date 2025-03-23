@@ -14,6 +14,7 @@ import { StylistAgent } from './agents/StylistAgent';
 import { RefinerAgent } from './agents/RefinerAgent';
 import { CharacterGeneratorAgent } from './agents/CharacterGeneratorAgent';
 import { bearConceptGenerator } from './generators/BearConceptGenerator';
+import { EnhancedRefinerAgent } from './agents/EnhancedRefinerAgent';
 
 // Load environment variables
 dotenv.config();
@@ -27,7 +28,7 @@ if (!process.env.REPLICATE_API_KEY) {
 
 async function main() {
   console.log('╭───────────────────────────────────────────╮');
-  console.log('│           ArtBot Test Script              │');
+  console.log('│         ArtBot Magritte Generator         │');
   console.log('╰───────────────────────────────────────────╯');
   
   try {
@@ -37,14 +38,14 @@ async function main() {
       openaiApiKey: process.env.OPENAI_API_KEY
     });
     
-    // Create Replicate service
+    // Create Replicate service with optimized parameters
     const replicateService = new ReplicateService({
       apiKey: process.env.REPLICATE_API_KEY,
       defaultModel: 'black-forest-labs/flux-1.1-pro', 
-      defaultWidth: 1024,
-      defaultHeight: 1024,
-      defaultNumInferenceSteps: 28,
-      defaultGuidanceScale: 3.0
+      defaultWidth: 2048,
+      defaultHeight: 2048,
+      defaultNumInferenceSteps: 35,
+      defaultGuidanceScale: 4.0
     });
     
     // Initialize services
@@ -55,7 +56,7 @@ async function main() {
     const system = new ArtBotMultiAgentSystem({
       aiService, 
       replicateService,
-      outputDir: path.join(process.cwd(), 'output', 'test')
+      outputDir: path.join(process.cwd(), 'output', 'magritte-bears')
     });
     
     // Create and register the Ideator agent
@@ -66,8 +67,8 @@ async function main() {
     const stylistAgent = new StylistAgent(aiService);
     system.registerAgent(stylistAgent);
     
-    // Create and register the Refiner agent
-    const refinerAgent = new RefinerAgent(aiService);
+    // Create and register the Enhanced Refiner agent instead of basic Refiner
+    const refinerAgent = new EnhancedRefinerAgent(aiService);
     system.registerAgent(refinerAgent);
     
     // Create and register the Character Generator agent
@@ -85,27 +86,53 @@ async function main() {
     // Initialize the system
     await system.initialize();
     
-    // Define a test project
-    const concept = process.argv.includes('--default') 
-      ? 'a distinguished bear portrait with a bowler hat in the style of René Magritte'
-      : process.argv[2] || bearConceptGenerator.generateBearConcept();
+    // Parse command line arguments for generation options
+    const options = {
+      useDefault: process.argv.includes('--default'),
+      forceBowlerHat: process.argv.includes('--bowler'),
+      enhanceMagritte: process.argv.includes('--enhance'),
+      highQuality: process.argv.includes('--hq'),
+      concept: process.argv.find(arg => arg.startsWith('--concept='))?.split('=')[1]
+    };
     
+    // Generate concept based on options
+    const concept = options.useDefault 
+      ? 'a distinguished bear portrait with a bowler hat in the style of René Magritte, with careful attention to surface quality and precise edge control'
+      : options.concept || bearConceptGenerator.generateBearConcept({ 
+          forceBowlerHat: options.forceBowlerHat
+        });
+    
+    // Define a test project with enhanced options
     const testProject = {
-      title: 'Test Bear Portrait',
-      description: 'A test of the ArtBot multi-agent system',
+      title: 'Magritte Bear Portrait',
+      description: 'A distinguished bear in Magritte surrealist style',
       concept,
       style: 'bear_pfp',
-      outputFilename: 'test_bear',
+      outputFilename: `magritte_bear_${Date.now()}`,
       requirements: [
-        'Generate high-quality image',
-        'Follow style guidelines',
-        'Create a visually appealing composition'
-      ]
+        'Generate high-quality Magritte-style image',
+        'Follow surrealist style guidelines',
+        'Create a visually appealing composition with philosophical elements',
+        'Maintain painterly precision and surface quality',
+        'Ensure proper composition for profile use'
+      ],
+      artDirection: {
+        enhanceMagritte: options.enhanceMagritte,
+        focusOnSurfaceQuality: true,
+        preferredColors: ['Belgian sky blue', 'deep prussian', 'rich mahogany'],
+        highQuality: options.highQuality,
+        modelParams: {
+          inferenceSteps: options.highQuality ? 40 : 35,
+          guidanceScale: options.highQuality ? 4.5 : 4.0
+        }
+      }
     };
     
     console.log('╭───────────────────────────────────────────╮');
     console.log(`│ 🎨 Generating: ${testProject.concept.substring(0, 25).padEnd(25)} │`);
     console.log(`│ 🖌️ Style: ${testProject.style.substring(0, 30).padEnd(30)} │`);
+    if (options.enhanceMagritte) console.log('│ ✓ Enhanced Magritte Mode Enabled             │');
+    if (options.highQuality) console.log('│ ✓ High Quality Mode Enabled                  │');
     console.log('╰───────────────────────────────────────────╯');
     
     // Run the project

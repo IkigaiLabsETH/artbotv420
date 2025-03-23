@@ -100,8 +100,16 @@ export class ReplicateService {
         input.output_format = input.output_format || this.defaultOutputFormat;
         
         // Ensure the prompt has the FLUX trigger word
-        if (input.prompt && !input.prompt.includes('IKIGAI')) {
-          input.prompt = `IKIGAI ${input.prompt}`;
+        if (input.prompt) {
+          // Make sure IKIGAI is at the beginning
+          if (!input.prompt.trim().startsWith('IKIGAI')) {
+            input.prompt = `IKIGAI ${input.prompt.trim()}`;
+          }
+          
+          // Add soft trigger for high-quality output
+          if (!input.prompt.includes('detailed high quality')) {
+            input.prompt = `${input.prompt}, detailed high quality`;
+          }
         }
       }
       

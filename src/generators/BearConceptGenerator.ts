@@ -149,61 +149,69 @@ export class BearConceptGenerator {
       "smoking pipe",
       "quill pen",
       "fountain pen",
-      "brass telescope",
-      "scientific instrument",
-      "leather-bound journal",
-      "antique map",
-      "botanical guidebook",
-      "astronomical chart"
-    ];
-
-    const neckwear = [
-      "silk bow tie",
-      "formal cravat",
-      "elegant tie",
-      "scientific society medal",
-      "academic stole",
-      "diplomatic corps badge",
-      "artistic medallion",
-      "explorer's compass",
-      "vintage measuring tape"
+      "compass",
+      "antique book",
+      "telescope",
+      "chess piece"
     ];
 
     const clothing = [
-      "formal suit",
-      "academic robes",
-      "artist's smock",
-      "explorer's jacket",
-      "chef's uniform",
-      "vintage waistcoat",
-      "conductor's tailcoat",
-      "diplomat's dress coat",
-      "naturalist's field attire",
-      "philosopher's dress coat"
+      "formal suit with bow tie",
+      "elegant waistcoat with pocket square",
+      "tweed jacket with elbow patches",
+      "tailored blazer with silk handkerchief",
+      "traditional academic gown",
+      "conductor's uniform",
+      "aristocratic hunting attire",
+      "scholarly robes",
+      "distinguished diplomatic uniform",
+      "vintage three-piece suit"
     ];
 
-    const additionalElements = [
-      "floating green apple",
-      "mysterious cloudy sky background",
-      "surreal window showing an impossible landscape",
-      "paradoxical shadows",
-      "metaphysical objects in the background",
-      "trompe l'oeil effect",
-      "philosophical visual paradox",
-      "enigmatic reflections in mirrors",
-      "impossibly balanced objects",
-      "Belgian sky blue background"
+    // Magritte-specific surrealist elements
+    const magritteElements = [
+      "a floating apple obscuring the face",
+      "a cloudy blue sky background",
+      "a floating bowler hat",
+      "a bird that transforms into a leaf",
+      "a window revealing a different time of day",
+      "a crescent moon emerging from behind",
+      "a mirror reflecting something unexpected",
+      "a door opening to an impossible space",
+      "objects suspended in mid-air",
+      "shadows cast in impossible directions",
+      "a pipe with the text 'Ceci n'est pas une pipe'",
+      "a luminous bell floating in darkness",
+      "a picture frame containing the continuation of the landscape behind it",
+      "a twilight sky transitioning to night",
+      "a silhouette filled with sky",
+      "elements with contradictory scale relationships",
+      "objects seamlessly merging into other forms",
+      "architectural elements defying physics",
+      "mathematically perfect surreal compositions"
     ];
 
-    // Create a combination of elements
-    const primary = forceBowlerHat ? "bowler hat" : getRandomElement(primaryAccessories);
-    const secondary = getRandomElement(secondaryAccessories);
-    const neck = getRandomElement(neckwear);
-    const cloth = getRandomElement(clothing);
-    const additional = getRandomElement(additionalElements);
+    // Color palettes inspired by Magritte
+    const colorPalettes = [
+      "Belgian sky blue with twilight grey transitions",
+      "deep prussian blue with pristine white",
+      "soft cerulean with precisely rendered clouds",
+      "warm amber tones against cool neutral backdrop",
+      "carefully controlled dusk lighting",
+      "precise shadow rendering without defined light source"
+    ];
 
-    // Generate concept
-    return `A distinguished bear portrait in profile wearing a ${primary}, ${secondary}, and ${neck}, dressed in a ${cloth}, with ${additional}, painted in Magritte's precise style against a Belgian sky blue background`;
+    // Get headwear - use bowler hat if forced, otherwise random from primaryAccessories
+    const headwear = forceBowlerHat ? "bowler hat" : getRandomElement(primaryAccessories);
+    
+    // Get other elements
+    const accessory = getRandomElement(secondaryAccessories);
+    const attire = getRandomElement(clothing);
+    const magritteElement = getRandomElement(magritteElements);
+    const colorPalette = getRandomElement(colorPalettes);
+    
+    // Generate concept with more precise Magritte technique description
+    return `A distinguished bear portrait in the style of René Magritte, with mathematical precision and philosophical surrealism, featuring a bear wearing a ${headwear} and carrying ${accessory}, dressed in ${attire}, with ${magritteElement}, rendered using ${colorPalette}, with perfectly smooth matte paint application and precisely controlled edges`;
   }
 
   /**

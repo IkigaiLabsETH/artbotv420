@@ -227,14 +227,35 @@ Variations:`;
    * Local prompt enhancement without AI service
    */
   private enhancePromptLocally(concept: string): string {
-    // Add some detail and specificity to the concept
+    // Add more specific Magritte style elements and details to the concept
     const enhancedConcept = concept
-      .replace(/portrait/i, 'detailed portrait with intricate features')
-      .replace(/bear/i, 'distinguished bear with expressive face')
-      .replace(/style of/i, 'artistic style of')
-      + ', high quality, detailed rendering, professional artwork';
+      .replace(/portrait/i, 'meticulously detailed portrait with precise painterly technique')
+      .replace(/bear/i, 'distinguished bear with perfectly rendered fur texture')
+      .replace(/style of/i, 'authentic painterly style of')
+      .replace(/René Magritte/i, 'René Magritte, with his signature smooth oil technique, unmodulated color fields, and philosophical surrealism');
     
-    return enhancedConcept;
+    // Add Magritte-specific artistic elements if they're not already included
+    const magritteElements = [
+      'against a perfectly rendered sky blue background',
+      'with carefully balanced surreal elements',
+      'featuring clean, precise edges and smooth paint application',
+      'with mathematically perfect composition',
+      'using Magritte\'s characteristic smooth, matte finish technique',
+      'employing subtle tonal transitions with minimal texture'
+    ];
+    
+    // Check if any Magritte elements are already present
+    let hasMagritteElement = magritteElements.some(element => 
+      enhancedConcept.toLowerCase().includes(element.toLowerCase().substring(0, 20))
+    );
+    
+    // Add a random Magritte element if none are present
+    if (!hasMagritteElement) {
+      const randomElement = magritteElements[Math.floor(Math.random() * magritteElements.length)];
+      return `${enhancedConcept}, ${randomElement}, high quality artwork with painterly precision`;
+    }
+    
+    return `${enhancedConcept}, high quality artwork with painterly precision`;
   }
   
   /**
