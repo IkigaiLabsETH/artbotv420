@@ -182,7 +182,7 @@ export class EnhancedPromptGenerator {
     const promptSuffix = defaultGenerationConfig.styles.magritte.promptSuffix || '';
     
     // 17. Combine all elements for the final prompt
-    const finalPrompt = `${promptPrefix}${promptBody}. ${emphasisBlock} ${styleBlock} ${colorInstructions} ${compositionInstructions}${promptSuffix}`;
+    const finalPrompt = `${promptPrefix}${promptBody}. ${emphasisBlock} ${styleBlock} ${colorInstructions} ${compositionInstructions} The scene is set against a Belgian sky blue background, characteristic of Magritte's work.${promptSuffix}`;
     
     // 18. Return complete result
     return {
@@ -395,15 +395,28 @@ export class EnhancedPromptGenerator {
     background: string;
     magritteElements: string[];
   } {
-    // Select accessories - prioritize from prompt elements if available
+    // Select accessories - prioritize from prompt elements if available, or use series-specific accessories
     const accessories = elements?.accessories && elements.accessories.length > 0 
       ? elements.accessories
       : this.getRandomElements(series.accessories, 2);
       
-    // Select clothing - use from prompt elements if available
-    const clothing = elements?.clothing && elements.clothing.length > 0
-      ? elements.clothing
-      : "formal distinguished attire";
+    // Select clothing - use from prompt elements if available, or create series-specific clothing
+    let clothing = "";
+    if (elements?.clothing && elements.clothing.length > 0) {
+      clothing = elements.clothing;
+    } else {
+      // Generate series-specific clothing
+      const seriesName = series.name.replace(' Series', '');
+      const trait = this.getRandomElement(series.characterTraits);
+      const clothingOptions = [
+        `distinctive ${seriesName.toLowerCase()} attire with professional details`,
+        `specialized ${seriesName.toLowerCase()} clothing with characteristic elements`,
+        `unique ${seriesName.toLowerCase()} professional outfit with ${trait} details`,
+        `${seriesName.toLowerCase()} professional wear featuring ${this.getRandomElement(series.accessories)}`,
+        `${trait} ${seriesName.toLowerCase()} attire with authentic details`
+      ];
+      clothing = this.getRandomElement(clothingOptions);
+    }
       
     // Select Magritte-specific visual elements - first from preferred, then from new styleElements, then original patterns
     const visualElementPool = [
@@ -416,11 +429,12 @@ export class EnhancedPromptGenerator {
     const magritteElements = this.getRandomElements(visualElementPool, 2);
     
     // Select background options - use enhanced versions
+    const seriesName = series.name.replace(' Series', '');
     const backgroundOptions = [
-      "Belgian sky blue background",
+      `Belgian sky blue background with ${seriesName.toLowerCase()} thematic elements`,
       "Belgian sky blue background with mathematically precise clouds",
       "Belgian sky blue with pristine clarity",
-      "Belgian sky blue with twilight grey transitions",
+      `Belgian sky blue with ${seriesName.toLowerCase()} professional context`,
       "perfectly flat Belgian sky blue",
       "immaculate Belgian sky blue background",
       "day-night paradox sky from Empire of Light",

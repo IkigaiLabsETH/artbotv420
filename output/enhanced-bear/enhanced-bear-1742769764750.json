@@ -1,0 +1,54 @@
+{
+  "name": "Untitled Artwork",
+  "description": "A bear_pfp style artwork",
+  "prompt": "A distinguished bear portrait in perfect profile wearing a unique hipster headpiece, neck ribbon floating slightly away from the neck, with pipe that contradicts its own existence, dressed in a distinctive hipster attire with unique professional details, carrying brewing vessels and accompanied by precise brewing methods, where balancing natural elements in surreal urban context creates a craft materials behaving unnaturally, representing the essence of craft revival, rendered with muted tones with conceptually significant color accents against an environment reflecting hipster themes against a Belgian sky blue background, with even illumination with conceptually impossible shadows, in meticulously calculated negative space relationships, painted in René Magritte's pristine surrealist style with immaculate surface quality, mathematically precise edges, and Belgian oil painting technique.",
+  "style": {
+    "primary": "Surrealism",
+    "specific": "René Magritte",
+    "elements": [
+      "pipe",
+      "distinguished bear"
+    ],
+    "paradox": "Object relationship paradox",
+    "technicalExecution": {
+      "surfaceQuality": "Perfectly smooth, matte finish",
+      "edgeDefinition": "Crystal-clear, precise boundaries",
+      "colorApproach": "Pure, unmodulated tones"
+    },
+    "philosophicalConcept": "Reality questioning",
+    "composition": "Clean, enigmatic arrangement"
+  },
+  "timestamp": "2025-03-23T22:42:50.047Z",
+  "artDirection": {
+    "highQuality": true,
+    "modelParams": {
+      "inferenceSteps": 40,
+      "guidanceScale": 4.5
+    }
+  },
+  "created": "2025-03-23T22:42:44.753Z",
+  "imageUrl": "",
+  "characterInfo": null,
+  "nftAttributes": [
+    {
+      "trait_type": "Visual Element",
+      "value": "pipe"
+    },
+    {
+      "trait_type": "Visual Element",
+      "value": "distinguished bear"
+    },
+    {
+      "trait_type": "Technique",
+      "value": "Oil Painting Technique"
+    },
+    {
+      "trait_type": "Concept",
+      "value": "Reality questioning"
+    },
+    {
+      "trait_type": "Style",
+      "value": "René Magritte Surrealism"
+    }
+  ]
+}

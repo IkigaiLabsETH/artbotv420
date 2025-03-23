@@ -133,6 +133,13 @@ async function main() {
       useLegacyPrompt: process.argv.includes('--legacy-prompt')
     };
     
+    // If no specific series is provided, randomly select an interesting one
+    if (!options.series && options.useSeries) {
+      const interestingSeries = ['hipster', 'adventure', 'artistic'];
+      options.series = interestingSeries[Math.floor(Math.random() * interestingSeries.length)];
+      console.log(`Automatically selected series: ${options.series.toUpperCase()}`);
+    }
+    
     // Generate concept based on options
     let concept;
     let useEnhancedGenerator = false;
@@ -174,8 +181,8 @@ async function main() {
     
     // Define a test project with enhanced options
     const testProject = {
-      title: 'Magritte Bear Portrait',
-      description: 'A distinguished bear in Magritte surrealist style',
+      title: `Magritte Bear Portrait - ${options.series ? options.series.charAt(0).toUpperCase() + options.series.slice(1) : 'Distinguished'} Series`,
+      description: `A ${options.series || 'distinguished'} bear in Magritte surrealist style`,
       concept,
       style: 'bear_pfp',
       outputFilename: `magritte_bear_${Date.now()}`,

@@ -295,16 +295,43 @@ export class EnhancedBearPromptGenerator {
       return {};
     }
     
+    // Get multiple accessories from the series
+    const accessories = series.accessories.sort(() => Math.random() - 0.5).slice(0, 2);
+    const primaryAccessory = accessories[0];
+    const secondaryAccessory = accessories[1];
+    
     // Extract series-specific elements
-    const accessory = getRandomElement(series.accessories);
     const magritteElement = getRandomElement(series.magritteElements);
     const enhancer = getRandomElement(series.promptEnhancers);
+    const trait = getRandomElement(series.characterTraits);
     
-    // Map series elements to prompt structure
+    // Create series-specific attire
+    const seriesName = series.name.replace(' Series', '');
+    const attireOptions = [
+      `distinctive ${seriesName.toLowerCase()} attire with unique professional details`,
+      `specialized ${seriesName.toLowerCase()} clothing with characteristic elements`,
+      `unique ${seriesName.toLowerCase()} outfit with professional implements`,
+      `${trait} ${seriesName.toLowerCase()} professional wear`
+    ];
+    
+    // Generate a head accessory appropriate for the series
+    const headwearOptions = [
+      `professional ${seriesName.toLowerCase()} headwear`,
+      `distinctive ${seriesName.toLowerCase()} cap`,
+      `specialized ${seriesName.toLowerCase()} head protection`,
+      `unique ${seriesName.toLowerCase()} headpiece`
+    ];
+    
+    // Map series elements to prompt structure with much more series-specific details
     return {
-      accessory,
+      accessory: primaryAccessory,
+      secondaryAccessory: secondaryAccessory,
+      attire: getRandomElement(attireOptions),
+      headwear: getRandomElement(headwearOptions),
       surrealistElement: enhancer,
-      visualParadox: magritteElement
+      visualParadox: magritteElement,
+      backgroundElement: `an environment reflecting ${seriesName.toLowerCase()} themes against a Belgian sky blue background`,
+      philosophicalConcept: `the essence of ${series.conceptualThemes[Math.floor(Math.random() * series.conceptualThemes.length)]}`
     };
   }
 

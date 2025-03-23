@@ -453,7 +453,7 @@ export function generateMagritteStyleBlock(): string {
   const technique = getNestedStyleElements('artisticApproaches', 'techniques', 1)[0];
   const environment = getNestedStyleElements('magritteKeywords', 'environments', 1)[0];
   
-  return `The painting employs ${technicalStyle} with ${visualElements}. The palette features ${colorDescription}, composed with ${composition}. Featuring ${portraitElement} with ${technique} in ${environment}. Referencing ${reference}. ${magritteStyleElements.moodAndTone}`;
+  return `The painting employs ${technicalStyle} with ${visualElements} against a Belgian sky blue background. The palette features ${colorDescription}, composed with ${composition}. Featuring ${portraitElement} with ${technique} in ${environment}. Referencing ${reference}. ${magritteStyleElements.moodAndTone}`;
 }
 
 /**
@@ -467,12 +467,21 @@ export function generateMagritteNegativePrompt(): string {
  * Generate color instructions for a Magritte painting
  */
 export function generateColorInstructions(count: number = 3): string {
-  // Combine standard colors with artistic approach colors
-  const standardColors = getStyleElements('colorPalette', Math.ceil(count/2));
-  const approachColors = getNestedStyleElements('artisticApproaches', 'color', Math.floor(count/2));
-  const colors = [...standardColors, ...approachColors].slice(0, count);
+  // Ensure Belgian sky blue is always included
+  const belgianSkyBlue = "Belgian sky blue background (RGB: 135, 206, 235)";
   
-  return `Use a precise Magritte palette featuring ${colors.join(', ')}.`;
+  // Combine standard colors with artistic approach colors, minus count-1 to make room for Belgian sky blue
+  const standardColors = getStyleElements('colorPalette', Math.ceil((count-1)/2));
+  const approachColors = getNestedStyleElements('artisticApproaches', 'color', Math.floor((count-1)/2));
+  
+  // Filter out any duplicates of Belgian sky blue
+  const filteredStandardColors = standardColors.filter(color => !color.includes("Belgian sky blue"));
+  const filteredApproachColors = approachColors.filter(color => !color.includes("Belgian sky blue"));
+  
+  // Combine colors with Belgian sky blue first
+  const colors = [belgianSkyBlue, ...filteredStandardColors, ...filteredApproachColors].slice(0, count);
+  
+  return `Use a precise Magritte palette featuring ${colors.join(', ')}, with emphasis on the Belgian sky blue background.`;
 }
 
 /**
@@ -484,7 +493,7 @@ export function generateCompositionInstructions(count: number = 3): string {
   const approachComposition = getNestedStyleElements('artisticApproaches', 'composition', Math.floor(count/2));
   const compositions = [...standardComposition, ...approachComposition].slice(0, count);
   
-  return `Compose with ${compositions.join(', ')}.`;
+  return `Compose with ${compositions.join(', ')} against a characteristic Belgian sky blue background.`;
 }
 
 /**
