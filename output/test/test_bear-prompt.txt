@@ -1,11 +1,17 @@
-Render a formal portrait of a distinguished brown bear wearing a black bowler hat, in the distinctive style of René Magritte. The bear should have an impassive, slightly quizzical expression. Compose the image as a tight bust portrait, with the bear's face and hat filling most of the frame, centered for use as a profile picture.
+"Create a formal portrait of a distinguished bear wearing a bowler hat, in the distinctive style of René Magritte. The composition should be centered and framed for use as a profile picture.
 
-Employ Magritte's signature elements:
+Painting Style:
 - Smooth, matte finish with subtle visible brushwork in flat color areas
-- Soft yet precise edges with careful gradients reminiscent of Belgian skies
-- Deliberate, controlled paint application with minimal texture or impasto
-- Clean, unmodulated color fields with subtle tonal transitions
-- Precise yet painterly rendering of details like fur and hat textures
-- Careful attention to realistic light and shadow on the bear's form
+- Soft, precise edges with careful gradients reminiscent of Belgian skies
+- Oil painting technique with minimal texture and impasto
+- Deliberate, controlled paint application with unmodulated color fields
 
-The overall style should evoke Magritte's Surrealist sensibilities, juxtaposing the natural bear with the man-made hat in an unsettling yet whimsical way that provokes deeper contemplation.
+Bear Portrait Elements:
+- Regal, anthropomorphized bear with distinguished facial features
+- Formal portrait composition with the bear's head and shoulders centered
+- Bowler hat as the sole human attire, creating a surreal juxtaposition
+- Clean, precise lines and shapes with subtle tonal transitions
+- Careful attention to light and shadow, with a slightly dramatic lighting
+- Neutral, simplified background to emphasize the bear's presence
+
+Maintain Magritte's distinctive painting style, with a surreal and thought-provoking quality, while ensuring the portrait is perfectly centered and suitable for use as a profile picture."

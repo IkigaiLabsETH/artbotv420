@@ -1,21 +1,21 @@
 {
-  "id": "f04467fe-f625-49ca-bfb0-9405c5b57e97",
+  "id": "055dffed-faa0-4c91-bee8-6c89da39512b",
   "title": "Test Bear Portrait",
   "description": "A test of the ArtBot multi-agent system",
-  "prompt": "Render a formal portrait of a distinguished brown bear wearing a black bowler hat, in the distinctive style of René Magritte. The bear should have an impassive, slightly quizzical expression. Compose the image as a tight bust portrait, with the bear's face and hat filling most of the frame, centered for use as a profile picture.\n\nEmploy Magritte's signature elements:\n- Smooth, matte finish with subtle visible brushwork in flat color areas\n- Soft yet precise edges with careful gradients reminiscent of Belgian skies\n- Deliberate, controlled paint application with minimal texture or impasto\n- Clean, unmodulated color fields with subtle tonal transitions\n- Precise yet painterly rendering of details like fur and hat textures\n- Careful attention to realistic light and shadow on the bear's form\n\nThe overall style should evoke Magritte's Surrealist sensibilities, juxtaposing the natural bear with the man-made hat in an unsettling yet whimsical way that provokes deeper contemplation.",
+  "prompt": "\"Create a formal portrait of a distinguished bear wearing a bowler hat, in the distinctive style of René Magritte. The composition should be centered and framed for use as a profile picture.\n\nPainting Style:\n- Smooth, matte finish with subtle visible brushwork in flat color areas\n- Soft, precise edges with careful gradients reminiscent of Belgian skies\n- Oil painting technique with minimal texture and impasto\n- Deliberate, controlled paint application with unmodulated color fields\n\nBear Portrait Elements:\n- Regal, anthropomorphized bear with distinguished facial features\n- Formal portrait composition with the bear's head and shoulders centered\n- Bowler hat as the sole human attire, creating a surreal juxtaposition\n- Clean, precise lines and shapes with subtle tonal transitions\n- Careful attention to light and shadow, with a slightly dramatic lighting\n- Neutral, simplified background to emphasize the bear's presence\n\nMaintain Magritte's distinctive painting style, with a surreal and thought-provoking quality, while ensuring the portrait is perfectly centered and suitable for use as a profile picture.\"",
   "style": "bear_pfp",
-  "imageUrl": "https://replicate.delivery/xezq/yUbhr7dY3fRsM6h6BCSbTFYDHlUiIawGKYmoQpeRDFOYsYbUA/tmp1v3uxc7q.png",
+  "imageUrl": "https://replicate.delivery/xezq/TqGXClvmeIwFayEKJRqUxQlZVMgCyAqvue3eaDE17NOTbx2oA/tmptpen19n3.png",
   "character": {
-    "name": "Reginald C. Bearlsworth, Esq.",
-    "title": "The Distinguished Gentleman",
+    "name": "Reginald P. Grizzlington, Esq.",
+    "title": "The Distinguished Ursine",
     "personality": [
-      "Discerning",
-      "Refined",
-      "Scholarly",
       "Dignified",
-      "Sagacious"
+      "Discerning",
+      "Sagacious",
+      "Composed",
+      "Urbane"
     ],
-    "backstory": "Reginald Ursington III ascended to prominence through an unwavering commitment to the study of ursine metaphysics, his seminal treatise \"On the Unbearable Lightness of Being a Bear\" earning him global renown. Yet it was his daring reconciliation of the paradoxes of Zeno's dichotomy that solidified his legacy, an achievement all the more remarkable given his sartorial adherence to the bowler hat -- a whimsical nod to the inherent absurdity underpinning existence itself."
+    "backstory": "Descended from a long line of ursine intellectuals, Sir Reginald Bruinsworth inherited his distinguished bearing and sartorial flair from noble ancestors who eschewed the wilderness for a life of scholarly pursuits. His seminal treatise on apian metaphysics, \"The Bees' Knees: An Inquiry into the Existential Ennui of Melittology,\" cemented his reputation as a leading thinker, while his signature bowler hat served as a whimsical acknowledgment that one cannot escape one's essential ursine nature, no matter how erudite the veneer."
   },
-  "createdAt": "2025-03-23T09:49:13.868Z"
+  "createdAt": "2025-03-23T09:50:34.708Z"
 }
