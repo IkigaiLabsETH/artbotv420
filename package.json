@@ -23,7 +23,8 @@
     "test:enhanced:batch": "ts-node src/test-enhanced-magritte.ts --full",
     "example:magritte": "ts-node src/examples/magritte-prompt-example.ts",
     "example:enhanced": "ts-node src/examples/enhanced-magritte-style-example.ts",
-    "test:enhanced-refiner": "ts-node src/test-enhanced-refiner.ts"
+    "test:enhanced-refiner": "ts-node src/test-enhanced-refiner.ts",
+    "character-gen": "ts-node src/test-character-generation.ts"
   },
   "author": "ArtBot Team",
   "license": "MIT",

@@ -3,6 +3,9 @@
  * Defines agent roles, interfaces, and communication structures
  */
 
+import { CharacterGenerationOptions } from '../generators/EnhancedCharacterGenerator';
+import { CategoryDefinition, SeriesType } from '../config/characterCategoriesConfig';
+
 /**
  * Enum defining the different roles that agents can have in the system
  */
@@ -58,6 +61,12 @@ export interface AgentContext {
   modelConfig?: any;
   previousResults?: any;
   messages: AgentMessage[];
+  task?: {
+    action: string;
+    categoryId?: string;
+    seriesType?: string;
+    [key: string]: any;
+  };
   [key: string]: any;
 }
 
@@ -98,6 +107,8 @@ export interface CharacterIdentity {
   traits?: Record<string, any>;
   occupation?: string;
   specialItems?: string[];
+  category?: CategoryDefinition;
+  seriesType?: SeriesType;
 }
 
 /**
@@ -161,7 +172,7 @@ export interface CriticAgent extends Agent {
  */
 export interface CharacterGeneratorAgent extends Agent {
   role: AgentRole.CHARACTER_GENERATOR;
-  generateCharacter(concept: string): Promise<CharacterIdentity>;
+  generateCharacter(concept: string, options?: CharacterGenerationOptions): Promise<CharacterIdentity>;
 }
 
 /**

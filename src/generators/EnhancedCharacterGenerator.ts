@@ -7,6 +7,23 @@ import { v4 as uuidv4 } from 'uuid';
 import { CharacterIdentity } from '../agents/types';
 import { AIService } from '../services/ai/index';
 import { AgentLogger } from '../utils/agentLogger';
+import { 
+  CategoryDefinition, 
+  SeriesType, 
+  getRandomCategory, 
+  getCategoryById, 
+  getRandomCategoryFromSeries 
+} from '../config/characterCategoriesConfig';
+
+/**
+ * Character generation options
+ */
+export interface CharacterGenerationOptions {
+  categoryId?: string;     // Specific category to use
+  seriesType?: SeriesType; // Specific series to pick from
+  allowAiEnhancement?: boolean; // Whether to use AI to enhance the character
+  randomizationLevel?: number; // 0-1 how much randomization to apply
+}
 
 /**
  * Enhanced Character Generator
@@ -28,28 +45,51 @@ export class EnhancedCharacterGenerator {
   /**
    * Generate a character from a concept and prompt
    */
-  async generateCharacter(concept: string, prompt: string): Promise<CharacterIdentity> {
+  async generateCharacter(concept: string, prompt: string, options?: CharacterGenerationOptions): Promise<CharacterIdentity> {
     try {
+      // Select a category based on options or extract from the concept
+      const category = await this.selectCategory(concept, options);
+      
       // Extract elements from the prompt
-      const elements = await this.extractElements(concept, prompt);
+      const elements = await this.extractElements(concept, prompt, category);
       
       // Generate the character components
-      const name = this.generateName(elements);
-      const title = this.generateTitle(elements);
-      const personality = this.derivePersonality(elements);
-      const backstory = await this.createBackstory(elements, name, title);
-      const nickname = this.generateNickname(elements, title);
+      const name = this.generateName(elements, category);
+      const title = this.generateTitle(elements, category);
+      const personality = this.derivePersonality(elements, category);
+      const backstory = await this.createBackstory(elements, name, title, category);
+      const nickname = this.generateNickname(elements, title, category);
+      
+      // Generate specialized items based on category
+      const occupation = this.deriveOccupation(category);
+      const specialItems = this.selectSpecialItems(category);
       
       // Log the character creation
-      AgentLogger.log(`Generated character: ${name}, ${title}`);
+      AgentLogger.log(`Generated character: ${name}, ${title} (${category?.name || 'Custom category'})`);
       
-      return {
+      // Create rich character identity 
+      const character: CharacterIdentity = {
         name,
         title,
         nickname,
         personality,
-        backstory
+        backstory,
+        occupation,
+        specialItems,
+        traits: {
+          category: category?.id || 'custom',
+          series: category?.series || 'general',
+          attire: elements.clothing,
+          accessories: elements.accessories
+        }
       };
+      
+      // Enhance with AI if requested
+      if (options?.allowAiEnhancement && this.aiService) {
+        return await this.enhanceCharacterWithAI(character, concept);
+      }
+      
+      return character;
     } catch (error) {
       AgentLogger.log(`Error generating character: ${error instanceof Error ? error.message : String(error)}`);
       
@@ -64,10 +104,69 @@ export class EnhancedCharacterGenerator {
   }
   
   /**
-   * Extract character elements from concept and prompt
+   * Select a category based on options or concept content
    */
-  private async extractElements(concept: string, prompt: string): Promise<any> {
-    // Default elements
+  private async selectCategory(concept: string, options?: CharacterGenerationOptions): Promise<CategoryDefinition | undefined> {
+    // If a specific category is requested, use that
+    if (options?.categoryId) {
+      const category = getCategoryById(options.categoryId);
+      if (category) {
+        return category;
+      }
+    }
+    
+    // If a series is specified, get a random category from that series
+    if (options?.seriesType) {
+      return getRandomCategoryFromSeries(options.seriesType);
+    }
+    
+    // Try to extract category from concept
+    if (concept.includes('pfp_')) {
+      const categoryMatches = concept.match(/bear_pfp_([a-z_]+)/i);
+      if (categoryMatches && categoryMatches[1]) {
+        const categoryId = `bear_pfp_${categoryMatches[1].toLowerCase()}`;
+        const category = getCategoryById(categoryId);
+        if (category) {
+          return category;
+        }
+      }
+    }
+    
+    // Try to detect series or category based on keywords in the concept
+    const conceptLower = concept.toLowerCase();
+    
+    // Check for series keywords
+    const seriesKeywords: Record<SeriesType, string[]> = {
+      [SeriesType.ADVENTURE]: ['pilot', 'explorer', 'adventure', 'journey', 'expedition', 'sailor', 'mountaineer', 'climber', 'diver'],
+      [SeriesType.ARTISTIC]: ['artist', 'painter', 'sculptor', 'creative', 'artistic', 'designer', 'composer', 'musician'],
+      [SeriesType.ACADEMIC]: ['professor', 'academic', 'scholar', 'scientist', 'researcher', 'historian', 'librarian'],
+      [SeriesType.HIPSTER]: ['barista', 'artisanal', 'craft', 'vintage', 'coffee', 'vinyl', 'organic', 'sustainable'],
+      [SeriesType.MYSTICAL]: ['mystic', 'alchemist', 'occult', 'spiritual', 'magical', 'wizard', 'mysterious'],
+      [SeriesType.STEAMPUNK]: ['steampunk', 'inventor', 'mechanical', 'clockwork', 'gear', 'brass', 'victorian'],
+      [SeriesType.CLASSICAL]: ['classical', 'composer', 'conductor', 'orchestra', 'symphony', 'concerto', 'sonata'],
+      [SeriesType.DIPLOMATIC]: ['diplomat', 'ambassador', 'envoy', 'consul', 'emissary', 'attaché', 'delegate'],
+      [SeriesType.BLOCKCHAIN]: ['blockchain', 'crypto', 'nft', 'token', 'defi', 'web3', 'dao', 'validator'],
+      [SeriesType.SUSTAINABLE]: ['sustainable', 'eco', 'green', 'organic', 'environmental', 'recycled', 'renewable']
+    };
+    
+    // Check for series matches
+    for (const [series, keywords] of Object.entries(seriesKeywords)) {
+      for (const keyword of keywords) {
+        if (conceptLower.includes(keyword)) {
+          return getRandomCategoryFromSeries(series as SeriesType);
+        }
+      }
+    }
+    
+    // If no specific category or series was found, return a random category
+    return getRandomCategory();
+  }
+  
+  /**
+   * Extract character elements from concept and prompt with category guidance
+   */
+  private async extractElements(concept: string, prompt: string, category?: CategoryDefinition): Promise<any> {
+    // Start with default elements
     const elements: any = {
       accessories: ["bowler hat"],
       clothing: "formal suit",
@@ -78,35 +177,64 @@ export class EnhancedCharacterGenerator {
       activity: null
     };
     
-    // Extract accessories
-    const accessoryMatches = prompt.match(/with ([^,.]+)|holding ([^,.]+)|carries ([^,.]+)/ig);
-    if (accessoryMatches) {
-      elements.accessories = accessoryMatches.map((match: string) => {
-        return match.replace(/with |holding |carries /ig, '').trim();
-      });
+    // Apply category defaults if available
+    if (category) {
+      // Choose random items from each category list
+      if (category.accessories.length > 0) {
+        elements.accessories = [
+          category.accessories[Math.floor(Math.random() * category.accessories.length)]
+        ];
+      }
+      
+      if (category.headwear.length > 0) {
+        elements.accessories.push(
+          category.headwear[Math.floor(Math.random() * category.headwear.length)]
+        );
+      }
+      
+      if (category.clothing.length > 0) {
+        elements.clothing = category.clothing[Math.floor(Math.random() * category.clothing.length)];
+      }
+      
+      if (category.tools.length > 0) {
+        elements.tools = [
+          category.tools[Math.floor(Math.random() * category.tools.length)]
+        ];
+      }
+      
+      // Set profession based on category
+      elements.profession = this.deriveOccupation(category);
+      
+      // Add personality traits from category
+      if (category.personalityTraits.length > 0) {
+        elements.attributes = [...new Set([
+          ...elements.attributes,
+          category.personalityTraits[Math.floor(Math.random() * category.personalityTraits.length)]
+        ])];
+      }
     }
     
-    // Extract clothing
+    // Extract accessories from prompt
+    const accessoryMatches = prompt.match(/with ([^,.]+)|holding ([^,.]+)|carries ([^,.]+)/ig);
+    if (accessoryMatches) {
+      elements.accessories = [
+        ...elements.accessories,
+        ...accessoryMatches.map((match: string) => {
+          return match.replace(/with |holding |carries /ig, '').trim();
+        })
+      ];
+      
+      // Remove duplicates
+      elements.accessories = [...new Set(elements.accessories)];
+    }
+    
+    // Extract clothing from prompt
     const clothingMatch = prompt.match(/wearing ([^,.]+)/i);
     if (clothingMatch && clothingMatch[1]) {
       elements.clothing = clothingMatch[1].trim();
     }
     
-    // Extract profession from common professions
-    const professions = [
-      "professor", "doctor", "curator", "philosopher", "artist", "poet",
-      "conductor", "composer", "writer", "scientist", "explorer", "antiquarian",
-      "diplomat", "collector", "scholar", "historian", "librarian", "astronomer"
-    ];
-    
-    for (const profession of professions) {
-      if (concept.toLowerCase().includes(profession) || prompt.toLowerCase().includes(profession)) {
-        elements.profession = profession;
-        break;
-      }
-    }
-    
-    // Extract attributes
+    // Extract attributes from common dignified attributes
     const attributeMatches = [
       "distinguished", "dignified", "elegant", "formal", "philosophical", 
       "contemplative", "mysterious", "enigmatic", "surreal", "paradoxical"
@@ -124,9 +252,9 @@ export class EnhancedCharacterGenerator {
   }
   
   /**
-   * Generate a distinguished bear name
+   * Generate a distinguished bear name using the category for influence
    */
-  private generateName(elements: any): string {
+  private generateName(elements: any, category?: CategoryDefinition): string {
     // Name components
     const prefixes = [
       "Sir", "Professor", "Dr.", "Baron", "Archduke", "Captain", "Ambassador", 
@@ -144,57 +272,119 @@ export class EnhancedCharacterGenerator {
       "Ambrose", "Oakley", "Pemberton", "Fitzursa", "Bramblebrook"
     ];
     
-    // Select random components
-    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-    const middle = middleNames[Math.floor(Math.random() * middleNames.length)];
-    const surname = surnames[Math.floor(Math.random() * surnames.length)];
+    // Series-based name adjustments
+    if (category) {
+      // Use series-appropriate prefix
+      switch (category.series) {
+        case SeriesType.ACADEMIC:
+          return `Professor ${middleNames[Math.floor(Math.random() * middleNames.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`;
+          
+        case SeriesType.ADVENTURE:
+          return `Captain ${middleNames[Math.floor(Math.random() * middleNames.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`;
+          
+        case SeriesType.ARTISTIC:
+          return `Maestro ${middleNames[Math.floor(Math.random() * middleNames.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`;
+          
+        case SeriesType.DIPLOMATIC:
+          return `Ambassador ${middleNames[Math.floor(Math.random() * middleNames.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`;
+          
+        case SeriesType.MYSTICAL:
+          return `${middleNames[Math.floor(Math.random() * middleNames.length)]} the ${prefixes[Math.floor(Math.random() * prefixes.length)]}`;
+          
+        case SeriesType.BLOCKCHAIN:
+          const cryptoNames = ["Satoshi", "Vitalik", "Nakamoto", "Blockchain", "Cipher"];
+          return `${cryptoNames[Math.floor(Math.random() * cryptoNames.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`;
+      }
+    }
     
     // Profession-based naming adjustments
     if (elements.profession) {
       // Use profession-appropriate prefix
       if (elements.profession === "professor") {
-        return `Professor ${middle} ${surname}`;
+        return `Professor ${middleNames[Math.floor(Math.random() * middleNames.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`;
       } else if (elements.profession === "doctor") {
-        return `Dr. ${middle} ${surname}`;
+        return `Dr. ${middleNames[Math.floor(Math.random() * middleNames.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`;
       } else if (elements.profession === "artist" || elements.profession === "composer") {
-        return `Maestro ${middle} ${surname}`;
+        return `Maestro ${middleNames[Math.floor(Math.random() * middleNames.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`;
       }
     }
     
     // Regular full name
+    const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+    const middle = middleNames[Math.floor(Math.random() * middleNames.length)];
+    const surname = surnames[Math.floor(Math.random() * surnames.length)];
+    
     return `${prefix} ${middle} ${surname}`;
   }
   
   /**
-   * Generate a title based on character elements
+   * Generate a title based on character elements and category
    */
-  private generateTitle(elements: any): string {
+  private generateTitle(elements: any, category?: CategoryDefinition): string {
     // Title patterns
     const patterns = [
       "The %ADJECTIVE% %PROFESSION%",
       "The %PROFESSION% of %DOMAIN%",
       "The %ADJECTIVE% %DOMAIN% %SPECIALIST%",
       "Keeper of the %DOMAIN% %ARTIFACT%",
-      "Master of %DOMAIN% %ARTIFACT%"
+      "Master of %DOMAIN% %ARTIFACT%",
+      "The Distinguished %PROFESSION%",
+      "%DOMAIN% %SPECIALIST% Extraordinaire"
     ];
     
     // Get random pattern
     const pattern = patterns[Math.floor(Math.random() * patterns.length)];
     
-    // Generate components
-    const adjectives = elements.attributes.length > 0 
+    // Category-based adjectives and domains
+    let adjectives = elements.attributes.length > 0 
       ? elements.attributes 
       : ["Distinguished", "Contemplative", "Philosophical"];
+    
+    let domains = ["Surrealist", "Philosophical", "Metaphysical", "Conceptual", "Artistic"];
+    
+    // Customize based on category if available
+    if (category) {
+      // Use personality traits from category
+      if (category.personalityTraits.length > 0) {
+        adjectives = [...adjectives, ...category.personalityTraits];
+      }
+      
+      // Customize domains based on series
+      switch (category.series) {
+        case SeriesType.ADVENTURE:
+          domains = ["Expeditionary", "Exploratory", "Voyaging", "Pioneering", "Frontier"];
+          break;
+        case SeriesType.ARTISTIC:
+          domains = ["Creative", "Artistic", "Expressive", "Aesthetic", "Visionary"];
+          break;
+        case SeriesType.ACADEMIC:
+          domains = ["Academic", "Scholarly", "Intellectual", "Research", "Scientific"];
+          break;
+        case SeriesType.BLOCKCHAIN:
+          domains = ["Decentralized", "Distributed", "Tokenized", "On-Chain", "Cryptographic"];
+          break;
+        case SeriesType.SUSTAINABLE:
+          domains = ["Sustainable", "Regenerative", "Ecological", "Environmental", "Harmony"];
+          break;
+      }
+    }
     
     const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
     
     const professions = elements.profession 
       ? [elements.profession.charAt(0).toUpperCase() + elements.profession.slice(1)] 
       : ["Philosopher", "Scholar", "Dignitary", "Thinker"];
+      
+    // Add profession from category if available
+    if (category) {
+      const occupation = this.deriveOccupation(category);
+      if (occupation && !professions.includes(occupation)) {
+        professions.push(occupation);
+      }
+    }
     
     const profession = professions[Math.floor(Math.random() * professions.length)];
     
-    const domains = ["Surrealist", "Philosophical", "Metaphysical", "Conceptual", "Artistic"];
     const domain = domains[Math.floor(Math.random() * domains.length)];
     
     const specialists = ["Specialist", "Expert", "Authority", "Virtuoso"];
@@ -214,9 +404,9 @@ export class EnhancedCharacterGenerator {
   }
   
   /**
-   * Generate a nickname based on character elements
+   * Generate a nickname based on character elements and category
    */
-  private generateNickname(elements: any, title: string): string {
+  private generateNickname(elements: any, title: string, category?: CategoryDefinition): string {
     // 50% chance to not have a nickname
     if (Math.random() < 0.5) {
       return "";
@@ -239,20 +429,50 @@ export class EnhancedCharacterGenerator {
       ? elements.attributes 
       : ["Distinguished", "Contemplative", "Philosophical"];
     
-    const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+    let adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
     
-    const professions = elements.profession 
+    let professions = elements.profession 
       ? [elements.profession.charAt(0).toUpperCase() + elements.profession.slice(1)] 
       : ["Philosopher", "Scholar", "Dignitary", "Thinker"];
     
-    const profession = professions[Math.floor(Math.random() * professions.length)];
+    // Add category-based profession
+    if (category) {
+      const occupation = this.deriveOccupation(category);
+      if (occupation && !professions.includes(occupation)) {
+        professions.push(occupation);
+      }
+    }
     
-    const domains = ["Surrealist", "Philosophical", "Metaphysical", "Conceptual", "Artistic"];
+    let profession = professions[Math.floor(Math.random() * professions.length)];
+    
+    // Get domains based on category
+    let domains = ["Surrealist", "Philosophical", "Metaphysical", "Conceptual", "Artistic"];
+    
+    if (category) {
+      // Customize domains based on series
+      switch (category.series) {
+        case SeriesType.ADVENTURE:
+          domains = ["Adventurous", "Exploratory", "Voyaging", "Pioneering", "Intrepid"];
+          break;
+        case SeriesType.ARTISTIC:
+          domains = ["Creative", "Artistic", "Expressive", "Visionary", "Inspired"];
+          break;
+        case SeriesType.BLOCKCHAIN:
+          domains = ["Decentralized", "Distributed", "Tokenized", "Digital", "Crypto"];
+          break;
+      }
+    }
+    
     const domain = domains[Math.floor(Math.random() * domains.length)];
     
-    const artifact = elements.accessories?.length > 0 
+    // Get artifact based on category or elements
+    let artifact = elements.accessories?.length > 0 
       ? elements.accessories[0].replace(/a |an |the /i, '') 
       : "Bowler";
+      
+    if (category?.tools.length) {
+      artifact = category.tools[Math.floor(Math.random() * category.tools.length)];
+    }
     
     // Replace placeholders
     return pattern
@@ -263,112 +483,222 @@ export class EnhancedCharacterGenerator {
   }
   
   /**
-   * Derive personality traits from character elements
+   * Derive personality traits based on elements and category
    */
-  private derivePersonality(elements: any): string[] {
-    // Base traits for all distinguished bears
-    const baseTraits = ["Dignified", "Refined"];
+  private derivePersonality(elements: any, category?: CategoryDefinition): string[] {
+    // Get base personality traits
+    const baseTraits = elements.attributes.length > 0 
+      ? elements.attributes 
+      : ["Distinguished", "Dignified", "Contemplative", "Precise", "Formal"];
     
-    // Add additional traits based on elements
-    const traits = [...baseTraits];
-    
-    // Add traits based on attributes
-    if (elements.attributes.includes("philosophical")) {
-      traits.push("Philosophical");
-      traits.push("Contemplative");
+    // Add category-specific traits if available
+    if (category?.personalityTraits.length) {
+      // Combine traits and remove duplicates
+      return [...new Set([
+        ...baseTraits,
+        ...category.personalityTraits
+      ])].slice(0, 5); // Limit to 5 traits
     }
     
-    if (elements.attributes.includes("mysterious") || elements.attributes.includes("enigmatic")) {
-      traits.push("Mysterious");
-      traits.push("Enigmatic");
-    }
-    
-    if (elements.attributes.includes("surreal") || elements.attributes.includes("paradoxical")) {
-      traits.push("Unconventional");
-      traits.push("Innovative");
-    }
-    
-    // Add traits based on profession
-    if (elements.profession === "professor" || elements.profession === "scholar") {
-      traits.push("Scholarly");
-      traits.push("Analytical");
-    } else if (elements.profession === "artist" || elements.profession === "composer") {
-      traits.push("Creative");
-      traits.push("Expressive");
-    } else if (elements.profession === "philosopher") {
-      traits.push("Profound");
-      traits.push("Reflective");
-    }
-    
-    // Select 5 traits
-    const selectedTraits: string[] = [];
-    const availableTraits = [...new Set(traits)]; // Remove duplicates
-    
-    for (let i = 0; i < Math.min(5, availableTraits.length); i++) {
-      const index = Math.floor(Math.random() * availableTraits.length);
-      selectedTraits.push(availableTraits[index]);
-      availableTraits.splice(index, 1);
-    }
-    
-    // Ensure we have exactly 5 traits
-    while (selectedTraits.length < 5) {
-      const extras = ["Poised", "Cultured", "Sagacious", "Meticulous", "Observant"];
-      for (const trait of extras) {
-        if (!selectedTraits.includes(trait)) {
-          selectedTraits.push(trait);
-          if (selectedTraits.length >= 5) break;
-        }
-      }
-    }
-    
-    return selectedTraits;
+    return baseTraits;
   }
   
   /**
-   * Create a backstory based on character elements
+   * Derive occupation from category
    */
-  private async createBackstory(elements: any, name: string, title: string): Promise<string> {
+  private deriveOccupation(category?: CategoryDefinition): string {
+    if (!category) return '';
+    
+    // Convert category ID to occupation
+    // Remove "bear_pfp_" prefix
+    let occupation = category.id.replace('bear_pfp_', '');
+    
+    // Convert to title case
+    occupation = occupation
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+    
+    return occupation;
+  }
+  
+  /**
+   * Select special items based on the category
+   */
+  private selectSpecialItems(category?: CategoryDefinition): string[] {
+    if (!category) return [];
+    
+    const items: string[] = [];
+    
+    // Add headwear
+    if (category.headwear.length > 0) {
+      items.push(category.headwear[Math.floor(Math.random() * category.headwear.length)]);
+    }
+    
+    // Add accessories
+    if (category.accessories.length > 0) {
+      items.push(category.accessories[Math.floor(Math.random() * category.accessories.length)]);
+    }
+    
+    // Add tools
+    if (category.tools.length > 0) {
+      items.push(category.tools[Math.floor(Math.random() * category.tools.length)]);
+    }
+    
+    return items;
+  }
+  
+  /**
+   * Create a backstory for the character based on category
+   */
+  private async createBackstory(elements: any, name: string, title: string, category?: CategoryDefinition): Promise<string> {
+    // If we don't have AI service, generate a simple backstory
+    if (!this.aiService) {
+      return this.generateSimpleBackstory(name, title, category);
+    }
+    
     try {
-      // If we have AI service, generate a creative backstory
-      if (this.aiService && typeof this.aiService.generateText === 'function') {
-        // Create a prompt for the backstory
-        const backstoryPrompt = `
-        Create a short, philosophical backstory (3-4 sentences max) for a distinguished bear character with the following details:
-        - Name: ${name}
-        - Title: ${title}
-        - Profession: ${elements.profession || "Distinguished dignitary"}
-        - Accessories: ${elements.accessories?.join(', ') || "bowler hat"}
-        - Clothing: ${elements.clothing || "formal attire"}
-        - Characteristics: ${elements.attributes?.join(', ') || "distinguished, dignified"}
-        
-        The backstory should have the philosophical depth and paradoxical quality of René Magritte's surrealist paintings.
-        Focus on the character's distinguished nature and intellectual pursuits.
-        Must be exactly 3-4 sentences, concise and elegant.
-        `;
-        
-        const backstory = await this.aiService.generateText(backstoryPrompt);
-        if (backstory && backstory.length > 0) {
-          return backstory;
-        }
-      }
+      // Create a rich backstory prompt
+      const seriesDescription = category ? `from the ${category.series} series` : '';
+      const categoryDescription = category ? `a ${category.name}` : '';
       
-      // If AI service is not available or fails, create a template-based backstory
-      const firstName = name.split(' ')[1];
+      let prompt = `
+Create a brief, sophisticated backstory (2-3 sentences) for a character with these details:
+- Name: ${name}
+- Title: ${title}
+- Profession: ${elements.profession || this.deriveOccupation(category) || 'Unknown'}
+- Wearing: ${elements.clothing || 'formal attire'}
+- Accessories: ${elements.accessories?.join(', ') || 'various distinguished items'}
+- Personality traits: ${elements.attributes?.join(', ') || 'distinguished, dignified'}
+${category ? `- Category: ${categoryDescription} ${seriesDescription}` : ''}
+
+Make the backstory sophisticated, dignified, and slightly mysterious, fitting for a distinguished bear portrait in René Magritte's surrealist style. 
+Limit to 2-3 concise sentences that capture the essence of the character.
+`;
+
+      // Generate the backstory
+      const response = await this.aiService.getCompletion({
+        messages: [
+          { role: 'system', content: 'You are a character backstory specialist who creates sophisticated, concise backstories for distinguished bear portraits.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.7
+      });
       
-      // Templates for backstory
-      const templates = [
-        `Born into a distinguished family of intellectual bears, ${firstName} gained renown for ${elements.profession ? `expertise in ${elements.profession}` : "philosophical insights"}. ${firstName}'s work with ${elements.accessories ? elements.accessories[0] : "symbolic objects"} has challenged conventional perspectives on reality and representation. Now, as ${title.toLowerCase()}, ${firstName} continues to explore the boundaries between the tangible and the metaphysical through rigorous contemplation.`,
-        
-        `${firstName} rose to prominence through a series of ${elements.profession ? `groundbreaking contributions to ${elements.profession}` : "philosophical treatises"} that questioned the nature of reality. Always seen with ${elements.accessories ? elements.accessories[0] : "symbolic accessories"}, ${firstName} embodies the paradoxical relationship between appearance and essence. The distinguished bear's work continues to influence thinkers across multiple disciplines.`,
-        
-        `After years of contemplative study, ${firstName} developed a unique approach to ${elements.profession || "philosophical inquiry"} that merges rigorous analysis with surrealist perspectives. Recognizable by ${elements.accessories ? elements.accessories[0] : "a distinctive bowler hat"}, ${firstName} challenges observers to reconsider the boundaries of perception. ${firstName}'s treatises on representation and reality have earned both acclaim and puzzlement from fellow scholars.`
-      ];
-      
-      // Select a random template
-      return templates[Math.floor(Math.random() * templates.length)];
+      return response.content.trim();
     } catch (error) {
-      // Fallback backstory
-      return `A distinguished bear of profound intellect and philosophical insight. Known for contemplative exploration of metaphysical concepts and a keen eye for surrealist juxtaposition.`;
+      // Fall back to simple backstory
+      return this.generateSimpleBackstory(name, title, category);
+    }
+  }
+  
+  /**
+   * Generate a simple backstory without AI
+   */
+  private generateSimpleBackstory(name: string, title: string, category?: CategoryDefinition): string {
+    const beginnings = [
+      "Born into a family of noble bears,",
+      "After years of dedicated study,",
+      "Distinguished among peers from an early age,",
+      "Having traveled the world in pursuit of knowledge,",
+      "Following a remarkable discovery,"
+    ];
+    
+    const middles = [
+      "dedicated a lifetime to perfecting the art of",
+      "became renowned for contributions to",
+      "established a prestigious reputation in",
+      "mastered the subtle complexities of",
+      "revolutionized traditional approaches to"
+    ];
+    
+    const endings = [
+      "now serves as an authority on the subject.",
+      "is sought after for expert consultation.",
+      "continues to inspire admirers across the globe.",
+      "maintains a dignified presence in distinguished circles.",
+      "contemplates the philosophical implications of the work."
+    ];
+    
+    // Select random parts or use category-specific content
+    let beginning = beginnings[Math.floor(Math.random() * beginnings.length)];
+    let middle = middles[Math.floor(Math.random() * middles.length)];
+    let ending = endings[Math.floor(Math.random() * endings.length)];
+    
+    // Customize based on category if available
+    if (category) {
+      switch (category.series) {
+        case SeriesType.ADVENTURE:
+          beginning = "After numerous expeditions to uncharted territories,";
+          middle = `became celebrated for ${this.deriveOccupation(category).toLowerCase()} achievements in`;
+          ending = "continues to seek new horizons with distinguished bearing.";
+          break;
+          
+        case SeriesType.ARTISTIC:
+          beginning = "Trained in the classical traditions of art,";
+          middle = `developed a distinctive approach to ${this.deriveOccupation(category).toLowerCase()}`;
+          ending = "is renowned for creating works of profound metaphysical significance.";
+          break;
+          
+        case SeriesType.ACADEMIC:
+          beginning = "Following decades of scholarly research,";
+          middle = `contributed groundbreaking insights to the field of ${this.deriveOccupation(category).toLowerCase()}`;
+          ending = "continues to mentor distinguished students while pursuing philosophical inquiries.";
+          break;
+          
+        case SeriesType.BLOCKCHAIN:
+          beginning = "After witnessing the early days of digital transformation,";
+          middle = `pioneered innovative approaches to ${this.deriveOccupation(category).toLowerCase()}`;
+          ending = "maintains a balance between technological advancement and philosophical contemplation.";
+          break;
+      }
+    }
+    
+    // Combine the parts
+    return `${beginning} ${name} ${middle} ${this.deriveOccupation(category)?.toLowerCase() || title.toLowerCase()} and ${ending}`;
+  }
+  
+  /**
+   * Enhance a character with AI assistance
+   */
+  private async enhanceCharacterWithAI(character: CharacterIdentity, concept: string): Promise<CharacterIdentity> {
+    if (!this.aiService) {
+      return character;
+    }
+    
+    try {
+      const prompt = `
+Enhance this character for a Magritte-style bear portrait:
+${JSON.stringify(character, null, 2)}
+
+Original concept: "${concept}"
+
+Please provide subtle refinements to make this character more intriguing and distinctive, while maintaining the sophisticated, formal Magritte style.
+Return the enhanced character as valid JSON without any additional text or commentary.
+      `;
+      
+      const response = await this.aiService.getCompletion({
+        messages: [
+          { role: 'system', content: 'You are a character enhancement specialist who refines character details for distinguished bear portraits in René Magritte\'s surrealist style.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.5
+      });
+      
+      try {
+        // Attempt to parse the response as JSON
+        const enhancedCharacter = JSON.parse(response.content);
+        return {
+          ...character,
+          ...enhancedCharacter
+        };
+      } catch (e) {
+        // If parsing fails, return the original character
+        return character;
+      }
+    } catch (error) {
+      // Return the original character on error
+      return character;
     }
   }
 } 
