@@ -9,6 +9,7 @@ import { AgentLogger } from '../utils/agentLogger';
 import { AIService } from '../services/ai/index';
 import { StyleConfig, defaultGenerationConfig } from '../config/generationConfig';
 import { MagritteStyleEvaluator } from '../services/style/MagritteStyleEvaluator';
+import { enhanceBearPortraitPrompt } from '../services/style/magrittePromptEnhancer';
 
 /**
  * Stylist Agent implementation
@@ -22,6 +23,7 @@ export class StylistAgent implements IStylistAgent {
   private messages: AgentMessage[];
   private styles: Record<string, StyleConfig>;
   private magritteEvaluator: MagritteStyleEvaluator;
+  private styleLibrary: any;
   
   /**
    * Constructor
@@ -34,6 +36,7 @@ export class StylistAgent implements IStylistAgent {
     this.messages = [];
     this.styles = defaultGenerationConfig.styles;
     this.magritteEvaluator = new MagritteStyleEvaluator();
+    this.initializeStyleLibrary();
     
     AgentLogger.logAgentAction(this, 'Initialize', 'Stylist agent created with Magritte style capabilities');
   }
@@ -44,6 +47,172 @@ export class StylistAgent implements IStylistAgent {
   async initialize(): Promise<void> {
     this.status = AgentStatus.IDLE;
     AgentLogger.logAgentAction(this, 'Initialize', 'Stylist agent initialized');
+  }
+
+  /**
+   * Initialize the enhanced style library with Magritte elements
+   */
+  private initializeStyleLibrary(): void {
+    this.styleLibrary = {
+      magritte: {
+        core: {
+          essence: 'Traditional oil painting techniques in Belgian surrealism',
+          era: 'Classic Magritte surrealism (1926-1967)',
+          influences: [
+            'traditional oil painting',
+            'Magritte\'s precise technique',
+            'Belgian surrealism',
+            'classical painting methods',
+            'philosophical paradox'
+          ]
+        },
+        visual: {
+          composition: {
+            primary: [
+              'perfectly balanced surreal elements',
+              'mathematically precise staging',
+              'impossible object arrangements',
+              'golden ratio compositions',
+              'classical painting structure'
+            ],
+            secondary: [
+              'precise object placement',
+              'spatial paradoxes',
+              'window illusions',
+              'traditional depth techniques',
+              'painterly perspective'
+            ],
+            framing: [
+              'museum-quality oil painting',
+              'traditional canvas proportions',
+              'classical composition rules',
+              'formal painting arrangement',
+              'contemplative spacing'
+            ]
+          },
+          lighting: {
+            quality: [
+              'day and night simultaneity',
+              'mysterious atmospheric glow',
+              'perfect shadow rendering',
+              'subtle luminosity',
+              'metaphysical light'
+            ],
+            technique: [
+              'smooth shadow transitions',
+              'perfect light modeling',
+              'crystalline reflections',
+              'traditional glazing effects',
+              'unified illumination'
+            ],
+            effects: [
+              'impossible lighting scenarios',
+              'paradoxical shadows',
+              'surreal atmospheric depth',
+              'perfect highlight control',
+              'subtle ambient occlusion'
+            ]
+          },
+          color: {
+            palettes: [
+              ['cerulean sky blue', 'deep shadow grey', 'muted earth tones'],
+              ['twilight purple', 'pristine cloud white', 'stone grey'],
+              ['deep night blue', 'pale morning light', 'rich brown']
+            ],
+            characteristics: [
+              'unmodulated color fields',
+              'perfect transitions',
+              'traditional matte surface',
+              'classical color harmony',
+              'subtle tonal variations'
+            ],
+            treatments: [
+              'pure oil paint application',
+              'perfect paint layering',
+              'classical varnish finish',
+              'pristine surface quality',
+              'flawless color blending'
+            ]
+          }
+        },
+        elements: {
+          symbols: [
+            'floating bowler hats',
+            'green apples',
+            'billowing curtains',
+            'mysterious birds',
+            'paradoxical windows',
+            'philosophical pipes',
+            'floating stones',
+            'enigmatic mirrors',
+            'surreal doors',
+            'metaphysical frames'
+          ],
+          settings: [
+            'impossible landscapes',
+            'surreal interiors',
+            'metaphysical spaces',
+            'paradoxical rooms',
+            'mysterious horizons',
+            'philosophical voids',
+            'dreamlike environments',
+            'contemplative settings',
+            'infinite skies',
+            'impossible architecture'
+          ],
+          objects: [
+            'levitating objects',
+            'transformed everyday items',
+            'paradoxical elements',
+            'mysterious artifacts',
+            'philosophical props',
+            'surreal furnishings',
+            'impossible combinations',
+            'metaphysical tools',
+            'enigmatic instruments',
+            'dreamlike accessories'
+          ]
+        },
+        techniques: {
+          painting: [
+            'flawless oil application',
+            'perfect edge control',
+            'subtle surface texture',
+            'unified light treatment',
+            'crystalline detail rendering',
+            'classical shadow modeling',
+            'smooth color transitions',
+            'traditional matte finish',
+            'pristine canvas quality',
+            'perfect paint layering'
+          ],
+          surrealism: [
+            'impossible scale relationships',
+            'perfect object displacement',
+            'classical reality questioning',
+            'traditional metaphysical approach',
+            'pristine paradox rendering',
+            'mysterious juxtapositions',
+            'philosophical transformations',
+            'dreamlike combinations',
+            'surreal metamorphoses',
+            'enigmatic arrangements'
+          ],
+          conceptual: [
+            'philosophical questioning',
+            'metaphysical poetry',
+            'surreal narratives',
+            'perfect paradox execution',
+            'pristine concept realization',
+            'mysterious symbolism',
+            'contemplative depth',
+            'dreamlike logic',
+            'enigmatic meanings',
+            'philosophical resonance'
+          ]
+        }
+      }
+    };
   }
 
   /**
@@ -76,14 +245,20 @@ export class StylistAgent implements IStylistAgent {
           styledPrompt = `${styledPrompt}${styleConfig.promptSuffix}`;
         }
         
-        // Then apply Magritte-specific enhancements
-        const enhancedPrompt = this.magritteEvaluator.enhancePrompt(styledPrompt);
+        // Special handling for bear PFP portraits
+        if (style === 'bear_pfp' || prompt.toLowerCase().includes('bear')) {
+          AgentLogger.logAgentAction(this, 'Bear PFP Enhancement', 'Applying specialized bear portrait enhancement');
+          styledPrompt = enhanceBearPortraitPrompt(styledPrompt);
+        } else {
+          // For other Magritte styles, use the general enhancer
+          styledPrompt = this.enhanceMagrittePrompt(styledPrompt);
+        }
         
         this.status = AgentStatus.SUCCESS;
         AgentLogger.logAgentAction(this, 'Magritte Style Applied', 
-          `Applied Magritte style: ${enhancedPrompt.substring(0, 100)}...`);
+          `Applied Magritte style: ${styledPrompt.substring(0, 100)}...`);
         
-        return enhancedPrompt;
+        return styledPrompt;
       }
       
       // For non-Magritte styles, use the standard approach
@@ -138,6 +313,112 @@ export class StylistAgent implements IStylistAgent {
       // Return the original prompt as fallback
       return prompt;
     }
+  }
+
+  /**
+   * Enhanced Magritte prompt method with style library elements
+   */
+  private enhanceMagrittePrompt(prompt: string): string {
+    // First use the evaluator
+    const evaluation = this.magritteEvaluator.evaluatePrompt(prompt);
+    
+    // If score is already high, make minor enhancements
+    if (evaluation.score > 0.8) {
+      return this.addMagritteRefinements(prompt);
+    }
+    
+    // Add specific Magritte style elements from style library
+    let enhancedPrompt = prompt;
+    
+    // Add composition elements
+    const compositionElements = this.selectStyleElements(
+      this.styleLibrary.magritte.visual.composition.primary, 1
+    );
+    if (compositionElements.length > 0) {
+      enhancedPrompt += `, with ${compositionElements.join(' and ')}`;
+    }
+    
+    // Add lighting elements
+    const lightingElements = this.selectStyleElements(
+      this.styleLibrary.magritte.visual.lighting.quality, 1
+    );
+    if (lightingElements.length > 0) {
+      enhancedPrompt += `, featuring ${lightingElements.join(' and ')}`;
+    }
+    
+    // Add color elements
+    const colorPalette = this.selectRandomPalette(
+      this.styleLibrary.magritte.visual.color.palettes
+    );
+    if (colorPalette.length > 0) {
+      enhancedPrompt += `, in a palette of ${colorPalette.join(', ')}`;
+    }
+    
+    // Add symbolic elements
+    const symbols = this.selectStyleElements(
+      this.styleLibrary.magritte.elements.symbols, 1
+    );
+    if (symbols.length > 0) {
+      enhancedPrompt += `, with ${symbols.join(' and ')}`;
+    }
+    
+    // Add technical aspects
+    const techniques = this.selectStyleElements(
+      this.styleLibrary.magritte.techniques.painting, 2
+    );
+    if (techniques.length > 0) {
+      enhancedPrompt += `, rendered with ${techniques.join(' and ')}`;
+    }
+    
+    // Add conceptual depth
+    const concepts = this.selectStyleElements(
+      this.styleLibrary.magritte.techniques.conceptual, 1
+    );
+    if (concepts.length > 0) {
+      enhancedPrompt += `, expressing ${concepts.join(' and ')}`;
+    }
+    
+    return enhancedPrompt;
+  }
+  
+  /**
+   * Add Magritte refinements to an already good prompt
+   */
+  private addMagritteRefinements(prompt: string): string {
+    // Signature Magritte elements to potentially add
+    const magritteElements = [
+      ", with trademark Magritte precision and photorealistic rendering",
+      ", featuring clean edges and perfect surfaces in the style of René Magritte",
+      ", with the philosophical depth and conceptual clarity of Magritte's best works",
+      ", painted with Magritte's characteristic atmospheric lighting and theatrical composition"
+    ];
+    
+    // Add 1-2 refinements
+    const numToAdd = 1 + Math.floor(Math.random() * 2);
+    const selectedElements = new Set<string>();
+    
+    while (selectedElements.size < numToAdd) {
+      const element = magritteElements[Math.floor(Math.random() * magritteElements.length)];
+      selectedElements.add(element);
+    }
+    
+    return prompt + Array.from(selectedElements).join("");
+  }
+
+  /**
+   * Select random style elements from an array
+   */
+  private selectStyleElements(elements: string[], count: number): string[] {
+    const numToSelect = Math.min(elements.length, count);
+    const shuffled = [...elements].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, numToSelect);
+  }
+
+  /**
+   * Select a random color palette
+   */
+  private selectRandomPalette(palettes: string[][]): string[] {
+    return palettes[Math.floor(Math.random() * palettes.length)];
   }
   
   /**
@@ -221,6 +502,58 @@ export class StylistAgent implements IStylistAgent {
         technicalDetails: ['Create smooth, unmodulated color fields', 'Maintain sharp edges', 'Use photorealistic rendering']
       };
     }
+  }
+  
+  /**
+   * Generate visual element suggestions for Magritte style
+   */
+  private generateMagritteVisualElementSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
+    return this.selectStyleElements(this.styleLibrary.magritte.elements.symbols, 3);
+  }
+  
+  /**
+   * Generate composition suggestions for Magritte style
+   */
+  private generateMagritteCompositionSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
+    return [
+      ...this.selectStyleElements(this.styleLibrary.magritte.visual.composition.primary, 2),
+      ...this.selectStyleElements(this.styleLibrary.magritte.visual.composition.secondary, 1)
+    ];
+  }
+  
+  /**
+   * Generate color suggestions for Magritte style
+   */
+  private generateMagritteColorSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
+    const palette = this.selectRandomPalette(this.styleLibrary.magritte.visual.color.palettes);
+    return [
+      ...palette,
+      ...this.selectStyleElements(this.styleLibrary.magritte.visual.color.characteristics, 2)
+    ];
+  }
+  
+  /**
+   * Generate lighting suggestions for Magritte style
+   */
+  private generateMagritteLightingSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
+    return [
+      ...this.selectStyleElements(this.styleLibrary.magritte.visual.lighting.quality, 2),
+      ...this.selectStyleElements(this.styleLibrary.magritte.visual.lighting.technique, 1)
+    ];
+  }
+  
+  /**
+   * Generate technical suggestions for Magritte style
+   */
+  private generateMagritteTechnicalSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
+    return this.selectStyleElements(this.styleLibrary.magritte.techniques.painting, 3);
+  }
+  
+  /**
+   * Generate conceptual suggestions for Magritte style
+   */
+  private generateMagritteConceptSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
+    return this.selectStyleElements(this.styleLibrary.magritte.techniques.conceptual, 3);
   }
   
   /**
@@ -318,98 +651,7 @@ export class StylistAgent implements IStylistAgent {
       };
     }
   }
-  
-  /**
-   * Generate Magritte-specific visual element suggestions
-   */
-  private generateMagritteVisualElementSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
-    // Import relevant visual elements from magrittePatterns if needed
-    const visualElements = [
-      "Add a floating bowler hat",
-      "Include a green apple as a focal point",
-      "Feature a pipe with the caption 'This is not a pipe'",
-      "Add a window frame that reveals a surreal view",
-      "Include a businessman in formal attire as silhouette"
-    ];
-    
-    return visualElements;
-  }
-  
-  /**
-   * Generate Magritte-specific composition suggestions
-   */
-  private generateMagritteCompositionSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
-    const compositions = [
-      "Center the main subject against a plain, unmodulated background",
-      "Create a theatrical staging with precise object placement",
-      "Present the subject in profile against a Belgian blue sky",
-      "Use distinct foreground and background separation",
-      "Arrange objects in impossible but visually balanced configuration"
-    ];
-    
-    return compositions;
-  }
-  
-  /**
-   * Generate Magritte-specific color suggestions
-   */
-  private generateMagritteColorSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
-    const colors = [
-      "Use Magritte's signature Belgian sky blue for backgrounds",
-      "Create clean color separations with minimal blending",
-      "Employ a limited color palette with high contrast",
-      "Use matte, flat color fields with minimal variation",
-      "Apply cool shadows with precise edges"
-    ];
-    
-    return colors;
-  }
-  
-  /**
-   * Generate Magritte-specific lighting suggestions
-   */
-  private generateMagritteLightingSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
-    const lighting = [
-      "Use diffused, sourceless lighting without harsh shadows",
-      "Create the Empire of Light effect with day-night paradox",
-      "Apply consistent lighting across all elements",
-      "Use soft shadows with clear definition",
-      "Maintain naturalistic lighting despite surreal context"
-    ];
-    
-    return lighting;
-  }
-  
-  /**
-   * Generate Magritte-specific technical suggestions
-   */
-  private generateMagritteTechnicalSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
-    const technical = [
-      "Render with perfectly smooth, matte finish surfaces",
-      "Create crystal-clear, precise boundaries between elements",
-      "Use clean edge definition with minimal softness",
-      "Apply photorealistic detail to surreal compositions",
-      "Use consistent scale and proportion despite surreal context"
-    ];
-    
-    return technical;
-  }
-  
-  /**
-   * Generate Magritte-specific philosophical concept suggestions
-   */
-  private generateMagritteConceptSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
-    const concepts = [
-      "Question the nature of representation with visual paradoxes",
-      "Incorporate the tension between image and reality",
-      "Explore the limitations of visual language",
-      "Include philosophical puzzles through object relationships",
-      "Create dissonance between what is seen and what is real"
-    ];
-    
-    return concepts;
-  }
-  
+
   /**
    * Handle a message
    */

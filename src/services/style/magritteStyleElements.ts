@@ -297,6 +297,84 @@ export const magritteStyleElements = {
     "precise_shadow": { r: 47, g: 79, b: 79 },
     "clean_highlight_blue": { r: 230, g: 230, b: 250 },
     "pure_neutral": { r: 210, g: 180, b: 140 }
+  },
+
+  /**
+   * Bear-specific Magritte style elements for PFP use
+   */
+  bearPfpElements: {
+    portraitStyle: [
+      "dignified bear in profile",
+      "philosophical bear portrait",
+      "surrealist bear character",
+      "metaphysical ursine subject",
+      "traditional bear businessman",
+      "enigmatic bear face",
+      "paradoxical bear representation",
+      "conceptual bear imagery",
+      "Belgian surrealist bear",
+      "Magritte-inspired bear portrait"
+    ],
+    attire: [
+      "formal suit with bowler hat",
+      "businessman's attire",
+      "dapper vest and tie",
+      "traditional Belgian formal wear",
+      "surrealist formal attire", 
+      "metaphysical business suit",
+      "philosophical waistcoat",
+      "period-appropriate formal wear",
+      "classic gentleman's attire",
+      "traditional painter's smock"
+    ],
+    accessories: [
+      "floating bowler hat",
+      "philosophical pipe",
+      "green apple",
+      "mysterious key",
+      "surreal umbrella",
+      "metaphysical bird",
+      "enigmatic mirror",
+      "paradoxical window",
+      "impossible door",
+      "symbolic bell"
+    ],
+    expressions: [
+      "dignified contemplation",
+      "philosophical gaze", 
+      "metaphysical composure",
+      "surreal serenity",
+      "enigmatic stare",
+      "mysterious profile",
+      "paradoxical expression",
+      "calm observation",
+      "conceptual thoughtfulness",
+      "surrealist dignity"
+    ],
+    poses: [
+      "dignified profile",
+      "formal portrait stance",
+      "contemplative pose",
+      "surreal positioning",
+      "metaphysical arrangement",
+      "floating in Belgian sky",
+      "paradoxically placed", 
+      "impossibly balanced",
+      "traditionally centered",
+      "philosophically composed"
+    ],
+    professions: [
+      "metaphysical businessman bear",
+      "surrealist painter bear",
+      "philosophical cartographer bear",
+      "enigmatic musician bear",
+      "paradoxical architect bear",
+      "mysterious scientist bear", 
+      "conceptual writer bear",
+      "impossible engineer bear",
+      "traditional craftsman bear",
+      "dreamlike philosopher bear"
+    ]
   }
 };
 

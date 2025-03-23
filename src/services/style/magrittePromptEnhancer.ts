@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { magritteStyleElements } from './magritteStyleElements';
 import { MAGRITTE_TEMPLATES } from './magrittePromptTemplates';
 import { AgentLogger } from '../../utils/agentLogger';
+import { magrittePatterns } from './magrittePatterns';
 
 /**
  * Magritte template type definition
@@ -489,4 +490,77 @@ export class MagrittePromptEnhancer {
     
     return negative;
   }
+}
+
+/**
+ * Enhance a Magritte-style prompt specifically for bear portraits
+ */
+export function enhanceBearPortraitPrompt(basePrompt: string): string {
+  // Import style elements
+  const { magritteStyleElements } = require('./magritteStyleElements');
+  const { magrittePatterns } = require('./magrittePatterns');
+  
+  // Select elements from our enhanced collections
+  const portraitStyle = selectRandomElement(magritteStyleElements.bearPfpElements.portraitStyle);
+  const attire = selectRandomElement(magritteStyleElements.bearPfpElements.attire);
+  const accessory = selectRandomElement(magritteStyleElements.bearPfpElements.accessories);
+  const expression = selectRandomElement(magritteStyleElements.bearPfpElements.expressions);
+  const pose = selectRandomElement(magritteStyleElements.bearPfpElements.poses);
+  
+  // Select conceptual elements
+  const concept = selectRandomElement(magrittePatterns.conceptualThemes);
+  const paradox = selectRandomElement(magrittePatterns.paradoxes);
+  const composition = selectRandomElement(magrittePatterns.compositions);
+  
+  // Select technical elements
+  const technicalAspect = selectRandomElement(magrittePatterns.technicalAspects);
+  const colorPalette = selectRandomElement(magrittePatterns.colorPalettes);
+  
+  // Reference to a famous work
+  const famousWork = selectRandomElement(magrittePatterns.famousWorks);
+  
+  // Construct enhanced prompt
+  let enhancedPrompt = basePrompt;
+  
+  // Add portrait elements if not already present
+  if (!enhancedPrompt.includes("bear") && !enhancedPrompt.includes("ursine")) {
+    enhancedPrompt = `${portraitStyle}, ${enhancedPrompt}`;
+  }
+  
+  // Add attire if not specified
+  if (!containsAnyKeyword(enhancedPrompt, ["suit", "attire", "dressed", "wearing", "clothes"])) {
+    enhancedPrompt += `, wearing ${attire}`;
+  }
+  
+  // Add accessory
+  enhancedPrompt += `, with ${accessory}`;
+  
+  // Add expression and pose
+  enhancedPrompt += `, with ${expression} and ${pose}`;
+  
+  // Add conceptual depth
+  enhancedPrompt += `. The portrait ${concept} through ${paradox}`;
+  
+  // Add composition and technical details
+  enhancedPrompt += `. Composed with ${composition}, rendered with ${technicalAspect} and ${colorPalette}`;
+  
+  // Add reference
+  enhancedPrompt += `. Inspired by Magritte's "${famousWork}"`;
+  
+  return enhancedPrompt;
+}
+
+/**
+ * Check if text contains any of the specified keywords
+ */
+function containsAnyKeyword(text: string, keywords: string[]): boolean {
+  const lowerText = text.toLowerCase();
+  return keywords.some(keyword => lowerText.includes(keyword.toLowerCase()));
+}
+
+/**
+ * Select a random element from an array
+ */
+function selectRandomElement<T>(array: T[]): T {
+  return array[Math.floor(Math.random() * array.length)];
 } 

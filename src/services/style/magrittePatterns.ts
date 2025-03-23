@@ -119,5 +119,97 @@ export const magrittePatterns = {
     "The... of...",
     "L'Empire des lumières",
     "La Trahison des images"
-  ]
+  ],
+  
+  // Bear-specific elements for the PFP collection
+  bearElements: {
+    clothing: [
+      "formal suit with bowler hat",
+      "businessman's attire",
+      "dapper vest and tie",
+      "traditional Belgian formal wear",
+      "surrealist formal attire",
+      "metaphysical business suit",
+      "philosophical waistcoat",
+      "period-appropriate formal wear",
+      "classic gentleman's attire",
+      "traditional painter's smock"
+    ],
+    accessories: [
+      "floating bowler hat",
+      "philosophical pipe",
+      "green apple",
+      "mysterious key",
+      "surreal umbrella",
+      "metaphysical bird",
+      "enigmatic mirror",
+      "paradoxical window",
+      "impossible door",
+      "symbolic bell"
+    ],
+    expressions: [
+      "dignified contemplation",
+      "philosophical gaze",
+      "metaphysical composure",
+      "surreal serenity",
+      "enigmatic stare",
+      "mysterious profile",
+      "paradoxical expression",
+      "calm observation",
+      "conceptual thoughtfulness",
+      "surrealist dignity"
+    ],
+    poses: [
+      "dignified profile",
+      "formal portrait stance",
+      "contemplative pose",
+      "surreal positioning",
+      "metaphysical arrangement",
+      "floating in Belgian sky",
+      "paradoxically placed",
+      "impossibly balanced",
+      "traditionally centered",
+      "philosophically composed"
+    ]
+  },
+  
+  // Additional specialized Magritte-style patterns
+  specializedPatterns: {
+    occupations: [
+      "metaphysical businessman",
+      "surrealist painter",
+      "philosophical cartographer",
+      "enigmatic musician",
+      "paradoxical architect",
+      "mysterious scientist",
+      "conceptual writer",
+      "impossible engineer",
+      "traditional craftsman",
+      "dreamlike philosopher"
+    ],
+    environments: [
+      "Belgian sky backdrop",
+      "metaphysical interior",
+      "surreal landscape",
+      "impossible architecture",
+      "dreamlike setting",
+      "paradoxical room",
+      "floating in clouds",
+      "philosophical void",
+      "traditional European scene",
+      "enigmatic space"
+    ],
+    surrealistConcepts: [
+      "pipe that is not a pipe",
+      "day and night simultaneously",
+      "object transforming into sky",
+      "floating solid objects",
+      "impossible scale relationships",
+      "sky fragments in unexpected places",
+      "inside becoming outside",
+      "reality questioning itself",
+      "mirror reflecting impossible scene",
+      "time standing still"
+    ]
+  }
 }; 

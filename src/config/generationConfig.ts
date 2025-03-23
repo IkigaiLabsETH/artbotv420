@@ -108,6 +108,19 @@ export const defaultGenerationConfig: GenerationConfig = {
   * Precise yet painterly edges
   * Careful attention to light and shadow
   * Magritte's characteristic surface quality
+- Composition Guidelines:
+  * Perfectly balanced surreal elements
+  * Mathematically precise staging
+  * Golden ratio compositions
+  * Classical painting structure
+  * Traditional profile view
+  * Museum-quality presentation
+- Color Treatment:
+  * Cerulean sky blue with deep shadow grey
+  * Twilight purple with pristine cloud white
+  * Deep night blue with pale morning light
+  * Unmodulated color fields with perfect transitions
+  * Traditional matte surfaces with subtle tonal variation
 Must maintain the artist's distinctive painting style while being perfectly centered for profile picture use.`,
       negativePrompt: [
         "photorealistic", "hyperrealistic", "camera photo", "photograph", "DSLR", "studio lighting",
@@ -136,7 +149,21 @@ Must maintain the artist's distinctive painting style while being perfectly cent
         "Magritte cloud white (unmodulated)",
         "Son of Man apple green (matte finish)",
         "Empire of Light blue (careful transition)",
-        "Golconda grey (precise tone)"
+        "Golconda grey (precise tone)",
+        "Deep shadow grey (controlled darkness)",
+        "Twilight purple (mysterious glow)",
+        "Pristine cloud white (atmospheric effect)",
+        "Deep night blue (metaphysical depth)",
+        "Pale morning light (subtle luminosity)"
+      ],
+      compositionGuidelines: [
+        "Perfectly centered main subject",
+        "Traditional profile view against blue sky",
+        "Theatrical staging of symbolic elements",
+        "Perfect placement using golden ratio",
+        "Classical balance with surreal elements",
+        "Formal painting arrangement with contemplative spacing",
+        "Objects arranged in impossible but harmonious configuration"
       ],
       customStyleParams: {
         surfaceQuality: 0.9,

@@ -168,9 +168,9 @@ export class MagritteStyleEvaluator {
    */
   private evaluateAtmosphericMystery(prompt: string): number {
     const atmosphericKeywords = [
-      'mysterious', 'atmosphere', 'enigmatic', 'ethereal',
-      'dreamlike', 'poetic', 'ambiguous', 'sky', 'clouds',
-      'blue sky', 'night sky', 'twilight', 'serene'
+      'mysterious', 'enigmatic', 'dreamlike', 'serene', 'twilight',
+      'atmospheric', 'quiet', 'silence', 'stillness', 'contemplative',
+      'ethereal', 'soft light', 'blue sky', 'clouds', 'calm'
     ];
     
     return this.calculateKeywordScore(prompt, atmosphericKeywords);
