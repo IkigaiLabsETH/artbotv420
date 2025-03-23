@@ -1,55 +1,63 @@
 {
-  "name": "@elizaos/plugin-artbotv420",
-  "description": "Plugin starter for elizaOS",
-  "version": "1.0.0-beta.6",
-  "private": true,
-  "type": "module",
+  "name": "@eliza/plugin-artbot",
+  "version": "1.0.0",
+  "description": "ArtBot image generation plugin for ElizaOS",
   "main": "dist/index.js",
-  "module": "dist/index.js",
   "types": "dist/index.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/elizaos-plugins/plugin-starter"
-  },
-  "exports": {
-    "./package.json": "./package.json",
-    ".": {
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      }
-    }
-  },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist",
+    "lint": "eslint src --ext .ts",
+    "prebuild": "npm run clean",
+    "prepare": "npm run build",
+    "test": "jest",
+    "start": "node dist/test-artbot.js"
+  },
+  "author": "ArtBot Team",
+  "license": "MIT",
   "dependencies": {
-    "@elizaos/cli": "1.0.0-beta.7",
-    "@elizaos/core": "1.0.0-beta.7",
-    "@elizaos/plugin-local-ai": "1.0.0-beta.7",
-    "@elizaos/plugin-sql": "1.0.0-beta.7",
-    "zod": "3.24.2"
+    "@elizaos/core": "^0.1.0",
+    "chalk": "^4.1.2",
+    "fs-extra": "^11.1.1",
+    "node-fetch": "^2.6.12",
+    "path": "^0.12.7",
+    "uuid": "^9.0.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "tsup": "8.4.0",
-    "prettier": "3.5.3"
+    "@types/fs-extra": "^11.0.2",
+    "@types/jest": "^29.5.3",
+    "@types/node": "^18.17.4",
+    "@types/node-fetch": "^2.6.4",
+    "@types/uuid": "^9.0.2",
+    "eslint": "^8.46.0",
+    "jest": "^29.6.2",
+    "rimraf": "^5.0.1",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.1.6"
   },
-  "scripts": {
-    "start": "npx @elizaos/cli start",
-    "test-with-cli": "cd ../cli && bun run build && cd ../plugin-starter && elizaos test",
-    "dev": "npx @elizaos/cli dev",
-    "build": "tsup",
-    "lint": "prettier --write ./src",
-    "test": "npx @elizaos/cli test",
-    "publish": "npx @elizaos/cli plugin publish",
-    "format": "prettier --write ./src",
-    "format:check": "prettier --check ./src"
+  "peerDependencies": {
+    "@elizaos/core": ">=0.1.0 <1.0.0"
   },
-  "publishConfig": {
-    "access": "public"
+  "engines": {
+    "node": ">=16.0.0"
   },
-  "resolutions": {
-    "zod": "3.24.2"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/eliza-plugin-artbot.git"
   },
-  "gitHead": "b165ad83e5f7a21bc1edbd83374ca087e3cd6b33"
+  "keywords": [
+    "eliza",
+    "plugin",
+    "art",
+    "generation",
+    "ai",
+    "image",
+    "magritte",
+    "surrealist"
+  ]
 }

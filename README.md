@@ -706,4 +706,136 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 </div>
 
+# ArtBot Plugin for ElizaOS
+
+This plugin integrates a sophisticated multi-agent art generation system with ElizaOS, enabling the creation of surrealist artwork in the style of René Magritte.
+
+## Features
+
+- **Distinguished Bear Portraits**: Generate surrealist bear portraits with professional and distinguished characteristics
+- **Magritte Style**: Authentic application of René Magritte's distinctive surrealist style
+- **Multi-Agent System**: Collaborative AI agents working together for high-quality art generation
+- **Customizable Styles**: Support for different art styles with detailed parameters
+- **HTTP API**: RESTful interface for integration with other services
+
+## Installation
+
+Add to your Eliza project using npm:
+
+```bash
+npm install @eliza/plugin-artbot
+```
+
+Or via yarn:
+
+```bash
+yarn add @eliza/plugin-artbot
+```
+
+## Configuration
+
+The plugin requires API keys for optimal functionality:
+
+```typescript
+// In your ElizaOS config
+{
+  "plugins": [
+    {
+      "name": "artbot",
+      "config": {
+        "REPLICATE_API_KEY": "YOUR_REPLICATE_API_KEY",
+        "ANTHROPIC_API_KEY": "YOUR_ANTHROPIC_API_KEY", // Optional
+        "OPENAI_API_KEY": "YOUR_OPENAI_API_KEY" // Optional
+      }
+    }
+  ]
+}
+```
+
+The Replicate API key is required for image generation. Anthropic and OpenAI keys are optional and used for enhanced prompt generation.
+
+## Usage
+
+### Via Conversation
+
+You can generate art through conversation:
+
+```
+User: Generate a surrealist bear portrait in Magritte style with a bowler hat and apple
+Eliza: [Image of a distinguished bear in Magritte style with bowler hat and apple]
+```
+
+### Via Actions
+
+Trigger art generation programmatically:
+
+```typescript
+// In your app code
+const result = await runtime.dispatch({
+  action: 'GENERATE_IMAGE',
+  content: {
+    text: 'Distinguished bear portrait in surrealist style with a pipe'
+  },
+  options: {
+    style: 'bear_pfp' // or 'magritte'
+  }
+});
+
+console.log(result.images[0]); // URL to generated image
+```
+
+### Via HTTP API
+
+Make requests to the plugin's HTTP endpoints:
+
+```bash
+# Generate art
+curl -X POST http://localhost:3000/eliza/artbot/generate \
+  -H "Content-Type: application/json" \
+  -d '{"concept": "Distinguished bear portrait in surrealist style with a pipe", "style": "bear_pfp"}'
+
+# Get available styles
+curl http://localhost:3000/eliza/artbot/styles
+```
+
+## Supported Styles
+
+- **bear_pfp**: Distinguished bear portraits in Magritte style
+- **magritte**: General surrealist art in René Magritte's style
+
+## Examples
+
+Here are example outputs from the ArtBot system:
+
+1. **Professional Bear**: Distinguished bear portrait in formal attire
+2. **Bowler Hat Bear**: Classic Magritte-style bear with a bowler hat
+3. **Son of Man Bear**: Bear portrait inspired by Magritte's famous "Son of Man" painting
+
+## Output
+
+Generated images are saved in the `output/artbot` directory with associated metadata files containing:
+
+- Generation parameters
+- Character identity
+- Style information
+- Technical details
+
+## Technical Details
+
+The plugin implements a sophisticated multi-agent system where specialized AI agents collaborate:
+
+- **Director Agent**: Coordinates the creative process
+- **Ideator Agent**: Generates creative concepts
+- **Stylist Agent**: Applies artistic styles
+- **Refiner Agent**: Optimizes prompts for specific models
+- **Character Generator**: Creates distinctive character identities
+
+## License
+
+MIT
+
+## Credits
+
+Built on the ArtBot multi-agent system.
+
 
