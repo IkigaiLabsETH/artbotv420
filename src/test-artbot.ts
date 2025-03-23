@@ -39,7 +39,7 @@ async function main() {
     // Create Replicate service
     const replicateService = new ReplicateService({
       apiKey: process.env.REPLICATE_API_KEY,
-      defaultModel: 'black-forest-labs/flux-1.1-pro',
+      defaultModel: 'black-forest-labs/flux-1.1-pro', 
       defaultWidth: 1024,
       defaultHeight: 1024,
       defaultNumInferenceSteps: 28,

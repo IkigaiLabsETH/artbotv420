@@ -1,12 +1,12 @@
 {
-  "id": "2a14a85a-9c6a-4415-8f14-604ea9f39593",
+  "id": "d6e36c00-1528-491c-b9f5-960882b19902",
   "title": "Test Bear Portrait",
   "description": "A test of the ArtBot multi-agent system",
-  "prompt": "Create a formal portrait of a distinguished bear wearing a black bowler hat, centered for use as a profile picture. Render in the style of René Magritte with his characteristic smooth, matte finish and subtle visible brushwork. Use flat color fields with soft, precise edges and careful gradients reminiscent of Belgian skies. Depict the bear's facial features with gravitas, seated upright against a plain background. Illuminate with directional lighting to create distinct light and shadow areas. Maintain Magritte's precise yet painterly technique with deliberate, unmodulated color application and minimal texture or impasto.",
+  "prompt": "Create a formal portrait of a distinguished bear wearing a black bowler hat, rendered in the distinctive style of René Magritte. The composition should be centered and framed closely on the bear's face and upper body against a simple background.\n\nPainting Style:\n- Smooth, matte finish with subtle visible brushwork in flat color areas\n- Soft, precise edges with careful gradients reminiscent of Belgian skies\n- Oil painting technique with minimal texture or impasto\n- Deliberate, controlled paint application with unmodulated color fields\n\nBear Portrait Elements:\n- Dignified, anthropomorphized bear facial features with a stern yet pensive expression\n- Formal, centered portrait composition with the bear's gaze meeting the viewer\n- Black bowler hat as the sole human clothing accessory, positioned naturally\n- Clean lines and shapes with precise yet painterly edges\n- Careful attention to realistic light, shadow, and subtle tonal transitions\n- Simple, uncluttered background in a muted, desaturated color\n\nThe overall piece should capture Magritte's surreal juxtaposition of the natural and human-made while maintaining his signature smooth, realistic painting style. The portrait format and close framing are optimized for a profile picture.",
   "style": "bear_pfp",
-  "imageUrl": "https://replicate.delivery/xezq/hHUYZA5LegUhBSaw1oNxBAruIRMAUUydg7NI5gqfw0pnjYbUA/tmpf6jhhtvd.jpg",
+  "imageUrl": "https://replicate.delivery/xezq/RviR1j6xgNIeUKJhDfzuFs2teoGQEbDV4i1fOgVepKueZK2GF/tmpzqbz2iai.png",
   "character": {
-    "name": "Reginald J. Bearpington, Esq.",
+    "name": "Reginald P. Bearpington, Esq.",
     "title": "The Distinguished Sophisticate",
     "personality": [
       "Distinguished",
@@ -14,7 +14,7 @@
       "Contemplative",
       "Precise"
     ],
-    "backstory": "Born into a family of esteemed academics, Sir Cedric Bruinhart defied expectations by pursuing a life of distinguished civil service, eventually rising to the rank of Undersecretary for Ursine Affairs -- a position he retains to this day, despite the surrealist controversy sparked by his groundbreaking 1983 paper, \"This Is Not a Bear,\" which challenged the very notion of identity. His signature bowler hat, a nod to his philosophical musings on the absurdity of sartorial norms, has become a symbol of his unique perspective on the world."
+    "backstory": "Descended from a long line of ursine aristocrats, Sir Reginald Bearnard overcame the preconceptions of high society through sheer force of erudition and gravitas, earning the admiration of peers and monarchs alike with his groundbreaking theories on the interconnectedness of all existence -- a revelation he claimed came to him in a vision whilst donning his signature bowler for the first time. Ever since, the distinguished hat has served as both sartorial flourish and philosophical talisman, symbolizing his transcendence of the corporeal into the metaphysical realms of enlightened consciousness."
   },
-  "createdAt": "2025-03-23T09:39:51.846Z"
+  "createdAt": "2025-03-23T09:46:16.802Z"
 }
