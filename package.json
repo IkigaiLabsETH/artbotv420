@@ -15,7 +15,7 @@
     "prebuild": "npm run clean",
     "prepare": "npm run build",
     "test": "jest",
-    "start": "node dist/test-artbot.js",
+    "start": "node dist/test-artbot.js --enhance",
     "test:prompt": "ts-node src/test-enhanced-prompt.ts",
     "test:magritte": "ts-node src/test-magritte-focus.ts",
     "test:enhanced": "ts-node src/test-enhanced-magritte.ts",

@@ -6,6 +6,17 @@
 import { Agent, AgentMessage } from '../agents/types';
 
 /**
+ * Log levels for different types of messages
+ */
+export enum LogLevel {
+  INFO = 'info',
+  DEBUG = 'debug',
+  WARNING = 'warning',
+  ERROR = 'error',
+  SUCCESS = 'success'
+}
+
+/**
  * Agent Logger Class
  * Handles formatted logging of agent actions and interactions
  */
@@ -13,7 +24,7 @@ export class AgentLogger {
   /**
    * Log a simple message with timestamp
    */
-  static log(message: string): void {
+  static log(message: string, level: LogLevel = LogLevel.INFO): void {
     const timestamp = new Date().toISOString().split('T')[1].slice(0, -1);
     console.log(`[${timestamp}] ${message}`);
   }
@@ -103,5 +114,30 @@ export class AgentLogger {
    */
   static logSuccess(message: string): void {
     console.log(`\n✓ ${message}\n`);
+  }
+
+  /**
+   * Log system start with configuration information
+   */
+  static logSystemStart(config: any): void {
+    console.log('\n╭───────────────────────────────────────────╮');
+    console.log('│        ArtBot Multi-Agent System           │');
+    console.log('├───────────────────────────────────────────┤');
+    console.log(`│ 🤖 AI Service: ${config.aiService}          │`);
+    console.log(`│ 🖼️ Replicate Service: ${config.replicateService} │`);
+    console.log(`│ 📁 Output Directory: ${config.outputDir}    │`);
+    console.log(`│ 🧠 Memory System: ${config.memorySystem}    │`);
+    console.log(`│ 🎨 Style Service: ${config.styleService}    │`);
+    console.log(`│ 👥 Agents: ${config.agentCount}            │`);
+    console.log('╰───────────────────────────────────────────╯\n');
+  }
+
+  /**
+   * Log generation progress
+   */
+  static logGenerationProgress(progress: number, total: number, stage: string): void {
+    const percentage = Math.floor((progress / total) * 100);
+    const progressBar = `[${'█'.repeat(Math.floor(percentage / 5))}${' '.repeat(20 - Math.floor(percentage / 5))}]`;
+    console.log(`⏳ ${stage}: ${progressBar} ${progress}/${total} (${percentage}%)`);
   }
 } 

@@ -155,7 +155,7 @@ Variations:`;
       }
       
       // Process based on task type
-      if (context.task && context.task.action === 'generate_idea') {
+      if (context.task && (context.task.action === 'generate_idea' || context.task.action === 'enhance_prompt')) {
         // Generate an enhanced prompt
         const enhancedPrompt = await this.generateIdea(context.concept);
         
