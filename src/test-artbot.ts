@@ -17,6 +17,8 @@ import { bearConceptGenerator } from './generators/BearConceptGenerator';
 import { EnhancedRefinerAgent } from './agents/EnhancedRefinerAgent';
 import { CriticAgent } from './agents/CriticAgent';
 import { MetadataGeneratorAgent } from './agents/MetadataGeneratorAgent';
+import { EnhancedBearPromptGenerator } from './generators/EnhancedBearPromptGenerator';
+import { StyleIntegrationService } from './services/style/StyleIntegrationService';
 
 // Load environment variables
 dotenv.config();
@@ -43,6 +45,7 @@ async function main() {
   console.log('│ --category=X Specify category ID           │');
   console.log('│ --no-series Disable series-based generation│');
   console.log('│ --no-categories Disable category generation│');
+  console.log('│ --legacy-prompt Use legacy prompt generator│');
   console.log('╰───────────────────────────────────────────╯');
   
   try {
@@ -66,10 +69,17 @@ async function main() {
     await aiService.initialize();
     await replicateService.initialize();
     
+    // Create Style Integration Service
+    const styleService = new StyleIntegrationService(aiService);
+    
+    // Create our enhanced prompt generator
+    const enhancedPromptGenerator = new EnhancedBearPromptGenerator();
+    
     // Create the multi-agent system
     const system = new ArtBotMultiAgentSystem({
       aiService, 
       replicateService,
+      styleIntegrationService: styleService,
       outputDir: path.join(process.cwd(), 'output', 'magritte-bears')
     });
     
@@ -119,19 +129,23 @@ async function main() {
       useCategories: !process.argv.includes('--no-categories'),
       concept: process.argv.find(arg => arg.startsWith('--concept='))?.split('=')[1],
       series: process.argv.find(arg => arg.startsWith('--series='))?.split('=')[1],
-      category: process.argv.find(arg => arg.startsWith('--category='))?.split('=')[1]
+      category: process.argv.find(arg => arg.startsWith('--category='))?.split('=')[1],
+      useLegacyPrompt: process.argv.includes('--legacy-prompt')
     };
     
     // Generate concept based on options
     let concept;
+    let useEnhancedGenerator = false;
+    
     if (options.useDefault) {
       concept = 'a distinguished bear portrait with a bowler hat in the style of René Magritte, with perfect smooth matte finish, immaculate edge control, and pristine surface quality';
       console.log('Using default concept');
     } else if (options.concept) {
       concept = options.concept;
       console.log('Using provided concept');
-    } else {
-      // Create advanced generation options for BearConceptGenerator
+    } else if (options.useLegacyPrompt) {
+      // Use legacy bear concept generator
+      console.log('Using legacy bear concept generator');
       const generationOptions = { 
         forceBowlerHat: options.forceBowlerHat,
         useSeries: options.useSeries,
@@ -139,9 +153,24 @@ async function main() {
         useRandomCombinations: options.randomCombinations || (!options.series && !options.category)
       };
       
-      console.log('Generating bear concept with options:', generationOptions);
       concept = bearConceptGenerator.generateBearConcept(generationOptions);
+    } else {
+      // Use our new enhanced bear prompt generator
+      console.log('Using enhanced bear prompt generator');
+      concept = enhancedPromptGenerator.generatePortraitPrompt({
+        forceBowlerHat: options.forceBowlerHat,
+        seriesId: options.series
+      });
+      
+      // Flag for the multi-agent system to use enhanced generator via StyleIntegrationService
+      useEnhancedGenerator = true;
     }
+    
+    console.log('╭───────────────────────────────────────────╮');
+    console.log('│ Generated Prompt:                         │');
+    console.log('╰───────────────────────────────────────────╯');
+    console.log(concept);
+    console.log('═'.repeat(80));
     
     // Define a test project with enhanced options
     const testProject = {
@@ -179,14 +208,17 @@ async function main() {
           controlnet_conditioning_scale: 0.8,
           clip_skip: 2
         }
-      }
+      },
+      // Flag to use our enhanced bear generator
+      useEnhancedBearGenerator: useEnhancedGenerator
     };
     
     console.log('╭───────────────────────────────────────────╮');
-    console.log(`│ 🎨 Generating: ${testProject.concept.substring(0, 25).padEnd(25)} │`);
+    console.log(`│ 🎨 Generating artwork                      │`);
     console.log(`│ 🖌️ Style: ${testProject.style.substring(0, 30).padEnd(30)} │`);
     if (options.enhanceMagritte) console.log('│ ✓ Enhanced Magritte Mode Enabled             │');
     if (options.highQuality) console.log('│ ✓ High Quality Mode Enabled                  │');
+    if (useEnhancedGenerator) console.log('│ ✓ Enhanced Bear Generator Enabled            │');
     console.log('╰───────────────────────────────────────────╯');
     
     // Run the project

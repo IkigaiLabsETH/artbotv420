@@ -85,7 +85,7 @@ export class MagritteMetadataGenerator {
     // If we have fewer than 2 elements, add some typical ones
     if (elements.length < 2) {
       // Add some default Magritte elements that work well with bears
-      const defaultElements = ["bowler hat", "blue sky background"];
+      const defaultElements = ["bowler hat", "Belgian sky blue background"];
       
       for (const element of defaultElements) {
         if (!elements.includes(element)) {

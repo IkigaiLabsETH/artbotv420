@@ -37,6 +37,7 @@ export const magritteStyleElements = {
     "mysterious windows",
     "paradoxical doors",
     "perfect green apples",
+    "Belgian sky blue background",
     "pristine blue skies",
     "mathematically precise clouds",
     "impossible shadows",
@@ -55,6 +56,7 @@ export const magritteStyleElements = {
    */
   colorPalette: [
     "Magritte sky blue (RGB: 135, 206, 235)",
+    "Belgian sky blue background (RGB: 135, 206, 235)",
     "deep shadow grey (RGB: 74, 74, 74)",
     "perfect apple green (RGB: 86, 130, 89)",
     "pristine cloud white (RGB: 245, 245, 245)",
@@ -139,6 +141,7 @@ export const magritteStyleElements = {
    */
   rgbValues: {
     "sky_blue": { r: 135, g: 206, b: 235 },
+    "belgian_sky_blue": { r: 135, g: 206, b: 235 },
     "shadow_grey": { r: 74, g: 74, b: 74 },
     "apple_green": { r: 86, g: 130, b: 89 },
     "cloud_white": { r: 245, g: 245, b: 245 },

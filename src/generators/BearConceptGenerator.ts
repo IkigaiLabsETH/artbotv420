@@ -160,7 +160,7 @@ export class BearConceptGenerator {
     
     // Add composition element
     const composition = getRandomElement([
-      "in perfect profile against an immaculate Belgian sky background",
+      "in perfect profile against a Belgian sky blue background",
       "perfectly posed with mathematical balance and precision",
       "rendered in meticulous detail with optical precision",
       "composed with formal portrait arrangement and sourceless lighting",
@@ -219,7 +219,7 @@ export class BearConceptGenerator {
     // Magritte-specific surrealist elements
     const magritteElements = [
       "a floating apple obscuring the face",
-      "a cloudy blue sky background",
+      "a Belgian sky blue background",
       "a floating bowler hat",
       "a bird that transforms into a leaf",
       "a window revealing a different time of day",
@@ -255,7 +255,7 @@ export class BearConceptGenerator {
 
     // Color palettes inspired by Magritte
     const colorPalettes = [
-      "Belgian sky blue with twilight grey transitions",
+      "Belgian sky blue background with twilight grey transitions",
       "deep prussian blue with pristine white",
       "soft cerulean with precisely rendered clouds",
       "warm amber tones against cool neutral backdrop",

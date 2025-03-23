@@ -417,13 +417,14 @@ export class EnhancedPromptGenerator {
     
     // Select background options - use enhanced versions
     const backgroundOptions = [
-      "Magritte sky blue with mathematically precise clouds",
-      "twilight gradient with impossible lighting",
-      "perfectly flat neutral tone with metaphysical depth",
-      "surrealist interior with contradictory shadows",
-      "dreamlike landscape with philosophical paradox",
+      "Belgian sky blue background",
+      "Belgian sky blue background with mathematically precise clouds",
+      "Belgian sky blue with pristine clarity",
+      "Belgian sky blue with twilight grey transitions",
+      "perfectly flat Belgian sky blue",
+      "immaculate Belgian sky blue background",
       "day-night paradox sky from Empire of Light",
-      "pristine blue sky with perfect symmetry"
+      "pristine Belgian sky with perfect symmetry"
     ];
     
     return {
