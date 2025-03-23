@@ -1,0 +1,18 @@
+{
+  "projectId": "test-enhanced-refiner",
+  "prompt": "a distinguished bear portrait in profile wearing a bowler hat and holding a pipe, the background shows a surreal window with sky, in the style of René Magritte, questioning the nature of reality and representation, featuring symbolic objects like bowler hats, green apples, or pipes, with surreal juxtapositions and visual paradoxes, with dreamlike atmospheric elements and serene skies, rendered with Magritte's characteristic precision, clean edges, and flawless surfaces, detail level 0.8, questioning the nature of reality and representation, with surreal juxtapositions and visual paradoxes, with dreamlike atmospheric elements and serene skies, rendered with Magritte's characteristic precision, clean edges, and flawless surfaces, René Magritte style, Belgian surrealism, photorealistic painting, smooth surfaces, philosophical surrealism, precise painting technique, 35mm film, perfect lighting, photorealistic quality",
+  "task": {
+    "action": "generate_image",
+    "model": "black-forest-labs/flux-1.1-pro"
+  },
+  "messages": [],
+  "negativePrompt": "expressionist style, abstract art, cubism, impressionism, cartoon, anime, sketch, graffiti, blurry, grainy, noisy, low quality, low resolution, oversaturated, oversaturated colors, rough texture, visible brushstrokes, impasto, sketchy lines, uneven surface, cluttered composition, busy background, chaotic arrangement, asymmetric, unbalanced, unrealistic lighting, harsh shadows, text overlay, incorrect perspective",
+  "parameters": {
+    "guidance_scale": 3,
+    "num_inference_steps": 28,
+    "width": 2048,
+    "height": 2048
+  },
+  "imageUrl": "https://replicate.delivery/xezq/4DFCZfwz032fgkUcvbosmhK6sPu4iCOifNCkKodRn8JH1C3oA/tmph290p_me.png",
+  "predictionId": "at0dvwrk2xrm80cnrj4szy76zm"
+}
