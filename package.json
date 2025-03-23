@@ -24,7 +24,9 @@
     "example:magritte": "ts-node src/examples/magritte-prompt-example.ts",
     "example:enhanced": "ts-node src/examples/enhanced-magritte-style-example.ts",
     "test:enhanced-refiner": "ts-node src/test-enhanced-refiner.ts",
-    "character-gen": "ts-node src/test-character-generation.ts"
+    "character-gen": "ts-node src/test-character-generation.ts",
+    "test:concepts": "ts-node src/test-bear-concepts.ts",
+    "varied-bear": "ts-node src/test-varied-bear.ts"
   },
   "author": "ArtBot Team",
   "license": "MIT",

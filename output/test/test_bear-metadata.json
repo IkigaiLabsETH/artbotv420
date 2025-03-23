@@ -1,21 +1,21 @@
 {
-  "id": "43284ec7-5cae-4cda-984f-44bd9523f058",
+  "id": "4633e143-0736-4272-8183-9426a2302e17",
   "title": "Test Bear Portrait",
   "description": "A test of the ArtBot multi-agent system",
-  "prompt": "Create a formal portrait of a distinguished bear wearing a black bowler hat, centered and framed for use as a profile picture. Render in René Magritte's distinctive surrealist style:\n\n- Smooth, matte finish with subtle visible brushwork in flat color areas\n- Soft yet precise edges with careful gradients reminiscent of Belgian skies\n- Oil painting technique with minimal impasto and texture\n- Precise yet painterly rendering of the bear's facial features and fur\n- Clean, unmodulated color fields with subtle tonal transitions\n- Careful attention to realistic light and shadow on the bear's form\n- Simple, nondescript studio backdrop to remove contextual distractions\n- The bear's expression should convey a sense of poise and quiet dignity\n- Overall composition should be balanced and centered for profile picture use",
+  "prompt": "Render a distinguished bear portrait in the distinctive style of René Magritte, perfectly centered for use as a profile picture. The bear should have a stoic, impassive expression with a black bowler hat perched at a jaunty angle atop its head. \n\nComposition:\n- Tightly cropped portrait of the bear's head and upper body against a flat, cloudy sky backdrop\n- The bear's head should be slightly larger than life-size and centered in the frame\n- The bowler hat should be clearly visible and recognizable, positioned at an improbable angle\n\nMagritte's Painting Style:\n- Smooth, matte finish with subtle visible brushwork in flat color areas\n- Soft yet precise edges with careful control of values and gradients\n- Deliberate, almost clinical paint application with minimal texture or impasto\n- Muted, desaturated color palette reminiscent of Belgian skies\n- Realistic yet simplified rendering of the bear's fur and features\n- Careful attention to light, shadow, and tonal transitions\n\nRender the bear portrait in oil painting technique, maintaining Magritte's distinctive style while ensuring suitability as a centered profile picture composition.",
   "style": "bear_pfp",
-  "imageUrl": "https://replicate.delivery/xezq/PD5WUwjaoLqlBBJPvbdJzWb7yOdaOD8futoHe70ryeYpuB3oA/tmpjdeesyor.png",
+  "imageUrl": "https://replicate.delivery/xezq/NHZlQxsaYXKwFxsdLgYfxGUlnVzTo6L5J2HwvYHSR3Q07wNKA/tmpn0mrgmcf.png",
   "character": {
-    "name": "Reginald B. Grissleigh, Esq.",
-    "title": "The Distinguished Dignitary",
+    "name": "Reginald J. Bearnardsley, Esq.",
+    "title": "The Distinguished Gentleman",
     "personality": [
       "Discerning",
-      "Scholarly",
+      "Sagacious",
+      "Urbane",
       "Composed",
-      "Dignified",
-      "Sagacious"
+      "Perspicacious"
     ],
-    "backstory": "Born into high society, Ursus Distingué cultivated an air of sophistication from an early age, donning his signature bowler hat as a symbol of his elevated status. His penchant for philosophical musings and insightful critiques propelled him to the forefront of the ursine intellectual elite. Yet, it was his groundbreaking work, \"The Surreality of Salmon,\" that cemented his reputation as a leading thinker, blurring the lines between the tangible and the enigmatic realms of existence."
+    "backstory": "Lord Ursus Archibald Beaumont III, scion of the illustrious Beaumont ursine dynasty, ascended to his distinguished profession through a lifetime of erudition and commitment to the existential exploration of pipe smoke's ephemeral wisps. His seminal treatise, \"On the Impermanence of Vapor Trails,\" earned him a Beardemician seat, and his signature bowler hat serves as a profound statement on the futility of anthropocentric headgear conventions in a universe utterly indifferent to the plights of even the most dapper of bruins."
   },
-  "createdAt": "2025-03-23T19:07:01.182Z"
+  "createdAt": "2025-03-23T20:15:37.815Z"
 }

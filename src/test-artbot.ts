@@ -13,6 +13,7 @@ import { IdeatorAgent } from './agents/IdeatorAgent';
 import { StylistAgent } from './agents/StylistAgent';
 import { RefinerAgent } from './agents/RefinerAgent';
 import { CharacterGeneratorAgent } from './agents/CharacterGeneratorAgent';
+import { bearConceptGenerator } from './generators/BearConceptGenerator';
 
 // Load environment variables
 dotenv.config();
@@ -85,10 +86,14 @@ async function main() {
     await system.initialize();
     
     // Define a test project
+    const concept = process.argv.includes('--default') 
+      ? 'a distinguished bear portrait with a bowler hat in the style of René Magritte'
+      : process.argv[2] || bearConceptGenerator.generateBearConcept();
+    
     const testProject = {
       title: 'Test Bear Portrait',
       description: 'A test of the ArtBot multi-agent system',
-      concept: process.argv[2] || 'a distinguished bear portrait with a bowler hat in the style of René Magritte',
+      concept,
       style: 'bear_pfp',
       outputFilename: 'test_bear',
       requirements: [
