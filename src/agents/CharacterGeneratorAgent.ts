@@ -5,7 +5,7 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import { Agent, AgentContext, AgentMessage, AgentResult, AgentRole, AgentStatus, CharacterGeneratorAgent as ICharacterGeneratorAgent, MessageDirection, CharacterIdentity } from './types';
-import { AgentLogger } from '../utils/agentLogger';
+import { AgentLogger, LogLevel } from '../utils/agentLogger';
 import { AIService } from '../services/ai/index';
 import { CharacterGenerator } from '../generators/CharacterGenerator';
 import { EnhancedCharacterGenerator, CharacterGenerationOptions } from '../generators/EnhancedCharacterGenerator';
@@ -22,7 +22,7 @@ export class CharacterGeneratorAgent implements ICharacterGeneratorAgent {
   private characterGenerator: CharacterGenerator;
   private enhancedGenerator: EnhancedCharacterGenerator;
   private messages: AgentMessage[];
-  private useEnhancedGenerator: boolean = true;
+  private useEnhancedGenerator: boolean = true; // Always use enhanced generator by default
   
   /**
    * Constructor
@@ -35,7 +35,7 @@ export class CharacterGeneratorAgent implements ICharacterGeneratorAgent {
     this.enhancedGenerator = new EnhancedCharacterGenerator(aiService);
     this.messages = [];
     
-    AgentLogger.logAgentAction(this, 'Initialize', 'Character Generator agent created');
+    AgentLogger.logAgentAction(this, 'Initialize', 'Character Generator agent created with Enhanced Generator enabled');
   }
   
   /**
@@ -43,7 +43,7 @@ export class CharacterGeneratorAgent implements ICharacterGeneratorAgent {
    */
   async initialize(): Promise<void> {
     this.status = AgentStatus.IDLE;
-    AgentLogger.logAgentAction(this, 'Initialize', 'Character Generator agent initialized');
+    AgentLogger.logAgentAction(this, 'Initialize', 'Character Generator agent initialized, using EnhancedCharacterGenerator');
   }
 
   /**
@@ -56,7 +56,14 @@ export class CharacterGeneratorAgent implements ICharacterGeneratorAgent {
     try {
       let character: CharacterIdentity;
       
-      // Use the enhanced generator if available
+      // Check if we have category or series options
+      const hasCategoryOptions = options?.categoryId || options?.seriesType;
+      if (hasCategoryOptions) {
+        AgentLogger.logAgentAction(this, 'Character Options', 
+          `Using specific category/series: ${options?.categoryId || 'None'} / ${options?.seriesType || 'None'}`);
+      }
+      
+      // Use the enhanced generator if available (default)
       if (this.useEnhancedGenerator) {
         // Construct a simplified prompt for the generator
         const simplifiedPrompt = this.simplifyConceptToPrompt(concept);
@@ -65,8 +72,17 @@ export class CharacterGeneratorAgent implements ICharacterGeneratorAgent {
           `Category: ${options?.categoryId || 'auto-detect'}, Series: ${options?.seriesType || 'auto-detect'}`);
           
         character = await this.enhancedGenerator.generateCharacter(concept, simplifiedPrompt, options);
+        
+        // Log the character details
+        AgentLogger.log('┌─── Character Generated ───────────────────┐', LogLevel.INFO);
+        AgentLogger.log(`│ Name: ${character.name}`, LogLevel.INFO);
+        AgentLogger.log(`│ Title: ${character.title}`, LogLevel.INFO);
+        if (character.nickname) AgentLogger.log(`│ Nickname: ${character.nickname}`, LogLevel.INFO);
+        AgentLogger.log(`│ Personality: ${character.personality.join(', ')}`, LogLevel.INFO);
+        AgentLogger.log('└────────────────────────────────────────────┘', LogLevel.INFO);
       } else {
-        // Use the basic generator
+        // Use the basic generator (fallback only)
+        AgentLogger.logAgentAction(this, 'Using Basic Generator', 'Fallback to basic character generation');
         character = await this.characterGenerator.generateCharacter(concept);
       }
       

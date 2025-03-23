@@ -199,7 +199,26 @@ export class DirectorAgent implements IDirectorAgent {
         });
       }
       
-      // 4. Refinement - Optimize for the selected model
+      // 4. Character Generation - Generate character identity if needed
+      this.updateProgress('character_generation', 40, 100);
+      const characterGenerator = this.getAgent(AgentRole.CHARACTER_GENERATOR);
+      if (characterGenerator) {
+        AgentLogger.logAgentAction(this, 'Process', 'Generating character information');
+        
+        // Extract character options if available
+        const characterOptions = context.characterOptions || {};
+        
+        // Generate a character based on the styled prompt
+        await this.assignTask(AgentRole.CHARACTER_GENERATOR, {
+          action: 'generate_character',
+          concept: context.prompt,
+          categoryId: characterOptions.categoryId,
+          seriesType: characterOptions.seriesType,
+          allowAiEnhancement: characterOptions.allowAiEnhancement !== false
+        });
+      }
+      
+      // 5. Refinement - Optimize for the selected model
       this.updateProgress('refinement', 50, 100);
       const refiner = this.getAgent(AgentRole.REFINER);
       if (!refiner) {
@@ -211,10 +230,55 @@ export class DirectorAgent implements IDirectorAgent {
         action: 'optimize_for_model',
         model: 'black-forest-labs/flux-1.1-pro',
         prompt: context.prompt,
-        artDirection: context.artDirection
+        artDirection: context.artDirection,
+        character: context.character
       });
       
-      // 5. Finalization
+      // At this point, the image should be generated during refinement or will be generated
+      // in the ArtBotMultiAgentSystem.saveResults method
+      
+      // 6. Critic Evaluation - Evaluate the generated artwork
+      this.updateProgress('evaluation', 70, 100);
+      const critic = this.getAgent(AgentRole.CRITIC);
+      if (critic) {
+        AgentLogger.logAgentAction(this, 'Process', 'Evaluating generated artwork with critic');
+        
+        // Evaluate the artwork
+        await this.assignTask(AgentRole.CRITIC, {
+          action: 'evaluate_result',
+          previousResults: context
+        });
+        
+        // If the evaluation score is too low, we could refine further
+        if (context.evaluation && context.evaluation.score < 0.6) {
+          AgentLogger.logAgentAction(this, 'Process', 'Refinement needed based on critic feedback');
+          
+          // Re-refine with feedback from the critic
+          await this.assignTask(AgentRole.REFINER, {
+            action: 'refine_prompt',
+            prompt: context.prompt,
+            feedback: context.evaluation.feedback,
+            artDirection: context.artDirection,
+            improvements: context.evaluation.improvements
+          });
+        }
+      }
+      
+      // 7. Metadata Generation - Generate comprehensive metadata
+      this.updateProgress('metadata', 80, 100);
+      const metadataGenerator = this.getAgent(AgentRole.METADATA_GENERATOR);
+      if (metadataGenerator) {
+        AgentLogger.logAgentAction(this, 'Process', 'Generating comprehensive metadata');
+        
+        // Generate metadata
+        await this.assignTask(AgentRole.METADATA_GENERATOR, {
+          action: 'generate_metadata',
+          previousResults: context,
+          character: context.character
+        });
+      }
+      
+      // 8. Finalization
       this.updateProgress('finalization', 90, 100);
       
       const result = await this.collectResults();

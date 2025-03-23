@@ -15,6 +15,8 @@ import { RefinerAgent } from './agents/RefinerAgent';
 import { CharacterGeneratorAgent } from './agents/CharacterGeneratorAgent';
 import { bearConceptGenerator } from './generators/BearConceptGenerator';
 import { EnhancedRefinerAgent } from './agents/EnhancedRefinerAgent';
+import { CriticAgent } from './agents/CriticAgent';
+import { MetadataGeneratorAgent } from './agents/MetadataGeneratorAgent';
 
 // Load environment variables
 dotenv.config();
@@ -29,6 +31,18 @@ if (!process.env.REPLICATE_API_KEY) {
 async function main() {
   console.log('╭───────────────────────────────────────────╮');
   console.log('│         ArtBot Magritte Generator         │');
+  console.log('╰───────────────────────────────────────────╯');
+  
+  console.log('╭───────────────────────────────────────────╮');
+  console.log('│ Enhanced Character Generation Options:     │');
+  console.log('│ --default   Use the default concept        │');
+  console.log('│ --bowler    Force bowler hat inclusion     │');
+  console.log('│ --random    Use random element combinations│');
+  console.log('│ --series=X  Specify series (ADVENTURE,     │');
+  console.log('│             ARTISTIC, HIPSTER, etc.)       │');
+  console.log('│ --category=X Specify category ID           │');
+  console.log('│ --no-series Disable series-based generation│');
+  console.log('│ --no-categories Disable category generation│');
   console.log('╰───────────────────────────────────────────╯');
   
   try {
@@ -75,6 +89,14 @@ async function main() {
     const characterGeneratorAgent = new CharacterGeneratorAgent(aiService);
     system.registerAgent(characterGeneratorAgent);
     
+    // Create and register the Critic agent
+    const criticAgent = new CriticAgent(aiService);
+    system.registerAgent(criticAgent);
+    
+    // Create and register the Metadata Generator agent
+    const metadataGeneratorAgent = new MetadataGeneratorAgent(aiService);
+    system.registerAgent(metadataGeneratorAgent);
+    
     // Log registered agents
     console.log('╭───────────────────────────────────────────╮');
     console.log('│ Registered Agents:                        │');
@@ -92,15 +114,34 @@ async function main() {
       forceBowlerHat: process.argv.includes('--bowler'),
       enhanceMagritte: process.argv.includes('--enhance'),
       highQuality: process.argv.includes('--hq'),
-      concept: process.argv.find(arg => arg.startsWith('--concept='))?.split('=')[1]
+      randomCombinations: process.argv.includes('--random'),
+      useSeries: !process.argv.includes('--no-series'),
+      useCategories: !process.argv.includes('--no-categories'),
+      concept: process.argv.find(arg => arg.startsWith('--concept='))?.split('=')[1],
+      series: process.argv.find(arg => arg.startsWith('--series='))?.split('=')[1],
+      category: process.argv.find(arg => arg.startsWith('--category='))?.split('=')[1]
     };
     
     // Generate concept based on options
-    const concept = options.useDefault 
-      ? 'a distinguished bear portrait with a bowler hat in the style of René Magritte, with careful attention to surface quality and precise edge control'
-      : options.concept || bearConceptGenerator.generateBearConcept({ 
-          forceBowlerHat: options.forceBowlerHat
-        });
+    let concept;
+    if (options.useDefault) {
+      concept = 'a distinguished bear portrait with a bowler hat in the style of René Magritte, with careful attention to surface quality and precise edge control';
+      console.log('Using default concept');
+    } else if (options.concept) {
+      concept = options.concept;
+      console.log('Using provided concept');
+    } else {
+      // Create advanced generation options for BearConceptGenerator
+      const generationOptions = { 
+        forceBowlerHat: options.forceBowlerHat,
+        useSeries: options.useSeries,
+        useCategories: options.useCategories,
+        useRandomCombinations: options.randomCombinations || (!options.series && !options.category)
+      };
+      
+      console.log('Generating bear concept with options:', generationOptions);
+      concept = bearConceptGenerator.generateBearConcept(generationOptions);
+    }
     
     // Define a test project with enhanced options
     const testProject = {
@@ -116,6 +157,12 @@ async function main() {
         'Maintain painterly precision and surface quality',
         'Ensure proper composition for profile use'
       ],
+      // Pass character generation options
+      characterOptions: {
+        categoryId: options.category || undefined,
+        seriesType: options.series || undefined,
+        allowAiEnhancement: true
+      },
       artDirection: {
         enhanceMagritte: options.enhanceMagritte,
         focusOnSurfaceQuality: true,

@@ -144,7 +144,8 @@ export class ArtBotMultiAgentSystem {
         description: project.description,
         requirements: project.requirements || [],
         outputFilename: project.outputFilename || `output-${context.projectId.substring(0, 8)}`,
-        artDirection: project.artDirection || {}
+        artDirection: project.artDirection || {},
+        characterOptions: project.characterOptions || {}
       };
       
       // Enhance the project context with StyleIntegrationService if available
@@ -248,88 +249,133 @@ export class ArtBotMultiAgentSystem {
             options.negative_prompt = output.negativePrompt;
           }
           
-          // Log that we're generating an image
-          AgentLogger.log(`🖼️ Generating image using Replicate...`, LogLevel.INFO);
+          // Add art direction parameters if specified
+          if (output.artDirection?.highQuality) {
+            options.num_inference_steps = output.artDirection.modelParams?.inferenceSteps || 40;
+            options.guidance_scale = output.artDirection.modelParams?.guidanceScale || 4.5;
+          }
           
           // Generate the image
-          const imageUrl = await this.replicateService.generateImage(output.prompt, options);
+          AgentLogger.log(`Generating image with prompt: ${output.prompt.substring(0, 100)}...`, LogLevel.INFO);
           
-          if (imageUrl) {
+          const prediction = await this.replicateService.runPrediction(
+            undefined, // This will use the default model
+            {
+              prompt: output.prompt,
+              ...options
+            }
+          );
+          
+          if (prediction.status === 'succeeded' && prediction.output) {
+            // Get the image URL
+            const imageUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
             output.imageUrl = imageUrl;
-            AgentLogger.log(`✅ Image generated: ${imageUrl.substring(0, 50)}...`, LogLevel.INFO);
+            
+            AgentLogger.log(`Image generated: ${imageUrl}`, LogLevel.INFO);
           } else {
-            throw new Error('Failed to generate image URL');
+            throw new Error(`Image generation failed: ${prediction.error || 'Unknown error'}`);
           }
         } catch (error) {
-          AgentLogger.log(`❌ Error generating image: ${error instanceof Error ? error.message : String(error)}`, LogLevel.ERROR);
-          
-          // Use a placeholder image URL in case of failure
-          output.imageUrl = 'https://placehold.co/1024x1024/EEE/31343C?text=ArtBot+Test+Image';
-          AgentLogger.log('Using placeholder image URL due to generation error', LogLevel.WARNING);
+          AgentLogger.log(`Error generating image: ${error instanceof Error ? error.message : String(error)}`, LogLevel.ERROR);
+          // Continue with the process, but without an image
         }
-      } else if (!output.imageUrl) {
-        // No Replicate service and no imageUrl, use a placeholder
-        output.imageUrl = 'https://placehold.co/1024x1024/EEE/31343C?text=ArtBot+Test+Image';
-        AgentLogger.log('Using placeholder image URL for test', LogLevel.WARNING);
       }
       
-      // Create the output file paths
-      const baseFilename = output.outputFilename || `output-${output.projectId.substring(0, 8)}`;
-      const promptPath = path.join(this.outputDir, `${baseFilename}-prompt.txt`);
-      const imagePath = path.join(this.outputDir, `${baseFilename}-image.txt`);
-      const metadataPath = path.join(this.outputDir, `${baseFilename}-metadata.json`);
+      // Create the output filename
+      const outputFilename = output.outputFilename || `artwork-${output.projectId || new Date().getTime().toString()}`;
       
-      // Ensure the output directory exists
-      if (!fs.existsSync(this.outputDir)) {
-        fs.mkdirSync(this.outputDir, { recursive: true });
+      // Download the image if we have a URL
+      const files: Record<string, string> = {};
+      if (output.imageUrl) {
+        try {
+          // Ensure the output directory exists
+          if (!fs.existsSync(this.outputDir)) {
+            fs.mkdirSync(this.outputDir, { recursive: true });
+          }
+          
+          // Download the image
+          const imageResponse = await fetch(output.imageUrl);
+          if (!imageResponse.ok) {
+            throw new Error(`Failed to download image: ${imageResponse.statusText}`);
+          }
+          
+          const imageArrayBuffer = await imageResponse.arrayBuffer();
+          const imageBuffer = Buffer.from(imageArrayBuffer);
+          
+          // Save the image
+          const imagePath = path.join(this.outputDir, `${outputFilename}.png`);
+          fs.writeFileSync(imagePath, imageBuffer);
+          files.image = imagePath;
+          
+          AgentLogger.log(`Image saved to: ${imagePath}`, LogLevel.INFO);
+        } catch (error) {
+          AgentLogger.log(`Error saving image: ${error instanceof Error ? error.message : String(error)}`, LogLevel.ERROR);
+          // Continue with the process, but without saving the image
+        }
       }
       
-      // Save the prompt
-      fs.writeFileSync(promptPath, output.prompt);
-      
-      // Save the image URL
-      fs.writeFileSync(imagePath, output.imageUrl);
-      
-      // Create metadata
-      const metadata = {
-        id: output.projectId,
-        title: output.title || 'Untitled',
-        description: output.description || '',
+      // Create the artwork metadata
+      let metadata: Record<string, any> = {
+        name: output.name || 'Untitled Artwork',
+        description: output.description || `Generated artwork based on: ${output.concept}`,
         prompt: output.prompt,
         style: output.style,
-        imageUrl: output.imageUrl,
-        character: output.character,
-        createdAt: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        artDirection: output.artDirection,
+        character: output.character
       };
       
-      // Save the metadata
-      fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
+      // Use metadata from MetadataGeneratorAgent if available
+      if (output.metadata) {
+        metadata = { ...metadata, ...output.metadata };
+        AgentLogger.log(`Using enhanced metadata from MetadataGeneratorAgent`, LogLevel.INFO);
+      }
       
-      // Return the artwork details
+      // Use the critic evaluation if available
+      if (output.evaluation) {
+        metadata.evaluation = output.evaluation;
+        metadata.qualityScore = output.evaluation.score;
+        AgentLogger.log(`Added evaluation data from CriticAgent with score: ${output.evaluation.score}`, LogLevel.INFO);
+      }
+      
+      // Use the character info if available
+      if (output.character) {
+        metadata.characterInfo = output.character;
+        AgentLogger.log(`Added character info: ${output.character.name}`, LogLevel.INFO);
+      }
+      
+      // Save the metadata
+      if (Object.keys(files).length > 0) {
+        try {
+          const metadataPath = path.join(this.outputDir, `${outputFilename}.json`);
+          fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
+          files.metadata = metadataPath;
+          
+          AgentLogger.log(`Metadata saved to: ${metadataPath}`, LogLevel.INFO);
+        } catch (error) {
+          AgentLogger.log(`Error saving metadata: ${error instanceof Error ? error.message : String(error)}`, LogLevel.ERROR);
+          // Continue with the process, but without saving the metadata
+        }
+      }
+      
+      // Return the result
       return {
         success: true,
         artwork: {
-          id: output.projectId,
-          title: output.title || 'Untitled',
-          description: output.description || '',
           prompt: output.prompt,
           imageUrl: output.imageUrl,
-          character: output.character,
           style: output.style,
-          files: {
-            prompt: promptPath,
-            image: imagePath,
-            metadata: metadataPath
-          }
+          files,
+          metadata
         }
       };
     } catch (error) {
-      AgentLogger.log(`❌ Error saving results: ${error instanceof Error ? error.message : String(error)}`, LogLevel.ERROR);
+      AgentLogger.log(`Error saving results: ${error instanceof Error ? error.message : String(error)}`, LogLevel.ERROR);
       
       return {
         success: false,
         error: error instanceof Error ? error : new Error(String(error)),
-        artwork: result.output
+        artwork: null
       };
     }
   }
