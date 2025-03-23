@@ -10,37 +10,54 @@ import { CharacterGenerator } from './generators/CharacterGenerator';
 import { AgentLogger, LogLevel } from './utils/agentLogger';
 import { defaultGenerationConfig, GenerationConfig } from './config/generationConfig';
 import { ReplicateService } from './services/replicate';
+import { StyleIntegrationService } from './services/style/StyleIntegrationService';
 import * as fs from 'fs';
 import * as path from 'path';
+
+/**
+ * Updated MultiAgentSystemConfig interface with optional styleIntegrationService
+ */
+interface EnhancedMultiAgentSystemConfig extends MultiAgentSystemConfig {
+  styleIntegrationService?: StyleIntegrationService;
+}
 
 /**
  * ArtBot Multi-Agent System
  * Implements a collaborative multi-agent system for art generation
  */
 export class ArtBotMultiAgentSystem {
-  private config: MultiAgentSystemConfig;
+  private config: EnhancedMultiAgentSystemConfig;
   private director: DirectorAgent;
   private agents: Map<AgentRole, Agent>;
   private initialized: boolean = false;
   private generationConfig: GenerationConfig;
   private outputDir: string;
   private replicateService: ReplicateService | null;
+  private styleIntegrationService: StyleIntegrationService | null;
   
   /**
    * Constructor
    */
-  constructor(config: MultiAgentSystemConfig) {
+  constructor(config: EnhancedMultiAgentSystemConfig) {
     this.config = config;
     this.agents = new Map();
     this.generationConfig = defaultGenerationConfig;
     this.outputDir = config.outputDir || path.join(process.cwd(), 'output');
     this.replicateService = config.replicateService;
     
+    // Initialize StyleIntegrationService if AIService is available
+    this.styleIntegrationService = config.styleIntegrationService || 
+      (config.aiService ? new StyleIntegrationService(config.aiService) : null);
+    
     // Create the director agent
     this.director = new DirectorAgentImpl(this.generationConfig);
     
     // Register the director agent
     this.agents.set(AgentRole.DIRECTOR, this.director);
+    
+    if (this.styleIntegrationService) {
+      AgentLogger.log('StyleIntegrationService initialized', LogLevel.INFO);
+    }
   }
   
   /**
@@ -129,6 +146,33 @@ export class ArtBotMultiAgentSystem {
         outputFilename: project.outputFilename || `output-${context.projectId.substring(0, 8)}`,
         artDirection: project.artDirection || {}
       };
+      
+      // Enhance the project context with StyleIntegrationService if available
+      if (this.styleIntegrationService && (style === 'magritte' || style === 'bear_pfp')) {
+        try {
+          const enhancedPromptResult = await this.styleIntegrationService.generateEnhancedPrompt(
+            concept,
+            { 
+              seriesId: project.seriesId,
+              templateId: project.templateId,
+              emphasis: project.emphasis,
+              additionalElements: project.additionalElements
+            }
+          );
+          
+          // Add style enhancement data to the context
+          projectContext.enhancedPrompt = enhancedPromptResult.prompt;
+          projectContext.negativePrompt = enhancedPromptResult.negativePrompt;
+          projectContext.styleInfo = enhancedPromptResult.integrationInfo;
+          projectContext.series = enhancedPromptResult.series;
+          projectContext.templateName = enhancedPromptResult.templateName;
+          
+          AgentLogger.log(`Enhanced prompt generated using all style services`, LogLevel.INFO);
+        } catch (styleError) {
+          AgentLogger.log(`Error enhancing prompt with StyleIntegrationService: ${styleError instanceof Error ? styleError.message : String(styleError)}`, LogLevel.WARNING);
+          // Continue with regular processing
+        }
+      }
       
       // Process the context
       const result = await this.director.process(projectContext);

@@ -6,12 +6,14 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import { Agent, AgentContext, AgentMessage, AgentResult, AgentRole, AgentStatus, RefinerAgent as IRefinerAgent, MessageDirection } from './types';
-import { AgentLogger } from '../utils/agentLogger';
+import { AgentLogger, LogLevel } from '../utils/agentLogger';
 import { AIService, AIMessage } from '../services/ai/index';
 import { ReplicateService } from '../services/replicate/index';
 import { defaultGenerationConfig } from '../config/generationConfig';
 import { MagritteStyleEvaluator } from '../services/style/MagritteStyleEvaluator';
 import { magrittePatterns } from '../services/style/magrittePatterns';
+import { StyleIntegrationService } from '../services/style/StyleIntegrationService';
+import { CharacterGenerator } from '../generators/CharacterGenerator';
 
 // Define the model optimization interface
 interface ModelOptimization {
@@ -92,13 +94,16 @@ const MAGRITTE_FLUX_OPTIMIZATION: ModelOptimization = {
  */
 export class EnhancedRefinerAgent implements IRefinerAgent {
   id: string;
-  role: AgentRole.REFINER;
-  status: AgentStatus;
+  role: AgentRole.REFINER = AgentRole.REFINER;
+  name: string = 'Enhanced Refiner Agent';
+  status: AgentStatus = AgentStatus.IDLE;
   
   private aiService: AIService;
   private replicateService: ReplicateService;
   private messages: AgentMessage[];
   private magritteEvaluator: MagritteStyleEvaluator;
+  private styleIntegrationService: StyleIntegrationService;
+  private lastAction: string = '';
   
   // Refinement parameters
   private refinementParameters = {
@@ -124,8 +129,9 @@ export class EnhancedRefinerAgent implements IRefinerAgent {
     this.replicateService = new ReplicateService();
     this.messages = [];
     this.magritteEvaluator = new MagritteStyleEvaluator();
+    this.styleIntegrationService = new StyleIntegrationService(aiService);
     
-    AgentLogger.logAgentAction(this, 'Initialize', 'Enhanced Refiner agent created with Magritte capabilities');
+    AgentLogger.log(`EnhancedRefinerAgent (${this.id}) created`, LogLevel.INFO);
   }
   
   /**
@@ -1038,5 +1044,70 @@ export class EnhancedRefinerAgent implements IRefinerAgent {
       },
       created: new Date()
     };
+  }
+
+  /**
+   * Process a character-focused art generation
+   */
+  private async processCharacterArt(context: AgentContext): Promise<AgentResult> {
+    const character = context.character;
+    
+    if (!character) {
+      AgentLogger.log(`No character information for this project`, LogLevel.WARNING);
+      // Use existing fallback processing method or use default processing
+      return this.process(context); // If no fallbackProcess exists, just use regular process
+    }
+    
+    try {
+      AgentLogger.log(`Processing character-focused art for ${character.name}`, LogLevel.INFO);
+      
+      // Use the character name to help refine the prompt
+      const title = character.title || '';
+      const name = character.name || '';
+      const concept = context.concept || '';
+      
+      // Use StyleIntegrationService to generate enhanced prompt
+      const enhancedPromptResult = await this.styleIntegrationService.generateEnhancedPrompt(concept, {
+        characterName: name,
+        additionalElements: [title, ...(character.personality || [])],
+        emphasis: 'balanced',
+      });
+      
+      // Use the enhanced prompt
+      const refinedPrompt = enhancedPromptResult.prompt;
+      
+      // Add metadata generation using the StyleIntegrationService
+      const imageUrl = context.imageUrl || '';
+      const metadata = await this.styleIntegrationService.generateComprehensiveMetadata(
+        refinedPrompt,
+        character,
+        imageUrl,
+        context.artDirection || {}
+      );
+      
+      // Return success with enhanced output including required messages field
+      return {
+        success: true,
+        message: `Generated refined prompt for character ${name}`,
+        messages: [], // Add empty messages array to satisfy AgentResult type
+        output: {
+          ...context,
+          prompt: refinedPrompt,
+          refinedPrompt,
+          negativePrompt: enhancedPromptResult.negativePrompt,
+          enhancedMetadata: metadata,
+          character: {
+            ...character,
+            enhancedMetadata: metadata
+          },
+          // Add all style information for comprehensive integration
+          styleInfo: enhancedPromptResult.integrationInfo
+        }
+      };
+    } catch (error) {
+      AgentLogger.log(`Error processing character art: ${error instanceof Error ? error.message : String(error)}`, LogLevel.ERROR);
+      // Use existing process method as fallback
+      return this.process(context);
+    }
   }
 } 
