@@ -5,6 +5,7 @@
 
 import { AIService } from '../services/ai';
 import { EnhancedMagrittePromptService } from '../services/style/enhancedMagrittePromptService';
+import { EnhancedLogger, LogLevel } from '../utils/enhancedLogger';
 
 // Create a helper function to format the prompt output nicely
 function formatPrompt(prompt: string): string {
@@ -18,78 +19,88 @@ function formatPrompt(prompt: string): string {
  * Demonstrates generating prompts with different emphasis options
  */
 async function generateMagrittePromptExamples() {
-  console.log('🎨 MAGRITTE PROMPT GENERATION EXAMPLES\n');
+  // Enable compact mode for prettier output
+  EnhancedLogger.setCompactMode(true);
+  
+  // Header
+  EnhancedLogger.printHeader('MAGRITTE PROMPT GENERATION EXAMPLES');
   
   // Initialize services
-  console.log('Initializing services...');
+  EnhancedLogger.log('Initializing services...', LogLevel.INFO);
   const aiService = new AIService();
   await aiService.initialize();
   const promptService = new EnhancedMagrittePromptService(aiService);
   
   // 1. Get available options
-  console.log('\n📋 Available Series:');
+  EnhancedLogger.printSection('Available Series');
   const series = promptService.getAvailableSeries();
-  series.slice(0, 5).forEach(s => console.log(`  - ${s.emoji} ${s.name}: ${s.description}`));
-  console.log(`  - ... and ${series.length - 5} more series`);
+  series.slice(0, 5).forEach(s => 
+    EnhancedLogger.log(`${s.emoji} ${s.name}: ${s.description}`, LogLevel.INFO)
+  );
+  EnhancedLogger.log(`... and ${series.length - 5} more series`, LogLevel.INFO);
   
-  console.log('\n📋 Available Templates:');
+  EnhancedLogger.printSection('Available Templates');
   const templates = promptService.getAvailableTemplates();
-  templates.slice(0, 5).forEach(t => console.log(`  - ${t.name}: ${t.description}`));
-  console.log(`  - ... and ${templates.length - 5} more templates`);
+  templates.slice(0, 5).forEach(t => 
+    EnhancedLogger.log(`${t.name}: ${t.description}`, LogLevel.INFO)
+  );
+  EnhancedLogger.log(`... and ${templates.length - 5} more templates`, LogLevel.INFO);
   
-  console.log('\n📋 Available Emphasis Options:');
+  EnhancedLogger.printSection('Available Emphasis Options');
   const emphasisOptions = promptService.getAvailableEmphasisOptions();
-  emphasisOptions.forEach(e => console.log(`  - ${e.name}: ${e.description}`));
+  emphasisOptions.forEach(e => 
+    EnhancedLogger.log(`${e.name}: ${e.description}`, LogLevel.INFO)
+  );
   
   // 2. Generate prompts with different emphasis options
-  console.log('\n🔄 Generating prompts with different emphasis options...\n');
+  EnhancedLogger.printSection('Generating Prompts');
+  EnhancedLogger.log('Creating examples with different emphasis options...', LogLevel.INFO);
   
-  // Define a base concept
-  const baseConcept = 'a distinguished bear professor with a pipe and bowler hat';
+  const baseConcept = "a distinguished bear portrait in profile wearing a bowler hat";
   
-  // Define the examples to generate
   const examples = [
-    { name: 'Balanced Style', emphasis: 'balanced' },
-    { name: 'Philosophical Depth', emphasis: 'philosophical' },
-    { name: 'Pristine Execution', emphasis: 'technical' },
-    { name: 'Dreamlike Clarity', emphasis: 'dreamlike' },
-    { name: 'Traditional Techniques', emphasis: 'traditional' },
-    { name: 'Surreal Juxtapositions', emphasis: 'surreal' }
+    { name: "Balanced Style", emphasis: "balanced" },
+    { name: "Philosophical Depth", emphasis: "philosophical" },
+    { name: "Pristine Execution", emphasis: "technical" },
+    { name: "Dreamlike Clarity", emphasis: "dreamlike" },
+    { name: "Traditional Techniques", emphasis: "traditional" }
   ];
   
-  // Generate each example
   for (const example of examples) {
-    console.log(`\n📌 EXAMPLE: ${example.name}`);
-    console.log(`   Concept: "${baseConcept}"`);
-    console.log(`   Emphasis: ${example.emphasis}`);
+    EnhancedLogger.printSection(`EXAMPLE: ${example.name}`);
+    EnhancedLogger.log(`Concept: "${baseConcept}"`, LogLevel.INFO);
+    EnhancedLogger.log(`Emphasis: ${example.emphasis}`, LogLevel.INFO);
     
-    const result = await promptService.generateEnhancedPrompt(baseConcept, {
-      seriesId: 'academic',
-      templateId: 'son_of_man',
-      emphasis: example.emphasis as any
-    });
+    // Generate the enhanced prompt with the specific emphasis
+    const result = await promptService.generateEnhancedPrompt(
+      baseConcept,
+      {
+        emphasis: example.emphasis as "balanced" | "philosophical" | "technical" | "dreamlike" | "traditional" | "surreal"
+      }
+    );
     
-    console.log('\n   ✨ EMPHASIS BLOCK:');
+    // Log the results
+    EnhancedLogger.log('EMPHASIS BLOCK:', LogLevel.INFO);
     console.log(formatPrompt(result.emphasisBlock));
     
-    console.log('\n   ✨ FINAL PROMPT:');
+    EnhancedLogger.log('FINAL PROMPT:', LogLevel.INFO);
     console.log(formatPrompt(result.prompt));
     
-    console.log('\n   --- Metadata ---');
-    console.log(`   Character: ${result.characterIdentity.name}`);
-    console.log(`   Template: ${result.templateName}`);
-    console.log(`   Series: ${result.seriesName} ${result.seriesEmoji}`);
+    EnhancedLogger.log('Metadata:', LogLevel.INFO);
+    EnhancedLogger.log(`Character: ${result.characterIdentity.name}`, LogLevel.INFO);
+    EnhancedLogger.log(`Template: ${result.templateName}`, LogLevel.INFO);
+    EnhancedLogger.log(`Series: ${result.seriesName} ${result.seriesEmoji}`, LogLevel.INFO);
     
     console.log('\n' + '-'.repeat(80));
   }
   
-  // 3. Generate prompts with custom emphasis configuration
-  console.log('\n🔄 Generating a prompt with custom emphasis configuration...\n');
+  // 3. Generate a custom emphasis example
+  EnhancedLogger.printSection('Custom Emphasis Example');
   
+  // Generate a prompt with custom emphasis settings using an explicit object
   const customEmphasisResult = await promptService.generateEnhancedPrompt(
-    'a mystical bear shaman with ancient scrolls and ceremonial artifacts',
+    baseConcept,
     {
-      seriesId: 'mystical',
       emphasis: {
         philosophical: true,
         technical: true,
@@ -100,19 +111,16 @@ async function generateMagrittePromptExamples() {
     }
   );
   
-  console.log('📌 CUSTOM EMPHASIS EXAMPLE:');
-  console.log('\n   ✨ EMPHASIS BLOCK:');
+  EnhancedLogger.log('EMPHASIS BLOCK:', LogLevel.INFO);
   console.log(formatPrompt(customEmphasisResult.emphasisBlock));
   
-  console.log('\n   ✨ FINAL PROMPT:');
+  EnhancedLogger.log('FINAL PROMPT:', LogLevel.INFO);
   console.log(formatPrompt(customEmphasisResult.prompt));
   
-  console.log('\n🎭 MAGRITTE PROMPT GENERATION EXAMPLES COMPLETE');
+  EnhancedLogger.printHeader('MAGRITTE PROMPT GENERATION EXAMPLES COMPLETE');
 }
 
-// Run the example if this file is executed directly
-if (require.main === module) {
-  generateMagrittePromptExamples().catch(console.error);
-}
-
-export { generateMagrittePromptExamples }; 
+// Run the example
+generateMagrittePromptExamples().catch(error => {
+  EnhancedLogger.log(`Error: ${error.message}`, LogLevel.ERROR);
+}); 

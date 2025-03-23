@@ -1,13 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
 import { ModelPrediction } from '../../types.js';
 import fetch from 'node-fetch';
+import { EnhancedLogger, LogLevel } from '../../utils/enhancedLogger';
 
 export { ModelPrediction };
 
 // Define the models
 const FLUX_PRO_MODEL = 'black-forest-labs/flux-1.1-pro';
 const STABILITY_MODEL = 'stability-ai/stable-diffusion-xl-base-1.0';
-const FALLBACK_MODEL = 'stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b';
+const FALLBACK_MODEL = 'stability-ai/sdxl';
 
 export class ReplicateService {
   private apiKey: string;
@@ -42,15 +43,15 @@ export class ReplicateService {
   
   async initialize(): Promise<void> {
     if (!this.apiKey) {
-      console.warn('Replicate API key not provided. Service will not work properly.');
-    } else {
-      console.log(`✅ Replicate API key found: ${this.apiKey.substring(0, 5)}...`);
-      console.log(`🖼️ Default image model: ${this.defaultModel}`);
-      console.log(`📐 Image dimensions: ${this.defaultWidth}x${this.defaultHeight}`);
-      console.log(`🔄 Inference steps: ${this.defaultNumInferenceSteps}`);
-      console.log(`🎯 Guidance scale: ${this.defaultGuidanceScale}`);
-      console.log(`🖼️ Output format: ${this.defaultOutputFormat}`);
+      throw new Error('REPLICATE_API_KEY not found. Please set it in your environment variables.');
     }
+    
+    EnhancedLogger.log(`Replicate API key found: ${this.apiKey.substring(0, 5)}...`, LogLevel.SUCCESS);
+    EnhancedLogger.log(`Default image model: ${this.defaultModel}`, LogLevel.INFO);
+    EnhancedLogger.log(`Image dimensions: ${this.defaultWidth}x${this.defaultHeight}`, LogLevel.INFO);
+    EnhancedLogger.log(`Inference steps: ${this.defaultNumInferenceSteps}`, LogLevel.INFO);
+    EnhancedLogger.log(`Guidance scale: ${this.defaultGuidanceScale}`, LogLevel.INFO);
+    EnhancedLogger.log(`Output format: ${this.defaultOutputFormat}`, LogLevel.INFO);
   }
   
   /**
@@ -159,7 +160,7 @@ export class ReplicateService {
       // Check for errors
       if (!response.ok) {
         const errorData = await response.json();
-        console.warn(`⚠️ Replicate API error: ${JSON.stringify(errorData)}`);
+        EnhancedLogger.log(`⚠️ Replicate API error: ${JSON.stringify(errorData)}`, LogLevel.WARNING);
         throw new Error(`Replicate API error: ${JSON.stringify(errorData)}`);
       }
       
@@ -176,7 +177,7 @@ export class ReplicateService {
       
       return prediction;
     } catch (error) {
-      console.error(`Error running prediction: ${error}`);
+      EnhancedLogger.log(`Error running prediction: ${error}`, LogLevel.ERROR);
       prediction.status = 'failed';
       throw error;
     }
@@ -186,9 +187,9 @@ export class ReplicateService {
    * Poll for a prediction result
    */
   private async pollPrediction(id: string): Promise<any> {
+    const maxAttempts = 60;
+    const delay = 2000;
     let attempts = 0;
-    const maxAttempts = 30;
-    const delay = 1000; // 1 second
     
     while (attempts < maxAttempts) {
       try {
@@ -201,22 +202,22 @@ export class ReplicateService {
         
         if (!response.ok) {
           const errorData = await response.json();
-          console.warn(`⚠️ Error polling prediction: ${JSON.stringify(errorData)}`);
+          EnhancedLogger.log(`⚠️ Error polling prediction: ${JSON.stringify(errorData)}`, LogLevel.WARNING);
           throw new Error(`Error polling prediction: ${JSON.stringify(errorData)}`);
         }
         
         const data = await response.json();
         
         if (data.status === 'succeeded') {
-          console.log(`✅ Prediction completed: ${id}`);
+          EnhancedLogger.log(`✅ Prediction completed: ${id}`, LogLevel.SUCCESS);
           
           if (Array.isArray(data.output) && data.output.length > 0) {
-            console.log(`🖼️ Output URL: ${data.output[0]}`);
+            EnhancedLogger.log(`🖼️ Output URL: ${data.output[0]}`, LogLevel.SUCCESS);
           }
           
           return data;
         } else if (data.status === 'failed') {
-          console.error(`❌ Prediction failed: ${id}`);
+          EnhancedLogger.log(`❌ Prediction failed: ${id}`, LogLevel.ERROR);
           throw new Error(`Prediction ${id} failed: ${data.error || 'Unknown error'}`);
         }
         
@@ -224,7 +225,7 @@ export class ReplicateService {
         await new Promise(resolve => setTimeout(resolve, delay));
         attempts++;
       } catch (error) {
-        console.error(`Error polling prediction: ${error}`);
+        EnhancedLogger.log(`Error polling prediction: ${error}`, LogLevel.ERROR);
         throw error;
       }
     }
@@ -237,7 +238,7 @@ export class ReplicateService {
    */
   async generateImage(prompt: string, options: Record<string, any> = {}): Promise<string | null> {
     try {
-      console.log(`🎨 Using model for image generation: ${this.defaultModel}`);
+      EnhancedLogger.log(`🎨 Using model for image generation: ${this.defaultModel}`, LogLevel.INFO);
       
       // Check if this is a FLUX model
       const isFluxModel = this.defaultModel.includes('flux');
@@ -247,13 +248,13 @@ export class ReplicateService {
         prompt = `IKIGAI ${prompt.trim()}`;
       }
       
-      console.log(`📝 Prompt: ${prompt.substring(0, 100)}...`);
+      EnhancedLogger.log(`📝 Prompt: ${prompt.substring(0, 100)}...`, LogLevel.INFO);
       
       // Ensure dimensions are within API limits
       options.width = Math.min(options.width || this.defaultWidth, 1440);
       options.height = Math.min(options.height || this.defaultHeight, 1440);
       
-      console.log(`📏 Dimensions: ${options.width}x${options.height}`);
+      EnhancedLogger.log(`📏 Dimensions: ${options.width}x${options.height}`, LogLevel.INFO);
       
       // If this is Flux, set optimal inference steps if not specified
       if (isFluxModel && !options.num_inference_steps) {
@@ -291,13 +292,15 @@ export class ReplicateService {
       };
       
       // Log all parameters being used for the generation
-      console.log('╭───────────────────────────────────────────╮');
-      console.log('│ Generation Parameters:                    │');
-      console.log(`│ - Model: ${this.defaultModel.substring(0, 30).padEnd(30)} │`);
-      console.log(`│ - Dimensions: ${options.width}x${options.height.toString().padEnd(24)} │`);
-      console.log(`│ - Steps: ${options.num_inference_steps || this.defaultNumInferenceSteps}                                │`);
-      console.log(`│ - Guidance: ${options.guidance_scale || this.defaultGuidanceScale}                              │`);
-      console.log('╰───────────────────────────────────────────╯');
+      const params = {
+        model: this.defaultModel,
+        width: options.width,
+        height: options.height,
+        steps: options.num_inference_steps || this.defaultNumInferenceSteps,
+        guidance: options.guidance_scale || this.defaultGuidanceScale
+      };
+      
+      EnhancedLogger.logGenerationParameters(params);
       
       // Try the default model first
       try {
@@ -312,11 +315,11 @@ export class ReplicateService {
         
         throw new Error(`Image generation failed: ${prediction.status !== 'succeeded' ? prediction.status : 'No output'}`);
       } catch (error) {
-        console.error(`Error generating image with primary model: ${error}`);
+        EnhancedLogger.log(`Error generating image with primary model: ${error}`, LogLevel.ERROR);
         
         // Try a fallback model if the primary fails
         if (this.defaultModel !== FALLBACK_MODEL) {
-          console.log(`⚠️ Falling back to ${FALLBACK_MODEL}`);
+          EnhancedLogger.log(`⚠️ Falling back to ${FALLBACK_MODEL}`, LogLevel.WARNING);
           
           // Adjust parameters for the fallback model
           const fallbackInput = { ...input };
@@ -357,14 +360,14 @@ export class ReplicateService {
             
             throw new Error(`Fallback image generation failed: ${fallbackPrediction.status !== 'succeeded' ? fallbackPrediction.status : 'No output'}`);
           } catch (fallbackError) {
-            console.error(`Error generating image with fallback model: ${fallbackError}`);
-            // Fall through to DALL-E fallback if applicable
+            EnhancedLogger.log(`Falling back to DALL-E`, LogLevel.WARNING);
+            return this.fallbackToDALLE(prompt, options);
           }
         }
         
         // If all Replicate models fail, try DALL-E if we have OpenAI API key
         if (process.env.OPENAI_API_KEY) {
-          console.log(`⚠️ Falling back to DALL-E`);
+          EnhancedLogger.log(`⚠️ Falling back to DALL-E`, LogLevel.WARNING);
           return this.fallbackToDALLE(prompt, options);
         }
         
@@ -372,7 +375,7 @@ export class ReplicateService {
         throw new Error(`All image generation attempts failed`);
       }
     } catch (error) {
-      console.error(`Error generating image: ${error}`);
+      EnhancedLogger.log(`Error generating image: ${error}`, LogLevel.ERROR);
       throw error;
     }
   }
@@ -412,7 +415,7 @@ export class ReplicateService {
         throw new Error('OpenAI API key not provided for DALL-E fallback');
       }
       
-      console.log('🤖 Using DALL-E for image generation');
+      EnhancedLogger.log(`🤖 Using DALL-E for image generation`, LogLevel.INFO);
       
       // Get the size parameter
       let size = '1024x1024';
@@ -436,7 +439,7 @@ export class ReplicateService {
         }
       }
       
-      console.log(`📊 Using DALL-E with size: ${size}`);
+      EnhancedLogger.log(`📊 Using DALL-E with size: ${size}`, LogLevel.INFO);
       
       // Determine the model to use (try dall-e-3 first)
       const model = 'dall-e-3';
@@ -460,11 +463,11 @@ export class ReplicateService {
       
       if (!response.ok) {
         const errorData = await response.json();
-        console.error(`⚠️ OpenAI API error: ${JSON.stringify(errorData)}`);
+        EnhancedLogger.log(`⚠️ OpenAI API error: ${JSON.stringify(errorData)}`, LogLevel.ERROR);
         
         // Try dall-e-2 if dall-e-3 fails
         if (model === 'dall-e-3') {
-          console.log('⚠️ Falling back to DALL-E 2');
+          EnhancedLogger.log(`⚠️ Falling back to DALL-E 2`, LogLevel.WARNING);
           
           // DALL-E 2 only supports specific sizes
           const dalle2Size = options.width <= 512 ? '512x512' : '1024x1024';
@@ -486,14 +489,14 @@ export class ReplicateService {
           
           if (!dalle2Response.ok) {
             const dalle2Error = await dalle2Response.json();
-            console.error(`⚠️ DALL-E 2 API error: ${JSON.stringify(dalle2Error)}`);
+            EnhancedLogger.log(`⚠️ DALL-E 2 API error: ${JSON.stringify(dalle2Error)}`, LogLevel.ERROR);
             throw new Error(`OpenAI API error: ${JSON.stringify(dalle2Error)}`);
           }
           
           const dalle2Data = await dalle2Response.json();
           
           if (dalle2Data.data && dalle2Data.data.length > 0 && dalle2Data.data[0].url) {
-            console.log(`✅ DALL-E 2 generated image URL: ${dalle2Data.data[0].url.substring(0, 50)}...`);
+            EnhancedLogger.log(`✅ DALL-E 2 generated image URL: ${dalle2Data.data[0].url.substring(0, 50)}...`, LogLevel.SUCCESS);
             return dalle2Data.data[0].url;
           }
         } else {
@@ -504,13 +507,13 @@ export class ReplicateService {
       const data = await response.json();
       
       if (data.data && data.data.length > 0 && data.data[0].url) {
-        console.log(`✅ DALL-E generated image URL: ${data.data[0].url.substring(0, 50)}...`);
+        EnhancedLogger.log(`✅ DALL-E generated image URL: ${data.data[0].url.substring(0, 50)}...`, LogLevel.SUCCESS);
         return data.data[0].url;
       }
       
       throw new Error('No URL in DALL-E response');
     } catch (error) {
-      console.error(`❌ Error in DALL-E fallback: ${error}`);
+      EnhancedLogger.log(`❌ Error in DALL-E fallback: ${error}`, LogLevel.ERROR);
       return null;
     }
   }

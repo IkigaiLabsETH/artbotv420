@@ -49,7 +49,28 @@ const logColors: Record<string, any> = {
   time: chalk.gray,
   highlight: chalk.bold.white,
   separator: chalk.gray,
-  section: chalk.bold.cyan
+  section: chalk.bold.cyan,
+  
+  // Symbols
+  checkmark: chalk.green('✓'),
+  x_mark: chalk.red('✗'),
+  hourglass: chalk.yellow('⏳'),
+  palette: chalk.magenta('🎨'),
+  paintbrush: chalk.cyan('🖌️'),
+  bot: chalk.blue('🤖'),
+  thinking: chalk.yellow('🧠')
+};
+
+// Box drawing characters
+const box = {
+  topLeft: '╭',
+  topRight: '╮',
+  bottomLeft: '╰',
+  bottomRight: '╯',
+  horizontal: '─',
+  vertical: '│',
+  verticalRight: '├',
+  verticalLeft: '┤'
 };
 
 /**
@@ -58,6 +79,14 @@ const logColors: Record<string, any> = {
 export class EnhancedLogger {
   private static showDebug: boolean = process.env.DEBUG === 'true';
   private static indent: number = 0;
+  private static compactMode: boolean = true;
+  
+  /**
+   * Toggle compact mode
+   */
+  static setCompactMode(compact: boolean): void {
+    this.compactMode = compact;
+  }
   
   /**
    * Get color function for agent status
@@ -85,80 +114,111 @@ export class EnhancedLogger {
       return;
     }
     
-    const timestamp = new Date().toISOString().split('T')[1].slice(0, -1);
     const colorFn = logColors[level] || logColors[LogLevel.INFO];
     const indent = ' '.repeat(this.indent);
     
-    console.log(`${logColors.time(timestamp)} ${colorFn('•')} ${indent}${message}`);
+    if (this.compactMode) {
+      // Compact timestamp format
+      const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false });
+      console.log(`${logColors.time(timestamp)} ${colorFn('•')} ${indent}${message}`);
+    } else {
+      const timestamp = new Date().toISOString().split('T')[1].slice(0, -1);
+      console.log(`${logColors.time(timestamp)} ${colorFn('•')} ${indent}${message}`);
+    }
   }
   
   /**
-   * Print a header section
+   * Print a compact header section
    */
   static printHeader(text: string): void {
-    const line = '═'.repeat(50);
-    console.log('\n' + logColors.border(line));
-    console.log(logColors.header(`  ${text}`));
-    console.log(logColors.border(line) + '\n');
+    const width = 50;
+    const paddedText = text.padEnd(width - 4);
+    
+    console.log(logColors.border(`\n${box.topLeft}${box.horizontal.repeat(width - 2)}${box.topRight}`));
+    console.log(logColors.border(`${box.vertical}`)+logColors.header(` ${paddedText} `)+logColors.border(`${box.vertical}`));
+    console.log(logColors.border(`${box.bottomLeft}${box.horizontal.repeat(width - 2)}${box.bottomRight}`));
   }
   
   /**
-   * Print a section header
+   * Print a compact section header
    */
   static printSection(title: string): void {
-    console.log(`\n${logColors.section('┌─')}${logColors.section('─'.repeat(title.length + 4))}${logColors.section('─┐')}`);
-    console.log(`${logColors.section('│')}  ${logColors.highlight(title)}  ${logColors.section('│')}`);
-    console.log(`${logColors.section('└─')}${logColors.section('─'.repeat(title.length + 4))}${logColors.section('─┘')}`);
+    if (this.compactMode) {
+      console.log(`\n${logColors.section('▸')} ${logColors.highlight(title)}`);
+    } else {
+      console.log(`\n${logColors.section('┌─')}${logColors.section('─'.repeat(title.length + 4))}${logColors.section('─┐')}`);
+      console.log(`${logColors.section('│')}  ${logColors.highlight(title)}  ${logColors.section('│')}`);
+      console.log(`${logColors.section('└─')}${logColors.section('─'.repeat(title.length + 4))}${logColors.section('─┘')}`);
+    }
   }
   
   /**
-   * Log an agent action
+   * Log an agent action in compact form
    */
   static logAgentAction(agent: Agent, action: string, details: string): void {
     const roleName = agent.role.charAt(0).toUpperCase() + agent.role.slice(1).replace(/_/g, ' ');
     const colorFn = logColors[agent.role] || logColors[LogLevel.INFO];
+    const shortId = agent.id.substring(0, 6);
     
-    console.log(`\n${colorFn('┌───')} ${logColors.highlight(roleName)} Agent (${agent.id}) ${colorFn('───────')}`);
-    console.log(`${colorFn('│')} Action: ${action}`);
-    console.log(`${colorFn('│')} ${details}`);
-    console.log(`${colorFn('└')}${colorFn('─'.repeat(40))}\n`);
+    if (this.compactMode) {
+      console.log(`\n${colorFn('▸')} ${logColors.highlight(roleName)} [${shortId}]: ${action}`);
+      console.log(`  ${details}`);
+    } else {
+      console.log(`\n${colorFn('┌───')} ${logColors.highlight(roleName)} Agent (${agent.id}) ${colorFn('───────')}`);
+      console.log(`${colorFn('│')} Action: ${action}`);
+      console.log(`${colorFn('│')} ${details}`);
+      console.log(`${colorFn('└')}${colorFn('─'.repeat(40))}\n`);
+    }
   }
   
   /**
-   * Log agent interaction
+   * Log agent interaction in compact form
    */
   static logAgentInteraction(from: Agent, to: Agent, message: string): void {
     const fromColorFn = logColors[from.role] || logColors[LogLevel.INFO];
     const toColorFn = logColors[to.role] || logColors[LogLevel.INFO];
     
-    console.log(`${fromColorFn('↓')} ${from.role} → ${toColorFn(to.role)}`);
-    console.log(`${logColors.separator('└──')} ${message}`);
+    if (this.compactMode) {
+      console.log(`  ${fromColorFn(from.role)} ${fromColorFn('→')} ${toColorFn(to.role)}: ${message}`);
+    } else {
+      console.log(`${fromColorFn('↓')} ${from.role} → ${toColorFn(to.role)}`);
+      console.log(`${logColors.separator('└──')} ${message}`);
+    }
   }
   
   /**
-   * Log the start of the generation process
+   * Log the start of the generation process with compact display
    */
   static logGenerationStart(concept: string, style: string): void {
-    this.printHeader('IKIGAI ART GENERATION');
-    console.log(`${logColors[LogLevel.INFO]('🎨')} Concept: ${logColors.highlight(concept)}`);
-    console.log(`${logColors[LogLevel.INFO]('🖌️')} Style: ${logColors.highlight(style)}\n`);
+    if (this.compactMode) {
+      this.printHeader(' IKIGAI ART GENERATION ');
+      console.log(`${logColors.palette} ${logColors.highlight('Concept:')} ${concept}`);
+      console.log(`${logColors.paintbrush} ${logColors.highlight('Style:')} ${style}`);
+    } else {
+      this.printHeader('IKIGAI ART GENERATION');
+      console.log(`${logColors.palette} Concept: ${logColors.highlight(concept)}`);
+      console.log(`${logColors.paintbrush} Style: ${logColors.highlight(style)}\n`);
+    }
   }
   
   /**
-   * Log generation progress
+   * Log generation progress with compact display
    */
   static logGenerationProgress(stage: string, progress: number, total: number): void {
     const percent = Math.round((progress / total) * 100);
-    const progressBar = this.createProgressBar(percent);
+    const progressBar = this.createProgressBar(percent, this.compactMode ? 10 : 20);
     
-    console.log(`${logColors[LogLevel.INFO]('⏳')} ${stage}: ${progressBar} ${percent}%`);
+    if (this.compactMode) {
+      console.log(`${logColors.hourglass} ${stage} ${progressBar} ${percent}%`);
+    } else {
+      console.log(`${logColors.hourglass} ${stage}: ${progressBar} ${percent}%`);
+    }
   }
   
   /**
    * Create a visual progress bar
    */
-  private static createProgressBar(percent: number): string {
-    const width = 20;
+  private static createProgressBar(percent: number, width: number = 20): string {
     const completed = Math.floor((width * percent) / 100);
     const remaining = width - completed;
     
@@ -166,7 +226,7 @@ export class EnhancedLogger {
   }
   
   /**
-   * Log Magritte-style art direction
+   * Log Magritte-style art direction in compact form
    */
   static logMagritteArtDirection(artDirection: any): void {
     this.printSection('Magritte Art Direction');
@@ -176,56 +236,132 @@ export class EnhancedLogger {
       return;
     }
     
-    console.log(`${logColors.border('│')} Visual Element: ${logColors.highlight(artDirection.visualElement || 'None')}`);
-    console.log(`${logColors.border('│')} Composition: ${logColors.highlight(artDirection.composition || 'None')}`);
-    console.log(`${logColors.border('│')} Paradox: ${logColors.highlight(artDirection.paradox || 'None')}`);
-    console.log(`${logColors.border('│')} Technique: ${logColors.highlight(artDirection.technique || 'None')}`);
-    
-    if (artDirection.additionalElements) {
-      console.log(`${logColors.border('│')} Additional: ${logColors.highlight(artDirection.additionalElements)}`);
+    if (this.compactMode) {
+      if (artDirection.visualElement) console.log(`• ${logColors.highlight('Visual:')} ${artDirection.visualElement}`);
+      if (artDirection.composition) console.log(`• ${logColors.highlight('Comp:')} ${artDirection.composition}`);
+      if (artDirection.paradox) console.log(`• ${logColors.highlight('Paradox:')} ${artDirection.paradox}`);
+      if (artDirection.technique) console.log(`• ${logColors.highlight('Tech:')} ${artDirection.technique}`);
+      if (artDirection.additionalElements) console.log(`• ${logColors.highlight('Add:')} ${artDirection.additionalElements}`);
+    } else {
+      console.log(`${logColors.border('│')} Visual Element: ${logColors.highlight(artDirection.visualElement || 'None')}`);
+      console.log(`${logColors.border('│')} Composition: ${logColors.highlight(artDirection.composition || 'None')}`);
+      console.log(`${logColors.border('│')} Paradox: ${logColors.highlight(artDirection.paradox || 'None')}`);
+      console.log(`${logColors.border('│')} Technique: ${logColors.highlight(artDirection.technique || 'None')}`);
+      
+      if (artDirection.additionalElements) {
+        console.log(`${logColors.border('│')} Additional: ${logColors.highlight(artDirection.additionalElements)}`);
+      }
+      
+      console.log(logColors.border('└') + logColors.border('─'.repeat(40)));
     }
-    
-    console.log(logColors.border('└') + logColors.border('─'.repeat(40)));
   }
   
   /**
-   * Log generation completion
+   * Log generation completion in compact form
    */
   static logGenerationComplete(result: any): void {
     if (result.success) {
       this.printSection('Generation Complete');
-      console.log(`${logColors[LogLevel.SUCCESS]('✓')} Image generated successfully`);
       
-      if (result.artwork) {
-        console.log(`${logColors[LogLevel.SUCCESS]('✓')} Title: ${logColors.highlight(result.artwork.title || 'Untitled')}`);
+      if (this.compactMode) {
+        console.log(`${logColors.checkmark} ${logColors.highlight('Image generated successfully')}`);
         
-        if (result.artwork.character) {
-          console.log(`${logColors[LogLevel.SUCCESS]('✓')} Character: ${logColors.highlight(result.artwork.character.name)}`);
-          console.log(`${logColors[LogLevel.SUCCESS]('✓')} Title: ${logColors.highlight(result.artwork.character.title)}`);
+        if (result.artwork) {
+          if (result.artwork.title) console.log(`${logColors.checkmark} ${logColors.highlight('Title:')} ${result.artwork.title}`);
+          
+          if (result.artwork.character) {
+            console.log(`${logColors.checkmark} ${logColors.highlight('Character:')} ${result.artwork.character.name}, ${result.artwork.character.title}`);
+          }
+          
+          if (result.artwork.imageUrl) {
+            // Display shortened URL
+            const shortUrl = result.artwork.imageUrl.length > 40 
+              ? result.artwork.imageUrl.substring(0, 37) + '...' 
+              : result.artwork.imageUrl;
+            console.log(`${logColors.checkmark} ${logColors.highlight('URL:')} ${shortUrl}`);
+          }
         }
+      } else {
+        console.log(`${logColors.checkmark} Image generated successfully`);
         
-        if (result.artwork.imageUrl) {
-          console.log(`${logColors[LogLevel.SUCCESS]('✓')} Image URL: ${result.artwork.imageUrl}`);
+        if (result.artwork) {
+          console.log(`${logColors.checkmark} Title: ${logColors.highlight(result.artwork.title || 'Untitled')}`);
+          
+          if (result.artwork.character) {
+            console.log(`${logColors.checkmark} Character: ${logColors.highlight(result.artwork.character.name)}`);
+            console.log(`${logColors.checkmark} Title: ${logColors.highlight(result.artwork.character.title)}`);
+          }
+          
+          if (result.artwork.imageUrl) {
+            console.log(`${logColors.checkmark} Image URL: ${result.artwork.imageUrl}`);
+          }
         }
       }
     } else {
       this.printSection('Generation Failed');
-      console.log(`${logColors[LogLevel.ERROR]('✗')} ${result.error?.message || 'Unknown error'}`);
+      console.log(`${logColors.x_mark} ${result.error?.message || 'Unknown error'}`);
     }
   }
   
   /**
-   * Log system start
+   * Log system start with compact display
    */
   static logSystemStart(config: any): void {
     this.printHeader('ArtBot Multi-Agent System');
     
-    console.log(`${logColors[LogLevel.INFO]('🤖')} AI Service: ${config.aiService ? logColors[LogLevel.SUCCESS]('Available') : logColors[LogLevel.ERROR]('Unavailable')}`);
-    console.log(`${logColors[LogLevel.INFO]('🖼️')} Replicate Service: ${config.replicateService ? logColors[LogLevel.SUCCESS]('Available') : logColors[LogLevel.ERROR]('Unavailable')}`);
-    console.log(`${logColors[LogLevel.INFO]('💾')} Output Directory: ${logColors.highlight(config.outputDir)}`);
-    console.log(`${logColors[LogLevel.INFO]('🧩')} Agents: ${logColors.highlight(config.agentCount.toString())}`);
+    if (this.compactMode) {
+      // Display services on a single line
+      const aiStatus = config.aiService ? logColors.checkmark : logColors.x_mark;
+      const repStatus = config.replicateService ? logColors.checkmark : logColors.x_mark; 
+      console.log(`${logColors.bot} ${logColors.highlight('Services:')} AI:${aiStatus} Replicate:${repStatus} Agents:${config.agentCount}`);
+      console.log(`${logColors[LogLevel.INFO]('💾')} ${logColors.highlight('Output:')} ${config.outputDir}`);
+    } else {
+      console.log(`${logColors.bot} AI Service: ${config.aiService ? logColors.checkmark : logColors.x_mark}`);
+      console.log(`${logColors[LogLevel.INFO]('🖼️')} Replicate Service: ${config.replicateService ? logColors.checkmark : logColors.x_mark}`);
+      console.log(`${logColors[LogLevel.INFO]('💾')} Output Directory: ${logColors.highlight(config.outputDir)}`);
+      console.log(`${logColors[LogLevel.INFO]('🧩')} Agents: ${logColors.highlight(config.agentCount.toString())}`);
+    }
     
     console.log('\n' + logColors.border('─'.repeat(50)));
+  }
+  
+  /**
+   * Log generation parameters in compact form
+   */
+  static logGenerationParameters(params: any): void {
+    if (!params) return;
+    
+    if (this.compactMode) {
+      console.log(`\n${logColors[LogLevel.INFO]('⚙️')} ${logColors.highlight('Generation Parameters:')}`);
+      
+      // Model with shortened display
+      if (params.model) {
+        const shortModel = params.model.includes('/') 
+          ? params.model.split('/').pop() 
+          : params.model;
+        console.log(`• ${logColors.highlight('Model:')} ${shortModel}`);
+      }
+      
+      // Dimensions
+      if (params.width && params.height) {
+        console.log(`• ${logColors.highlight('Size:')} ${params.width}×${params.height}`);
+      }
+      
+      // Steps and Guidance on single line
+      if (params.steps || params.guidance) {
+        const steps = params.steps ? `Steps:${params.steps}` : '';
+        const guidance = params.guidance ? `Guide:${params.guidance}` : '';
+        const separator = steps && guidance ? ' | ' : '';
+        console.log(`• ${logColors.highlight('Params:')} ${steps}${separator}${guidance}`);
+      }
+    } else {
+      this.printSection('Generation Parameters');
+      
+      if (params.model) console.log(`• Model: ${params.model}`);
+      if (params.width && params.height) console.log(`• Dimensions: ${params.width}×${params.height}`);
+      if (params.steps) console.log(`• Steps: ${params.steps}`);
+      if (params.guidance) console.log(`• Guidance: ${params.guidance}`);
+    }
   }
   
   /**

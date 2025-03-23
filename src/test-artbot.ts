@@ -4,7 +4,7 @@
  */
 
 import * as dotenv from 'dotenv';
-import path from 'path';
+import * as path from 'path';
 import { ArtBotMultiAgentSystem } from './artbot-multiagent-system';
 import { ElizaLogger, LogLevel } from './utils/elizaLogger';
 import { AIService } from './services/ai';
@@ -13,12 +13,15 @@ import { IdeatorAgent } from './agents/IdeatorAgent';
 import { StylistAgent } from './agents/StylistAgent';
 import { RefinerAgent } from './agents/RefinerAgent';
 import { CharacterGeneratorAgent } from './agents/CharacterGeneratorAgent';
-import { bearConceptGenerator } from './generators/BearConceptGenerator';
+import { BearConceptGenerator } from './generators/BearConceptGenerator';
 import { EnhancedRefinerAgent } from './agents/EnhancedRefinerAgent';
 import { CriticAgent } from './agents/CriticAgent';
 import { MetadataGeneratorAgent } from './agents/MetadataGeneratorAgent';
 import { EnhancedBearPromptGenerator } from './generators/EnhancedBearPromptGenerator';
 import { StyleIntegrationService } from './services/style/StyleIntegrationService';
+import { AgentRole } from './agents/types';
+import { AgentLogger } from './utils/agentLogger';
+import { EnhancedLogger } from './utils/enhancedLogger';
 
 // Load environment variables
 dotenv.config();
@@ -30,23 +33,90 @@ if (!process.env.REPLICATE_API_KEY) {
   process.exit(1);
 }
 
-async function main() {
-  console.log('╭───────────────────────────────────────────╮');
-  console.log('│         ArtBot Magritte Generator         │');
-  console.log('╰───────────────────────────────────────────╯');
+// Default concept for testing
+const defaultConcept = "a distinguished bear portrait in profile wearing a surrealist bowler hat, formal attire, and a white collar with red tie, in the style of Rene Magritte's precise oil painting technique with solid sky blue background";
+
+// Set up bear concept generator
+const bearGenerator = new BearConceptGenerator();
+
+/**
+ * Parse command-line arguments
+ */
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const options: Record<string, any> = {
+    bowler: false,
+    random: false,
+    series: '',
+    default: false,
+    legacy: false,
+    enhanceMagritte: false,
+    output: '',
+    highQuality: false,
+    style: '',
+    category: '',
+    noSeries: false,
+    noCategories: false
+  };
   
-  console.log('╭───────────────────────────────────────────╮');
-  console.log('│ Enhanced Character Generation Options:     │');
-  console.log('│ --default   Use the default concept        │');
-  console.log('│ --bowler    Force bowler hat inclusion     │');
-  console.log('│ --random    Use random element combinations│');
-  console.log('│ --series=X  Specify series (ADVENTURE,     │');
-  console.log('│             ARTISTIC, HIPSTER, etc.)       │');
-  console.log('│ --category=X Specify category ID           │');
-  console.log('│ --no-series Disable series-based generation│');
-  console.log('│ --no-categories Disable category generation│');
-  console.log('│ --legacy-prompt Use legacy prompt generator│');
-  console.log('╰───────────────────────────────────────────╯');
+  const remainingArgs = [];
+  
+  for (const arg of args) {
+    if (arg === '--bowler') {
+      options.bowler = true;
+    } else if (arg === '--random') {
+      options.random = true;
+    } else if (arg.startsWith('--series=')) {
+      options.series = arg.split('=')[1].trim();
+    } else if (arg.startsWith('--category=')) {
+      options.category = arg.split('=')[1].trim();
+    } else if (arg === '--default') {
+      options.default = true;
+    } else if (arg === '--legacy-prompt') {
+      options.legacy = true;
+    } else if (arg === '--enhance-magritte') {
+      options.enhanceMagritte = true;
+    } else if (arg.startsWith('--output=')) {
+      options.output = arg.split('=')[1].trim();
+    } else if (arg === '--high-quality') {
+      options.highQuality = true;
+    } else if (arg.startsWith('--style=')) {
+      options.style = arg.split('=')[1].trim();
+    } else if (arg === '--no-series') {
+      options.noSeries = true;
+    } else if (arg === '--no-categories') {
+      options.noCategories = true;
+    } else {
+      remainingArgs.push(arg);
+    }
+  }
+  
+  return { options, args: remainingArgs };
+}
+
+/**
+ * Main function to run the test
+ */
+async function main() {
+  // Initialize the logger with compact mode
+  EnhancedLogger.setCompactMode(true);
+  
+  // Parse command-line arguments
+  const { options, args } = parseArgs();
+  
+  // Print header
+  EnhancedLogger.printHeader('ArtBot Magritte Generator');
+  
+  // Print options
+  EnhancedLogger.printSection('Command Options');
+  EnhancedLogger.log('--default   Use the default concept', LogLevel.INFO);
+  EnhancedLogger.log('--bowler    Force bowler hat inclusion', LogLevel.INFO);
+  EnhancedLogger.log('--random    Use random element combinations', LogLevel.INFO);
+  EnhancedLogger.log('--series=X  Specify series (ADVENTURE, ARTISTIC, etc.)', LogLevel.INFO);
+  EnhancedLogger.log('--category=X Specify category ID', LogLevel.INFO);
+  EnhancedLogger.log('--no-series Disable series-based generation', LogLevel.INFO);
+  EnhancedLogger.log('--no-categories Disable category generation', LogLevel.INFO);
+  EnhancedLogger.log('--legacy-prompt Use legacy prompt generator', LogLevel.INFO);
   
   try {
     // Create AI service
@@ -58,10 +128,10 @@ async function main() {
     // Create Replicate service with optimized parameters
     const replicateService = new ReplicateService({
       apiKey: process.env.REPLICATE_API_KEY,
-      defaultModel: 'black-forest-labs/flux-1.1-pro', 
-      defaultWidth: 2048,
-      defaultHeight: 2048,
-      defaultNumInferenceSteps: 45,
+      defaultModel: process.env.DEFAULT_MODEL || 'black-forest-labs/flux-1.1-pro', 
+      defaultWidth: options.highQuality ? 768 : 512,
+      defaultHeight: options.highQuality ? 768 : 512,
+      defaultNumInferenceSteps: options.highQuality ? 45 : 28,
       defaultGuidanceScale: 4.5
     });
     
@@ -108,142 +178,91 @@ async function main() {
     system.registerAgent(metadataGeneratorAgent);
     
     // Log registered agents
-    console.log('╭───────────────────────────────────────────╮');
-    console.log('│ Registered Agents:                        │');
+    EnhancedLogger.printSection('Registered Agents');
     system.getAllAgents().forEach(agent => {
-      console.log(`│ - ${agent.role} (${agent.id})                 │`);
+      EnhancedLogger.log(`${agent.role} (${agent.id.substring(0, 8)})`, LogLevel.INFO);
     });
-    console.log('╰───────────────────────────────────────────╯');
     
     // Initialize the system
     await system.initialize();
     
-    // Parse command line arguments for generation options
-    const options = {
-      useDefault: process.argv.includes('--default'),
-      forceBowlerHat: process.argv.includes('--bowler'),
-      enhanceMagritte: process.argv.includes('--enhance') || true, // Enable enhanced Magritte mode by default
-      highQuality: process.argv.includes('--hq') || true, // Enable high quality by default
-      randomCombinations: process.argv.includes('--random'),
-      useSeries: !process.argv.includes('--no-series'),
-      useCategories: !process.argv.includes('--no-categories'),
-      concept: process.argv.find(arg => arg.startsWith('--concept='))?.split('=')[1],
-      series: process.argv.find(arg => arg.startsWith('--series='))?.split('=')[1],
-      category: process.argv.find(arg => arg.startsWith('--category='))?.split('=')[1],
-      useLegacyPrompt: process.argv.includes('--legacy-prompt')
-    };
+    // Flag to track if we're using the enhanced generator
+    let useEnhancedGenerator = !options.legacy;
     
-    // If no specific series is provided, randomly select an interesting one
-    if (!options.series && options.useSeries) {
-      const interestingSeries = ['hipster', 'adventure', 'artistic'];
-      options.series = interestingSeries[Math.floor(Math.random() * interestingSeries.length)];
-      console.log(`Automatically selected series: ${options.series.toUpperCase()}`);
+    // Check if a specific series was provided
+    if (!options.series && !options.noSeries) {
+      // Randomly pick a series
+      const seriesIds = ['adventure', 'artistic', 'business', 'culinary', 'hipster', 'historical', 'magical', 'musical', 'royal', 'scientific'];
+      options.series = seriesIds[Math.floor(Math.random() * seriesIds.length)];
+      EnhancedLogger.log(`Automatically selected series: ${options.series.toUpperCase()}`, LogLevel.INFO);
     }
     
-    // Generate concept based on options
-    let concept;
-    let useEnhancedGenerator = false;
-    
-    if (options.useDefault) {
-      concept = 'a distinguished bear portrait with a bowler hat in the style of René Magritte, with perfect smooth matte finish, immaculate edge control, and pristine surface quality';
-      console.log('Using default concept');
-    } else if (options.concept) {
-      concept = options.concept;
-      console.log('Using provided concept');
-    } else if (options.useLegacyPrompt) {
-      // Use legacy bear concept generator
-      console.log('Using legacy bear concept generator');
-      const generationOptions = { 
-        forceBowlerHat: options.forceBowlerHat,
-        useSeries: options.useSeries,
-        useCategories: options.useCategories,
-        useRandomCombinations: options.randomCombinations || (!options.series && !options.category)
-      };
-      
-      concept = bearConceptGenerator.generateBearConcept(generationOptions);
-    } else {
-      // Use our new enhanced bear prompt generator
-      console.log('Using enhanced bear prompt generator');
-      concept = enhancedPromptGenerator.generatePortraitPrompt({
-        forceBowlerHat: options.forceBowlerHat,
-        seriesId: options.series
+    // Generate concept
+    let concept = '';
+    if (options.default) {
+      EnhancedLogger.log('Using default concept', LogLevel.INFO);
+      concept = defaultConcept;
+    } else if (args.length > 0) {
+      EnhancedLogger.log('Using provided concept', LogLevel.INFO);
+      concept = args.join(' ');
+    } else if (options.legacy) {
+      EnhancedLogger.log('Using legacy bear concept generator', LogLevel.INFO);
+      concept = bearGenerator.generateBearConcept({
+        forceBowlerHat: options.bowler,
+        useSeries: !options.noSeries,
+        useCategories: !options.noCategories,
+        useRandomCombinations: options.random
       });
+    } else {
+      EnhancedLogger.log('Using enhanced bear prompt generator', LogLevel.INFO);
       
-      // Flag for the multi-agent system to use enhanced generator via StyleIntegrationService
-      useEnhancedGenerator = true;
+      // Use the styleService to generate an enhanced prompt
+      const enhancedPrompt = await styleService.generateEnhancedPrompt(
+        "distinguished bear portrait in profile wearing a bowler hat", 
+        {
+          seriesId: options.series,
+          categoryId: options.category,
+          includeBowlerHat: options.bowler,
+          includeRandomElements: options.random,
+          enhanceMagritteTechniques: options.enhanceMagritte
+        }
+      );
+      
+      // Use the enhanced prompt
+      concept = enhancedPrompt.prompt;
     }
     
-    console.log('╭───────────────────────────────────────────╮');
-    console.log('│ Generated Prompt:                         │');
-    console.log('╰───────────────────────────────────────────╯');
+    // Display the generated concept
+    EnhancedLogger.printSection('Generated Prompt');
     console.log(concept);
     console.log('═'.repeat(80));
     
-    // Define a test project with enhanced options
+    // Create a test project
     const testProject = {
-      title: `Magritte Bear Portrait - ${options.series ? options.series.charAt(0).toUpperCase() + options.series.slice(1) : 'Distinguished'} Series`,
-      description: `A ${options.series || 'distinguished'} bear in Magritte surrealist style`,
-      concept,
-      style: 'bear_pfp',
-      outputFilename: `magritte_bear_${Date.now()}`,
-      requirements: [
-        'Generate museum-quality Magritte-style image',
-        'Follow surrealist style guidelines with mathematical precision',
-        'Create a visually compelling composition with philosophical elements',
-        'Render with perfectly smooth matte finish and hyper-precise edge control',
-        'Ensure proper compositional balance for profile use'
-      ],
-      // Pass character generation options
-      characterOptions: {
-        categoryId: options.category || undefined,
-        seriesType: options.series || undefined,
-        allowAiEnhancement: true
-      },
+      title: 'Magritte Bear',
+      concept: concept,
+      style: options.style || 'magritte',
+      outputFilename: options.output || 'magritte-bear',
       artDirection: {
-        enhanceMagritte: true,
-        focusOnSurfaceQuality: true,
-        preferredColors: [
-          'Belgian sky blue',
-          'deep prussian blue',
-          'rich mahogany brown', 
-          'twilight purple'
-        ],
-        highQuality: true,
-        modelParams: {
-          inferenceSteps: 45,
-          guidanceScale: 4.5,
-          controlnet_conditioning_scale: 0.8,
-          clip_skip: 2
-        }
+        visualElement: options.bowler ? 'bowler hat' : undefined,
+        technique: options.highQuality ? 'highly detailed' : undefined
       },
-      // Flag to use our enhanced bear generator
-      useEnhancedBearGenerator: useEnhancedGenerator
+      requirements: []
     };
     
-    console.log('╭───────────────────────────────────────────╮');
-    console.log(`│ 🎨 Generating artwork                      │`);
-    console.log(`│ 🖌️ Style: ${testProject.style.substring(0, 30).padEnd(30)} │`);
-    if (options.enhanceMagritte) console.log('│ ✓ Enhanced Magritte Mode Enabled             │');
-    if (options.highQuality) console.log('│ ✓ High Quality Mode Enabled                  │');
-    if (useEnhancedGenerator) console.log('│ ✓ Enhanced Bear Generator Enabled            │');
-    console.log('╰───────────────────────────────────────────╯');
+    // Generate the artwork
+    EnhancedLogger.printSection('Generating Artwork');
+    EnhancedLogger.log(`Style: ${testProject.style.substring(0, 30)}`, LogLevel.INFO);
+    if (options.enhanceMagritte) EnhancedLogger.log('Enhanced Magritte Mode Enabled', LogLevel.INFO);
+    if (options.highQuality) EnhancedLogger.log('High Quality Mode Enabled', LogLevel.INFO);
+    if (useEnhancedGenerator) EnhancedLogger.log('Enhanced Bear Generator Enabled', LogLevel.INFO);
     
-    // Run the project
     const result = await system.runArtProject(testProject);
     
-    // Check the result
-    if (result.success) {
-      console.log('╭───────────────────────────────────────────╮');
-      console.log('│ ✓ Generation Complete                     │');
-      console.log(`│ 🖼️ Image: ${result.artwork.imageUrl}            │`);
-      console.log(`│ 📁 Saved to: ${result.artwork.files.image}      │`);
-      console.log('╰───────────────────────────────────────────╯');
-    } else {
-      console.error('╭───────────────────────────────────────────╮');
-      console.error('│ ✗ Generation Failed                       │');
-      console.error(`│ Error: ${result.error?.message || 'Unknown error'} │`);
-      console.error('╰───────────────────────────────────────────╯');
-    }
+    // Output the result
+    EnhancedLogger.printSection('Generation Complete');
+    EnhancedLogger.log(`Image: ${result.artwork.imageUrl}`, LogLevel.INFO);
+    EnhancedLogger.log(`Saved to: ${result.artwork.files.image}`, LogLevel.INFO);
   } catch (error) {
     console.error('Error running test:', error);
   }
