@@ -1,5 +1,11 @@
-"Create a perfectly centered portrait composition of a distinguished bear's face, rendered in the distinctive style of René Magritte's paintings. The bear should have a calm, pensive expression with intelligent, human-like eyes. It should be wearing a classic black bowler hat, slightly tilted, and a crisp white collared shirt.
+Create a formal portrait of a distinguished bear wearing a black bowler hat, centered and framed for use as a profile picture. Render in René Magritte's distinctive surrealist style:
 
-Employ Magritte's precise, representational technique with a smooth, matte finish and subtle visible brushwork in flat color areas. Use soft yet defined edges with careful control over gradients and tonal transitions. Render with clean, unmodulated color fields reminiscent of Belgian skies, and pay close attention to realistic light and shadow.
-
-The background should be a simple, neutral color field, perhaps a pale blue-gray, allowing the bear portrait to be the central focus. Maintain an overall sense of surreal juxtaposition while adhering to the formal qualities of Magritte's painting style."
+- Smooth, matte finish with subtle visible brushwork in flat color areas
+- Soft yet precise edges with careful gradients reminiscent of Belgian skies
+- Oil painting technique with minimal impasto and texture
+- Precise yet painterly rendering of the bear's facial features and fur
+- Clean, unmodulated color fields with subtle tonal transitions
+- Careful attention to realistic light and shadow on the bear's form
+- Simple, nondescript studio backdrop to remove contextual distractions
+- The bear's expression should convey a sense of poise and quiet dignity
+- Overall composition should be balanced and centered for profile picture use

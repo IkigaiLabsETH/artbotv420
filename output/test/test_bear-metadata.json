@@ -1,21 +1,21 @@
 {
-  "id": "0cddf92e-db4f-41ec-aa9e-30ea7b558860",
+  "id": "43284ec7-5cae-4cda-984f-44bd9523f058",
   "title": "Test Bear Portrait",
   "description": "A test of the ArtBot multi-agent system",
-  "prompt": "\"Create a perfectly centered portrait composition of a distinguished bear's face, rendered in the distinctive style of René Magritte's paintings. The bear should have a calm, pensive expression with intelligent, human-like eyes. It should be wearing a classic black bowler hat, slightly tilted, and a crisp white collared shirt.\n\nEmploy Magritte's precise, representational technique with a smooth, matte finish and subtle visible brushwork in flat color areas. Use soft yet defined edges with careful control over gradients and tonal transitions. Render with clean, unmodulated color fields reminiscent of Belgian skies, and pay close attention to realistic light and shadow.\n\nThe background should be a simple, neutral color field, perhaps a pale blue-gray, allowing the bear portrait to be the central focus. Maintain an overall sense of surreal juxtaposition while adhering to the formal qualities of Magritte's painting style.\"",
+  "prompt": "Create a formal portrait of a distinguished bear wearing a black bowler hat, centered and framed for use as a profile picture. Render in René Magritte's distinctive surrealist style:\n\n- Smooth, matte finish with subtle visible brushwork in flat color areas\n- Soft yet precise edges with careful gradients reminiscent of Belgian skies\n- Oil painting technique with minimal impasto and texture\n- Precise yet painterly rendering of the bear's facial features and fur\n- Clean, unmodulated color fields with subtle tonal transitions\n- Careful attention to realistic light and shadow on the bear's form\n- Simple, nondescript studio backdrop to remove contextual distractions\n- The bear's expression should convey a sense of poise and quiet dignity\n- Overall composition should be balanced and centered for profile picture use",
   "style": "bear_pfp",
-  "imageUrl": "https://replicate.delivery/xezq/lvm40fGAqyRfTkScuUZ0R3zXF4LilX2xxICMspDJeQeXvBuRB/tmp1mhjinwt.png",
+  "imageUrl": "https://replicate.delivery/xezq/PD5WUwjaoLqlBBJPvbdJzWb7yOdaOD8futoHe70ryeYpuB3oA/tmpjdeesyor.png",
   "character": {
-    "name": "Reginald J. Bearpington, Esq.",
-    "title": "The Distinguished Urbanite",
+    "name": "Reginald B. Grissleigh, Esq.",
+    "title": "The Distinguished Dignitary",
     "personality": [
       "Discerning",
+      "Scholarly",
       "Composed",
-      "Sagacious",
-      "Urbane",
-      "Perspicacious"
+      "Dignified",
+      "Sagacious"
     ],
-    "backstory": "Born into the aristocratic ursine society, Sir Cedric Bearpington's impeccable sartorial distinction and unwavering commitment to propriety paved his path to becoming the preeminent ambassador of etiquette. His seminal treatise, \"The Unbearable Lightness of Bearing,\" revolutionized the very notion of dignified comportment, establishing the bowler hat as the apex of civilized headgear -- a philosophical statement as much as a fashion statement, questioning the thin line between the absurd and the esteemed."
+    "backstory": "Born into high society, Ursus Distingué cultivated an air of sophistication from an early age, donning his signature bowler hat as a symbol of his elevated status. His penchant for philosophical musings and insightful critiques propelled him to the forefront of the ursine intellectual elite. Yet, it was his groundbreaking work, \"The Surreality of Salmon,\" that cemented his reputation as a leading thinker, blurring the lines between the tangible and the enigmatic realms of existence."
   },
-  "createdAt": "2025-03-23T18:37:42.490Z"
+  "createdAt": "2025-03-23T19:07:01.182Z"
 }
