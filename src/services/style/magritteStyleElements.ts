@@ -153,14 +153,169 @@ export const magritteStyleElements = {
     "twilight_purple": { r: 78, g: 81, b: 128 },
     "morning_grey": { r: 169, g: 169, b: 169 },
     "horizon_blue": { r: 137, g: 207, b: 240 }
+  },
+
+  /**
+   * Magritte-specific keywords for various aspects of his work
+   */
+  magritteKeywords: {
+    // Portrait Elements
+    portraitElements: [
+      'mysterious face', 'enigmatic expression', 'classical portrait', 'traditional profile',
+      'philosophical gaze', 'metaphysical features', 'surreal portrait', 'symbolic face',
+      'floating head', 'mirror reflection', 'masked figure', 'veiled face',
+      'traditional pose', 'classical composition', 'perfect symmetry', 'mysterious depth'
+    ],
+    
+    // Painting Techniques
+    paintingTechniques: [
+      'traditional oil painting', 'flawless brushwork', 'pristine edges', 'perfect matte finish',
+      'classical canvas texture', 'traditional medium', 'perfect surface quality', 'crystalline detail',
+      'subtle shadows', 'unified lighting', 'smooth transitions', 'delicate modeling',
+      'museum quality', 'masterful technique', 'perfect execution', 'classical approach'
+    ],
+    
+    // Core Symbols and Objects
+    coreSymbols: [
+      'vintage fedora', 'classic newsboy cap', 'wool beanie', 'wide-brim felt hat',
+      'flat cap', 'slouchy knit cap', 'porkpie hat', 'tweed flat cap',
+      'green apples', 'clouds', 'pipes', 'mirrors', 'curtains', 'windows', 
+      'birds', 'men in suits', 'floating rocks', 'everyday objects', 'mysterious doors',
+      'candlesticks', 'chairs', 'tables', 'fruit', 'musical instruments',
+      'wine bottles', 'bread loaves', 'books', 'paintings', 'frames'
+    ],
+    
+    // Philosophical Concepts
+    philosophicalConcepts: [
+      'classical surrealism', 'traditional paradox', 'perfect mystery',
+      'metaphysical questioning', 'philosophical depth', 'reality questioning',
+      'classical reality', 'identity exploration', 'traditional space', 'visual poetry'
+    ],
+    
+    // Visual Elements
+    enhancedVisualElements: [
+      'perfect lighting', 'traditional shadows', 'classical perspective',
+      'pristine surfaces', 'perfect reflections', 'traditional depth',
+      'flawless composition', 'classical framing', 'perfect symmetry',
+      'day-night paradox', 'impossible shadows', 'floating objects'
+    ],
+    
+    // Settings and Environments
+    environments: [
+      'traditional interiors', 'classical landscapes', 'perfect rooms',
+      'pristine skies', 'traditional architecture', 'perfect spaces',
+      'classical chambers', 'traditional windows', 'perfect staging',
+      'belgian coastline', 'stone walls', 'wooden floors', 'wallpaper',
+      'fireplaces', 'seaside views', 'garden paths', 'forest clearings'
+    ],
+
+    // Traditional Materials
+    traditionalMaterials: [
+      'oil paint', 'canvas texture', 'wooden frames', 'linen surface',
+      'natural pigments', 'varnish finish', 'traditional brushwork',
+      'classical glazing', 'traditional gesso', 'artist palette'
+    ]
+  },
+
+  /**
+   * Magritte's specific artistic approaches
+   */
+  artisticApproaches: {
+    composition: [
+      'traditionally painted objects',
+      'classical arrangements',
+      'perfect staging',
+      'traditional displays',
+      'flawless rendering',
+      'classical spaces',
+      'perfect reflections',
+      'traditional windows',
+      'classical perspective',
+      'perfect space distortion'
+    ],
+    lighting: [
+      'traditional natural light',
+      'classical illumination',
+      'perfect shadows',
+      'traditional atmosphere',
+      'classical twilight',
+      'perfect darkness',
+      'traditional radiance',
+      'classical luminescence',
+      'perfect atmosphere',
+      'traditional light'
+    ],
+    color: [
+      'deep sky blue (RGB: 135, 206, 235)',
+      'crisp daylight blue (RGB: 176, 196, 222)',
+      'clean grey tones (RGB: 128, 128, 128)',
+      'pure black (RGB: 0, 0, 0)',
+      'pristine white (RGB: 255, 255, 255)',
+      'subtle earth tones (RGB: 193, 154, 107)',
+      'clear cloud white (RGB: 236, 236, 236)',
+      'precise shadow tones (RGB: 47, 79, 79)',
+      'clean highlight blue (RGB: 230, 230, 250)',
+      'pure neutral tones (RGB: 210, 180, 140)'
+    ],
+    narrative: [
+      'classical philosophical questions',
+      'traditional paradoxes',
+      'perfect visual poetry',
+      'classical metaphysics',
+      'traditional reality questions',
+      'perfect surrealism',
+      'classical dialogues',
+      'traditional narratives',
+      'perfect stories',
+      'classical identity'
+    ],
+    techniques: [
+      'flawless oil technique',
+      'perfect edge control',
+      'traditional surface texture',
+      'classical light treatment',
+      'pristine detail rendering',
+      'perfect shadow modeling',
+      'traditional color transitions',
+      'classical matte finish',
+      'perfect canvas quality',
+      'traditional oil methods'
+    ]
+  },
+
+  /**
+   * Additional RGB values for extended Magritte color palette
+   */
+  extendedRgbValues: {
+    "deep_sky_blue": { r: 135, g: 206, b: 235 },
+    "crisp_daylight_blue": { r: 176, g: 196, b: 222 },
+    "clean_grey": { r: 128, g: 128, b: 128 },
+    "pure_black": { r: 0, g: 0, b: 0 },
+    "pristine_white": { r: 255, g: 255, b: 255 },
+    "subtle_earth": { r: 193, g: 154, b: 107 },
+    "clear_cloud": { r: 236, g: 236, b: 236 },
+    "precise_shadow": { r: 47, g: 79, b: 79 },
+    "clean_highlight_blue": { r: 230, g: 230, b: 250 },
+    "pure_neutral": { r: 210, g: 180, b: 140 }
   }
 };
 
 /**
  * Get specific RGB color values for a Magritte palette color
  */
-export function getRgbColor(colorName: keyof typeof magritteStyleElements.rgbValues): { r: number, g: number, b: number } {
-  return magritteStyleElements.rgbValues[colorName] || magritteStyleElements.rgbValues.sky_blue;
+export function getRgbColor(colorName: keyof typeof magritteStyleElements.rgbValues | keyof typeof magritteStyleElements.extendedRgbValues): { r: number, g: number, b: number } {
+  // First check the main RGB values
+  if (colorName in magritteStyleElements.rgbValues) {
+    return magritteStyleElements.rgbValues[colorName as keyof typeof magritteStyleElements.rgbValues];
+  }
+  
+  // Then check the extended RGB values
+  if (colorName in magritteStyleElements.extendedRgbValues) {
+    return magritteStyleElements.extendedRgbValues[colorName as keyof typeof magritteStyleElements.extendedRgbValues];
+  }
+  
+  // Return default if not found
+  return magritteStyleElements.rgbValues.sky_blue;
 }
 
 /**
@@ -168,6 +323,28 @@ export function getRgbColor(colorName: keyof typeof magritteStyleElements.rgbVal
  */
 export function getStyleElements(category: keyof typeof magritteStyleElements, count: number = 1): string[] {
   const elements = magritteStyleElements[category];
+  if (!elements || !Array.isArray(elements) || elements.length === 0) {
+    return [];
+  }
+  
+  if (elements.length <= count) {
+    return [...elements];
+  }
+  
+  const shuffled = [...elements].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
+
+/**
+ * Get random elements from a nested category
+ */
+export function getNestedStyleElements(parent: keyof typeof magritteStyleElements, category: string, count: number = 1): string[] {
+  const parentObj = magritteStyleElements[parent];
+  if (!parentObj || typeof parentObj !== 'object' || !(category in parentObj)) {
+    return [];
+  }
+  
+  const elements = (parentObj as any)[category];
   if (!elements || !Array.isArray(elements) || elements.length === 0) {
     return [];
   }
@@ -190,7 +367,12 @@ export function generateMagritteStyleBlock(): string {
   const composition = getStyleElements('compositionGuidelines', 2).join(', ');
   const reference = getStyleElements('references', 1)[0];
   
-  return `The painting employs ${technicalStyle} with ${visualElements}. The palette features ${colorDescription}, composed with ${composition}. Referencing ${reference}. ${magritteStyleElements.moodAndTone}`;
+  // Add new elements from the enhanced keywords
+  const portraitElement = getNestedStyleElements('magritteKeywords', 'portraitElements', 1)[0];
+  const technique = getNestedStyleElements('artisticApproaches', 'techniques', 1)[0];
+  const environment = getNestedStyleElements('magritteKeywords', 'environments', 1)[0];
+  
+  return `The painting employs ${technicalStyle} with ${visualElements}. The palette features ${colorDescription}, composed with ${composition}. Featuring ${portraitElement} with ${technique} in ${environment}. Referencing ${reference}. ${magritteStyleElements.moodAndTone}`;
 }
 
 /**
@@ -204,7 +386,11 @@ export function generateMagritteNegativePrompt(): string {
  * Generate color instructions for a Magritte painting
  */
 export function generateColorInstructions(count: number = 3): string {
-  const colors = getStyleElements('colorPalette', count);
+  // Combine standard colors with artistic approach colors
+  const standardColors = getStyleElements('colorPalette', Math.ceil(count/2));
+  const approachColors = getNestedStyleElements('artisticApproaches', 'color', Math.floor(count/2));
+  const colors = [...standardColors, ...approachColors].slice(0, count);
+  
   return `Use a precise Magritte palette featuring ${colors.join(', ')}.`;
 }
 
@@ -212,6 +398,49 @@ export function generateColorInstructions(count: number = 3): string {
  * Generate composition instructions for a Magritte painting
  */
 export function generateCompositionInstructions(count: number = 3): string {
-  const compositions = getStyleElements('compositionGuidelines', count);
+  // Combine standard composition with artistic approach composition
+  const standardComposition = getStyleElements('compositionGuidelines', Math.ceil(count/2));
+  const approachComposition = getNestedStyleElements('artisticApproaches', 'composition', Math.floor(count/2));
+  const compositions = [...standardComposition, ...approachComposition].slice(0, count);
+  
   return `Compose with ${compositions.join(', ')}.`;
+}
+
+/**
+ * Generate philosophical narrative for a Magritte painting
+ */
+export function generatePhilosophicalNarrative(): string {
+  const narrativeElement = getNestedStyleElements('artisticApproaches', 'narrative', 1)[0];
+  const philosophicalConcept = getNestedStyleElements('magritteKeywords', 'philosophicalConcepts', 1)[0];
+  
+  return `Infuse the image with ${narrativeElement} exploring ${philosophicalConcept}.`;
+}
+
+/**
+ * Generate technical approach for a Magritte painting
+ */
+export function generateTechnicalApproach(): string {
+  const paintingTechnique = getNestedStyleElements('magritteKeywords', 'paintingTechniques', 1)[0];
+  const traditionalMaterial = getNestedStyleElements('magritteKeywords', 'traditionalMaterials', 1)[0];
+  const technique = getNestedStyleElements('artisticApproaches', 'techniques', 1)[0];
+  
+  return `Render with ${paintingTechnique} using ${traditionalMaterial} and ${technique}.`;
+}
+
+/**
+ * Generate lighting instructions for a Magritte painting
+ */
+export function generateLightingInstructions(): string {
+  const lighting = getNestedStyleElements('artisticApproaches', 'lighting', 2).join(' with ');
+  
+  return `Illuminate with ${lighting}.`;
+}
+
+/**
+ * Generate object selection for a Magritte painting
+ */
+export function generateObjectSelections(count: number = 2): string {
+  const symbols = getNestedStyleElements('magritteKeywords', 'coreSymbols', count);
+  
+  return `Include ${symbols.join(' and ')} as focal elements.`;
 } 

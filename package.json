@@ -18,6 +18,9 @@
     "start": "node dist/test-artbot.js",
     "test:prompt": "ts-node src/test-enhanced-prompt.ts",
     "test:magritte": "ts-node src/test-magritte-focus.ts",
+    "test:enhanced": "ts-node src/test-enhanced-magritte.ts",
+    "test:enhanced:single": "ts-node src/test-enhanced-magritte.ts --single",
+    "test:enhanced:batch": "ts-node src/test-enhanced-magritte.ts --full",
     "example:magritte": "ts-node src/examples/magritte-prompt-example.ts",
     "example:enhanced": "ts-node src/examples/enhanced-magritte-style-example.ts"
   },
