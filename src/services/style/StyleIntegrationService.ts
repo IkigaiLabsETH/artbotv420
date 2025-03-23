@@ -36,6 +36,8 @@ import {
   selectRandomTemplate,
   getTemplateById
 } from './magrittePromptTemplates';
+// Import our new enhanced bear prompt generator
+import { EnhancedBearPromptGenerator } from '../../generators/EnhancedBearPromptGenerator';
 
 /**
  * Style Integration Service
@@ -52,6 +54,7 @@ export class StyleIntegrationService {
   private promptEnhancer: MagrittePromptEnhancer;
   private promptGenerator: EnhancedPromptGenerator;
   private promptService: EnhancedMagrittePromptService;
+  private enhancedBearPromptGenerator: EnhancedBearPromptGenerator; // Add new generator
   
   /**
    * Constructor
@@ -67,6 +70,7 @@ export class StyleIntegrationService {
     this.promptEnhancer = new MagrittePromptEnhancer();
     this.promptGenerator = new EnhancedPromptGenerator(aiService);
     this.promptService = new EnhancedMagrittePromptService(aiService);
+    this.enhancedBearPromptGenerator = new EnhancedBearPromptGenerator(); // Initialize new generator
     
     AgentLogger.log(`StyleIntegrationService (${this.id}) initialized with all style services`, LogLevel.INFO);
   }
@@ -81,38 +85,71 @@ export class StyleIntegrationService {
     const seriesId = options.seriesId || (options.series ? options.series.id : null);
     const series = seriesId ? getSeriesById(seriesId) : getRandomSeries();
     
-    // First, use the enhanced prompt service
-    const enhancedPromptResult = await this.promptService.generateEnhancedPrompt(concept, {
-      seriesId: series?.id,
-      templateId: options.templateId,
-      characterName: options.characterName,
-      additionalElements: options.additionalElements,
-      emphasis: options.emphasis || 'balanced',
-      preferredVisualElements: options.preferredVisualElements,
-      colorPalette: options.colorPalette
-    });
+    // Check if this is a bear portrait request and we should use the enhanced generator
+    const isBearPortrait = concept.toLowerCase().includes('bear') || 
+                           (options.style === 'bear_pfp') || 
+                           (options.useEnhancedBearGenerator === true);
     
-    // Then, evaluate and improve the prompt
-    const evaluation = this.styleEvaluator.evaluatePrompt(enhancedPromptResult.prompt);
+    let finalPrompt = '';
+    let enhancedPromptResult: any = {};
     
-    // If the evaluation score is below threshold, further enhance
-    let finalPrompt = enhancedPromptResult.prompt;
-    if (evaluation.score < 0.8) {
-      // Apply additional prompt enhancer
-      const enhancedResult = await this.promptEnhancer.enhancePrompt(
-        finalPrompt,
-        series?.id
-      );
-      finalPrompt = enhancedResult.prompt;
+    if (isBearPortrait && options.useEnhancedBearGenerator !== false) {
+      // Use our new enhanced bear portrait generator
+      AgentLogger.log(`Using Enhanced Bear Portrait Generator for: ${concept}`, LogLevel.INFO);
       
-      // Apply specific bear portrait enhancements
-      finalPrompt = enhanceBearPortraitPrompt(finalPrompt);
+      finalPrompt = this.enhancedBearPromptGenerator.generatePortraitPrompt({
+        forceBowlerHat: options.forceBowlerHat,
+        seriesId: seriesId,
+        emphasis: options.emphasis
+      });
+      
+      enhancedPromptResult = {
+        prompt: finalPrompt,
+        templateName: 'Enhanced Bear Portrait Template',
+        negativePrompt: generateMagritteNegativePrompt(),
+        series: series,
+        usedEnhancedBearGenerator: true
+      };
+      
+      AgentLogger.log(`Generated enhanced bear portrait prompt: ${finalPrompt.substring(0, 50)}...`, LogLevel.INFO);
+    } else {
+      // First, use the enhanced prompt service
+      enhancedPromptResult = await this.promptService.generateEnhancedPrompt(concept, {
+        seriesId: series?.id,
+        templateId: options.templateId,
+        characterName: options.characterName,
+        additionalElements: options.additionalElements,
+        emphasis: options.emphasis || 'balanced',
+        preferredVisualElements: options.preferredVisualElements,
+        colorPalette: options.colorPalette
+      });
+      
+      // Then, evaluate and improve the prompt
+      const evaluation = this.styleEvaluator.evaluatePrompt(enhancedPromptResult.prompt);
+      
+      // If the evaluation score is below threshold, further enhance
+      finalPrompt = enhancedPromptResult.prompt;
+      if (evaluation.score < 0.8) {
+        // Apply additional prompt enhancer
+        const enhancedResult = await this.promptEnhancer.enhancePrompt(
+          finalPrompt,
+          series?.id
+        );
+        finalPrompt = enhancedResult.prompt;
+        
+        // Apply specific bear portrait enhancements
+        finalPrompt = enhanceBearPortraitPrompt(finalPrompt);
+      }
+      
+      enhancedPromptResult = {
+        ...enhancedPromptResult,
+        prompt: finalPrompt,
+        evaluation: evaluation
+      };
     }
     
     return {
       ...enhancedPromptResult,
-      prompt: finalPrompt,
-      evaluation: evaluation,
       series: series,
       // Include all integration results
       integrationInfo: {
@@ -121,9 +158,21 @@ export class StyleIntegrationService {
         magritteStyleBlock: generateMagritteStyleBlock(),
         bearSeries: series,
         template: enhancedPromptResult.templateName,
-        visualElements: getStyleElements('visualElements', 3)
+        visualElements: getStyleElements('visualElements', 3),
+        usedEnhancedBearGenerator: enhancedPromptResult.usedEnhancedBearGenerator || false
       }
     };
+  }
+  
+  /**
+   * Generate a bear portrait prompt using the enhanced generator
+   */
+  generateEnhancedBearPrompt(options: any = {}) {
+    return this.enhancedBearPromptGenerator.generatePortraitPrompt({
+      forceBowlerHat: options.forceBowlerHat,
+      seriesId: options.seriesId,
+      emphasis: options.emphasis
+    });
   }
   
   /**
@@ -171,7 +220,8 @@ export class StyleIntegrationService {
       magritteTemplates: MAGRITTE_TEMPLATES,
       styleEmphasisOptions: this.getEmphasisOptions(),
       visualElementOptions: getStyleElements('visualElements'),
-      colorPaletteOptions: getStyleElements('colorPalette')
+      colorPaletteOptions: getStyleElements('colorPalette'),
+      enhancedBearPromptGenerator: 'available'
     };
   }
   

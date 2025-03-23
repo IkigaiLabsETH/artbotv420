@@ -26,7 +26,13 @@
     "test:enhanced-refiner": "ts-node src/test-enhanced-refiner.ts",
     "character-gen": "ts-node src/test-character-generation.ts",
     "test:concepts": "ts-node src/test-bear-concepts.ts",
-    "varied-bear": "ts-node src/test-varied-bear.ts"
+    "varied-bear": "ts-node src/test-varied-bear.ts",
+    "test:enhanced-bear": "ts-node src/test-enhanced-bear-prompt.ts",
+    "generate:enhanced-bear": "ts-node src/test-enhanced-bear-art.ts",
+    "generate:enhanced-bear:bowler": "ts-node src/test-enhanced-bear-art.ts --bowler",
+    "generate:enhanced-bear:academic": "ts-node src/test-enhanced-bear-art.ts --series=academic",
+    "generate:enhanced-bear:batch": "ts-node src/test-enhanced-bear-art.ts --count=3",
+    "generate:enhanced-bear:prompt-only": "ts-node src/test-enhanced-bear-art.ts --skip-generation"
   },
   "author": "ArtBot Team",
   "license": "MIT",
