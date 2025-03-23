@@ -1,21 +1,21 @@
 {
-  "id": "055dffed-faa0-4c91-bee8-6c89da39512b",
+  "id": "0cddf92e-db4f-41ec-aa9e-30ea7b558860",
   "title": "Test Bear Portrait",
   "description": "A test of the ArtBot multi-agent system",
-  "prompt": "\"Create a formal portrait of a distinguished bear wearing a bowler hat, in the distinctive style of René Magritte. The composition should be centered and framed for use as a profile picture.\n\nPainting Style:\n- Smooth, matte finish with subtle visible brushwork in flat color areas\n- Soft, precise edges with careful gradients reminiscent of Belgian skies\n- Oil painting technique with minimal texture and impasto\n- Deliberate, controlled paint application with unmodulated color fields\n\nBear Portrait Elements:\n- Regal, anthropomorphized bear with distinguished facial features\n- Formal portrait composition with the bear's head and shoulders centered\n- Bowler hat as the sole human attire, creating a surreal juxtaposition\n- Clean, precise lines and shapes with subtle tonal transitions\n- Careful attention to light and shadow, with a slightly dramatic lighting\n- Neutral, simplified background to emphasize the bear's presence\n\nMaintain Magritte's distinctive painting style, with a surreal and thought-provoking quality, while ensuring the portrait is perfectly centered and suitable for use as a profile picture.\"",
+  "prompt": "\"Create a perfectly centered portrait composition of a distinguished bear's face, rendered in the distinctive style of René Magritte's paintings. The bear should have a calm, pensive expression with intelligent, human-like eyes. It should be wearing a classic black bowler hat, slightly tilted, and a crisp white collared shirt.\n\nEmploy Magritte's precise, representational technique with a smooth, matte finish and subtle visible brushwork in flat color areas. Use soft yet defined edges with careful control over gradients and tonal transitions. Render with clean, unmodulated color fields reminiscent of Belgian skies, and pay close attention to realistic light and shadow.\n\nThe background should be a simple, neutral color field, perhaps a pale blue-gray, allowing the bear portrait to be the central focus. Maintain an overall sense of surreal juxtaposition while adhering to the formal qualities of Magritte's painting style.\"",
   "style": "bear_pfp",
-  "imageUrl": "https://replicate.delivery/xezq/TqGXClvmeIwFayEKJRqUxQlZVMgCyAqvue3eaDE17NOTbx2oA/tmptpen19n3.png",
+  "imageUrl": "https://replicate.delivery/xezq/lvm40fGAqyRfTkScuUZ0R3zXF4LilX2xxICMspDJeQeXvBuRB/tmp1mhjinwt.png",
   "character": {
-    "name": "Reginald P. Grizzlington, Esq.",
-    "title": "The Distinguished Ursine",
+    "name": "Reginald J. Bearpington, Esq.",
+    "title": "The Distinguished Urbanite",
     "personality": [
-      "Dignified",
       "Discerning",
-      "Sagacious",
       "Composed",
-      "Urbane"
+      "Sagacious",
+      "Urbane",
+      "Perspicacious"
     ],
-    "backstory": "Descended from a long line of ursine intellectuals, Sir Reginald Bruinsworth inherited his distinguished bearing and sartorial flair from noble ancestors who eschewed the wilderness for a life of scholarly pursuits. His seminal treatise on apian metaphysics, \"The Bees' Knees: An Inquiry into the Existential Ennui of Melittology,\" cemented his reputation as a leading thinker, while his signature bowler hat served as a whimsical acknowledgment that one cannot escape one's essential ursine nature, no matter how erudite the veneer."
+    "backstory": "Born into the aristocratic ursine society, Sir Cedric Bearpington's impeccable sartorial distinction and unwavering commitment to propriety paved his path to becoming the preeminent ambassador of etiquette. His seminal treatise, \"The Unbearable Lightness of Bearing,\" revolutionized the very notion of dignified comportment, establishing the bowler hat as the apex of civilized headgear -- a philosophical statement as much as a fashion statement, questioning the thin line between the absurd and the esteemed."
   },
-  "createdAt": "2025-03-23T09:50:34.708Z"
+  "createdAt": "2025-03-23T18:37:42.490Z"
 }

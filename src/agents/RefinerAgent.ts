@@ -8,6 +8,8 @@ import { Agent, AgentContext, AgentMessage, AgentResult, AgentRole, AgentStatus,
 import { AgentLogger } from '../utils/agentLogger';
 import { AIService } from '../services/ai/index';
 import { defaultGenerationConfig } from '../config/generationConfig';
+import { MagritteStyleEvaluator } from '../services/style/MagritteStyleEvaluator';
+import { magrittePatterns } from '../services/style/magrittePatterns';
 
 // Define the model optimization interface
 interface ModelOptimization {
@@ -49,10 +51,38 @@ const MODEL_OPTIMIZATIONS: Record<string, ModelOptimization> = {
     name: "MiniMax image-01",
     strength: "Clean, accurate image generation",
     keywords: ["best quality", "detailed", "sharp", "detailed"],
-    avoidWords: ["lowres", "blurry", "distorted"],
-    maxLength: 1500,
-    parameterKeys: ["guidance_scale", "negative_prompt"]
+    avoidWords: ["anime", "cartoon", "simple", "low quality"],
+    maxLength: 1200,
+    parameterKeys: ["guidance_scale", "num_inference_steps"]
   }
+};
+
+// Magritte-specific flux optimization
+const MAGRITTE_FLUX_OPTIMIZATION: ModelOptimization = {
+  name: "Magritte on Flux Pro",
+  strength: "Magritte style surrealism with photorealistic quality",
+  keywords: [
+    "René Magritte style", 
+    "Belgian surrealism", 
+    "photorealistic painting", 
+    "clean edges", 
+    "smooth surfaces", 
+    "philosophical surrealism",
+    "precise painting technique"
+  ],
+  avoidWords: [
+    "expressionistic", 
+    "rough texture", 
+    "heavy brushstrokes", 
+    "impasto", 
+    "sketchy", 
+    "loose style",
+    "abstract", 
+    "cartoon",
+    "anime"
+  ],
+  maxLength: 1800,
+  parameterKeys: ["guidance_scale", "num_inference_steps", "negative_prompt"]
 };
 
 /**
@@ -65,6 +95,7 @@ export class RefinerAgent implements IRefinerAgent {
   
   private aiService: AIService;
   private messages: AgentMessage[];
+  private magritteEvaluator: MagritteStyleEvaluator;
   
   /**
    * Constructor
@@ -75,8 +106,9 @@ export class RefinerAgent implements IRefinerAgent {
     this.status = AgentStatus.IDLE;
     this.aiService = aiService;
     this.messages = [];
+    this.magritteEvaluator = new MagritteStyleEvaluator();
     
-    AgentLogger.logAgentAction(this, 'Initialize', 'Refiner agent created');
+    AgentLogger.logAgentAction(this, 'Initialize', 'Refiner agent created with Magritte capabilities');
   }
   
   /**
@@ -88,46 +120,77 @@ export class RefinerAgent implements IRefinerAgent {
   }
 
   /**
-   * Refine a prompt based on feedback
+   * Refine a prompt with optional feedback
    */
   async refinePrompt(prompt: string, feedback?: string): Promise<string> {
     this.status = AgentStatus.BUSY;
-    AgentLogger.logAgentAction(this, 'Refine Prompt', `Refining prompt based on feedback: ${feedback?.substring(0, 50) || 'none'}`);
+    AgentLogger.logAgentAction(this, 'Refine Prompt', 'Refining prompt');
     
     try {
-      const hasFeedback = feedback && feedback.trim().length > 0;
+      // Check if this is a Magritte-style prompt based on content
+      const isMagritteStyle = this.isMagrittePrompt(prompt);
       
-      const aiPrompt = `
-      ${hasFeedback ? 
-        `Refine this image generation prompt based on the provided feedback:` :
-        `Review and improve this image generation prompt to make it more effective for AI image generation:`}
+      if (isMagritteStyle) {
+        AgentLogger.logAgentAction(this, 'Magritte Style', 'Detected Magritte-style prompt, applying specialized refinement');
+        const refinedPrompt = this.refineMagrittePrompt(prompt, feedback);
+        
+        this.status = AgentStatus.SUCCESS;
+        AgentLogger.logAgentAction(this, 'Prompt Refined', `Refined Magritte prompt: ${refinedPrompt.substring(0, 100)}...`);
+        
+        return refinedPrompt;
+      }
       
-      PROMPT:
-      "${prompt}"
+      // Standard prompt refinement logic
+      let refinedPrompt = prompt;
       
-      ${hasFeedback ? `FEEDBACK:\n${feedback}` : ''}
-      
-      Make these improvements:
-      1. Clarify visual details and composition
-      2. Add more specific artistic direction
-      3. Remove any contradictory or confusing elements
-      4. Ensure the language is precise and descriptive
-      5. Maintain the overall concept and style
-      
-      ${hasFeedback ? 'Address ALL issues mentioned in the feedback.' : ''}
-      
-      Return ONLY the refined prompt, without explanation or meta-commentary.
-      `;
-      
-      const response = await this.aiService.getCompletion({
-        messages: [
-          { role: 'system', content: 'You are a prompt engineering expert who specializes in refining prompts for AI image generation.' },
-          { role: 'user', content: aiPrompt }
-        ],
-        temperature: 0.4
-      });
-      
-      const refinedPrompt = response.content.trim();
+      // If feedback is provided, use it to improve the prompt
+      if (feedback) {
+        const aiPrompt = `
+        Refine this image generation prompt based on the feedback:
+        
+        Original prompt: "${prompt}"
+        
+        Feedback: ${feedback}
+        
+        Improve the prompt to address the feedback while maintaining the original intent.
+        Return ONLY the refined prompt, without explanation or meta-commentary.
+        `;
+        
+        const response = await this.aiService.getCompletion({
+          messages: [
+            { role: 'system', content: 'You are an expert at refining image generation prompts to improve results. You make prompts more specific, detailed, and effective.' },
+            { role: 'user', content: aiPrompt }
+          ],
+          temperature: 0.3
+        });
+        
+        refinedPrompt = response.content.trim();
+      } else {
+        // General refinement without specific feedback
+        const aiPrompt = `
+        Enhance this image generation prompt to produce better results:
+        
+        Original prompt: "${prompt}"
+        
+        Improve the prompt by:
+        1. Adding more specific details
+        2. Clarifying ambiguous elements
+        3. Adding relevant technical aspects (lighting, perspective, etc.)
+        4. Ensuring the prompt is well-structured
+        
+        Return ONLY the refined prompt, without explanation or meta-commentary.
+        `;
+        
+        const response = await this.aiService.getCompletion({
+          messages: [
+            { role: 'system', content: 'You are an expert at refining image generation prompts to improve results. You make prompts more specific, detailed, and effective.' },
+            { role: 'user', content: aiPrompt }
+          ],
+          temperature: 0.3
+        });
+        
+        refinedPrompt = response.content.trim();
+      }
       
       this.status = AgentStatus.SUCCESS;
       AgentLogger.logAgentAction(this, 'Prompt Refined', `Refined prompt: ${refinedPrompt.substring(0, 100)}...`);
@@ -150,40 +213,42 @@ export class RefinerAgent implements IRefinerAgent {
     AgentLogger.logAgentAction(this, 'Optimize for Model', `Optimizing prompt for model: ${model}`);
     
     try {
-      // Get model optimization info
-      const modelInfo = MODEL_OPTIMIZATIONS[model] || {
-        name: "Generic Model",
-        strength: "General image generation",
-        keywords: ["detailed", "high quality"],
-        avoidWords: [],
-        maxLength: 2000
-      };
+      // Check if this is a Magritte-style prompt for special handling
+      const isMagritteStyle = this.isMagrittePrompt(prompt);
       
-      const aiPrompt = `
-      Optimize this image generation prompt specifically for the ${modelInfo.name} model:
-      "${prompt}"
+      // Use Magritte-specific optimization for Flux if it's a Magritte prompt
+      if (isMagritteStyle && model === "black-forest-labs/flux-1.1-pro") {
+        AgentLogger.logAgentAction(this, 'Magritte Style', 'Applying specialized Magritte optimization for Flux model');
+        
+        const optimizedPrompt = await this.optimizeMagritteForFlux(prompt);
+        
+        this.status = AgentStatus.SUCCESS;
+        AgentLogger.logAgentAction(this, 'Prompt Optimized', `Optimized Magritte prompt for ${model}`);
+        
+        return optimizedPrompt;
+      }
       
-      Model specialties: ${modelInfo.strength}
+      // Standard model optimization
+      const optimization = MODEL_OPTIMIZATIONS[model];
+      if (!optimization) {
+        AgentLogger.logAgentAction(this, 'Unknown Model', `No optimization data for model: ${model}, using generic optimization`);
+        return this.refinePrompt(prompt);
+      }
       
-      Your optimizations should:
-      1. Add some of these recommended keywords for the model: ${modelInfo.keywords.join(', ')}
-      2. Remove any of these words that don't work well: ${modelInfo.avoidWords.join(', ')}
-      3. Ensure the prompt is clear and aligned with the model's strengths
-      4. Keep the prompt under ${modelInfo.maxLength} characters
-      5. Maintain the original concept, style, and artistic intent
+      // Check prompt length
+      if (prompt.length > optimization.maxLength) {
+        const truncatedPrompt = prompt.substring(0, optimization.maxLength);
+        AgentLogger.logAgentAction(this, 'Truncate Prompt', `Prompt was too long for ${model}, truncated to ${optimization.maxLength} characters`);
+        prompt = truncatedPrompt;
+      }
       
-      Return ONLY the optimized prompt, without explanation or meta-commentary.
-      `;
-      
-      const response = await this.aiService.getCompletion({
-        messages: [
-          { role: 'system', content: `You are an expert in optimizing prompts for the ${modelInfo.name} image generation model.` },
-          { role: 'user', content: aiPrompt }
-        ],
-        temperature: 0.3
+      // Add model-specific keywords if not already present
+      let optimizedPrompt = prompt;
+      optimization.keywords.forEach(keyword => {
+        if (!optimizedPrompt.toLowerCase().includes(keyword.toLowerCase())) {
+          optimizedPrompt += `, ${keyword}`;
+        }
       });
-      
-      const optimizedPrompt = response.content.trim();
       
       this.status = AgentStatus.SUCCESS;
       AgentLogger.logAgentAction(this, 'Prompt Optimized', `Optimized prompt for ${model}: ${optimizedPrompt.substring(0, 100)}...`);
@@ -199,104 +264,245 @@ export class RefinerAgent implements IRefinerAgent {
   }
   
   /**
-   * Generate a negative prompt for a specific model
+   * Check if a prompt is Magritte-style based on content
+   */
+  private isMagrittePrompt(prompt: string): boolean {
+    const promptLower = prompt.toLowerCase();
+    
+    // Check for Magritte's name
+    if (promptLower.includes('magritte') || promptLower.includes('rené magritte')) {
+      return true;
+    }
+    
+    // Check for Magritte's signature elements
+    const magritteElementCount = magrittePatterns.visualElements.reduce((count, element) => {
+      return count + (promptLower.includes(element.toLowerCase()) ? 1 : 0);
+    }, 0);
+    
+    if (magritteElementCount >= 2) {
+      return true;
+    }
+    
+    // Check for Magritte's signature themes and paradoxes
+    const magritteThemeCount = [
+      ...magrittePatterns.conceptualThemes,
+      ...magrittePatterns.paradoxes
+    ].reduce((count, theme) => {
+      return count + (promptLower.includes(theme.toLowerCase()) ? 1 : 0);
+    }, 0);
+    
+    if (magritteThemeCount >= 1) {
+      return true;
+    }
+    
+    // Check for references to Magritte's famous works
+    const magritteWorkCount = magrittePatterns.famousWorks.reduce((count, work) => {
+      return count + (promptLower.includes(work.toLowerCase()) ? 1 : 0);
+    }, 0);
+    
+    if (magritteWorkCount >= 1) {
+      return true;
+    }
+    
+    return false;
+  }
+  
+  /**
+   * Refine a Magritte-style prompt
+   */
+  private refineMagrittePrompt(prompt: string, feedback?: string): string {
+    // Use the MagritteStyleEvaluator to enhance the prompt
+    let refinedPrompt = this.magritteEvaluator.enhancePrompt(prompt);
+    
+    // If feedback is provided, ensure it's incorporated
+    if (feedback) {
+      // Add feedback-specific enhancements
+      if (feedback.toLowerCase().includes('more surreal')) {
+        refinedPrompt += ', with surreal juxtapositions and paradoxical elements';
+      }
+      
+      if (feedback.toLowerCase().includes('cleaner')) {
+        refinedPrompt += ', with crystal-clear edges and perfectly smooth surfaces';
+      }
+      
+      if (feedback.toLowerCase().includes('more philosophical')) {
+        refinedPrompt += ', questioning the relationship between image and reality';
+      }
+    }
+    
+    return refinedPrompt;
+  }
+  
+  /**
+   * Optimize a Magritte-style prompt specifically for the Flux model
+   */
+  private async optimizeMagritteForFlux(prompt: string): Promise<string> {
+    // Apply standard Magritte enhancement first
+    let optimizedPrompt = this.magritteEvaluator.enhancePrompt(prompt);
+    
+    // Add Flux-specific Magritte keywords if not present
+    MAGRITTE_FLUX_OPTIMIZATION.keywords.forEach(keyword => {
+      if (!optimizedPrompt.toLowerCase().includes(keyword.toLowerCase())) {
+        optimizedPrompt += `, ${keyword}`;
+      }
+    });
+    
+    // Ensure prompt doesn't exceed maximum length
+    if (optimizedPrompt.length > MAGRITTE_FLUX_OPTIMIZATION.maxLength) {
+      optimizedPrompt = optimizedPrompt.substring(0, MAGRITTE_FLUX_OPTIMIZATION.maxLength);
+    }
+    
+    // Add Flux-specific technical parameters for Magritte style
+    optimizedPrompt += ', 35mm film, perfect lighting, photorealistic quality';
+    
+    // Generate a negative prompt specifically for Magritte style on Flux
+    const negativePrompt = await this.generateMagritteNegativePrompt();
+    
+    // Store the negative prompt in the agent's state for later use
+    this.context = {
+      ...this.context,
+      negativePrompt
+    };
+    
+    return optimizedPrompt;
+  }
+  
+  /**
+   * Generate a negative prompt for Magritte-style images
+   */
+  private async generateMagritteNegativePrompt(): Promise<string> {
+    // Combine Magritte-specific avoidWords with default Flux avoidWords
+    const avoidWords = [
+      ...MAGRITTE_FLUX_OPTIMIZATION.avoidWords,
+      ...MODEL_OPTIMIZATIONS["black-forest-labs/flux-1.1-pro"].avoidWords
+    ];
+    
+    // Create a structured negative prompt
+    const negativePrompt = [
+      // Avoid non-Magritte styles
+      "expressionist style, abstract art, cubism, impressionism, cartoon, anime, sketch, graffiti",
+      
+      // Avoid technical issues
+      "blurry, grainy, noisy, low quality, low resolution, oversaturated, oversaturated colors",
+      
+      // Avoid wrong textures
+      "rough texture, visible brushstrokes, impasto, sketchy lines, uneven surface",
+      
+      // Avoid wrong composition
+      "cluttered composition, busy background, chaotic arrangement, asymmetric, unbalanced",
+      
+      // Avoid non-Magritte elements
+      "unrealistic lighting, harsh shadows, text overlay, incorrect perspective"
+    ].join(", ");
+    
+    return negativePrompt;
+  }
+  
+  /**
+   * Generate a negative prompt for a model
    */
   private async generateNegativePrompt(prompt: string, model: string): Promise<string> {
+    const optimization = MODEL_OPTIMIZATIONS[model];
+    if (!optimization) {
+      return "low quality, blurry, pixelated, bad anatomy, deformed, unnatural";
+    }
+    
     try {
-      const modelInfo = MODEL_OPTIMIZATIONS[model] || {
-        name: "Generic Model",
-        avoidWords: []
-      };
-      
       const aiPrompt = `
-      Create an effective negative prompt to avoid unwanted elements for this image generation:
-      "${prompt}"
+      Create a negative prompt to avoid unwanted elements for this image generation:
       
-      The negative prompt should:
-      1. List artifacts and quality issues to avoid (blur, pixelation, etc.)
-      2. Mention stylistic elements that should NOT appear
-      3. Specify unwanted compositions or elements
-      4. Address potential model weaknesses for this type of image
-      5. Be comprehensive but not contradictory to the main prompt
+      Prompt: "${prompt}"
+      Model: ${optimization.name}
       
-      Return ONLY the negative prompt as a comma-separated list without explanation.
+      Consider:
+      1. Style elements to avoid
+      2. Technical flaws to exclude
+      3. Anatomical issues to prevent
+      4. Composition problems to eliminate
+      
+      ${optimization.avoidWords.length > 0 ? `Be sure to include these problem areas: ${optimization.avoidWords.join(', ')}` : ''}
+      
+      Return ONLY the negative prompt as a comma-separated list without explanation or meta-commentary.
       `;
       
       const response = await this.aiService.getCompletion({
         messages: [
-          { role: 'system', content: 'You are a prompt engineering expert who specializes in creating effective negative prompts for AI image generation.' },
+          { role: 'system', content: 'You are an expert at creating negative prompts for image generation models to avoid unwanted elements and improve results.' },
           { role: 'user', content: aiPrompt }
         ],
-        temperature: 0.4
+        temperature: 0.3
       });
       
       return response.content.trim();
     } catch (error) {
-      AgentLogger.logAgentAction(this, 'Error', `Error generating negative prompt: ${error instanceof Error ? error.message : String(error)}`);
-      
-      // Return a default negative prompt
-      return "blurry, pixelated, low quality, low resolution, oversaturated, distorted, deformed, disfigured, ugly, amateur, unprofessional";
+      // Fallback negative prompt
+      return `low quality, blurry, pixelated, ${optimization.avoidWords.join(', ')}`;
     }
   }
   
   /**
-   * Suggest optimal parameters for a specific model
+   * Suggest parameters for a model
    */
   private async suggestModelParameters(prompt: string, model: string): Promise<Record<string, any>> {
-    try {
-      const modelInfo = MODEL_OPTIMIZATIONS[model] || {
-        parameterKeys: ["guidance_scale", "num_inference_steps"]
-      };
-      
-      // Create default parameters based on model
-      const defaultParams: Record<string, any> = {};
-      
-      if (modelInfo.parameterKeys.includes("guidance_scale") || modelInfo.parameterKeys.includes("cfg_scale")) {
-        const key = modelInfo.parameterKeys.includes("guidance_scale") ? "guidance_scale" : "cfg_scale";
-        defaultParams[key] = 7.5;
-      }
-      
-      if (modelInfo.parameterKeys.includes("num_inference_steps") || modelInfo.parameterKeys.includes("steps")) {
-        const key = modelInfo.parameterKeys.includes("num_inference_steps") ? "num_inference_steps" : "steps";
-        defaultParams[key] = 30;
-      }
-      
-      if (modelInfo.parameterKeys.includes("negative_prompt")) {
-        defaultParams["negative_prompt"] = await this.generateNegativePrompt(prompt, model);
-      }
-      
-      return defaultParams;
-    } catch (error) {
-      AgentLogger.logAgentAction(this, 'Error', `Error suggesting model parameters: ${error instanceof Error ? error.message : String(error)}`);
-      
-      // Return basic fallback parameters
+    const optimization = MODEL_OPTIMIZATIONS[model];
+    const isMagritteStyle = this.isMagrittePrompt(prompt);
+    
+    // Magritte-specific parameters for Flux
+    if (isMagritteStyle && model === "black-forest-labs/flux-1.1-pro") {
       return {
-        guidance_scale: 7.5,
-        num_inference_steps: 30,
-        negative_prompt: "blurry, pixelated, low quality, low resolution, distorted, deformed"
+        guidance_scale: 3,
+        num_inference_steps: 28,
+        width: 2048,
+        height: 2048
       };
     }
+    
+    // Default parameters for known models
+    if (model === "black-forest-labs/flux-1.1-pro") {
+      return {
+        guidance_scale: 3,
+        num_inference_steps: 28,
+        width: 768,
+        height: 768
+      };
+    }
+    
+    if (model === "adirik/flux-cinestill") {
+      return {
+        guidance_scale: 5,
+        num_inference_steps: 30,
+        width: 768,
+        height: 768
+      };
+    }
+    
+    // Default parameters for unknown models
+    return defaultGenerationConfig.default;
   }
+  
+  private context: Record<string, any> = {};
   
   /**
    * Process a request
    */
   async process(context: AgentContext): Promise<AgentResult> {
     this.status = AgentStatus.BUSY;
+    this.context = context;
     
     try {
       AgentLogger.logAgentAction(this, 'Process', 'Processing refinement request');
       
       // Check what task we need to perform
       const task = context.task?.action || 'refine_prompt';
-      const prompt = context.prompt || context.concept || '';
       
       let result;
       switch (task) {
         case 'refine_prompt':
-          // Refine the prompt based on feedback
-          const feedback = context.task?.feedback || context.feedback;
-          const refinedPrompt = await this.refinePrompt(prompt, feedback);
+          // Refine the prompt
+          const refinedPrompt = await this.refinePrompt(
+            context.prompt || context.concept || '',
+            context.task?.feedback
+          );
           
           result = {
             prompt: refinedPrompt
@@ -304,17 +510,64 @@ export class RefinerAgent implements IRefinerAgent {
           break;
           
         case 'optimize_for_model':
-          // Optimize the prompt for a specific model
-          const model = context.task?.model || 'black-forest-labs/flux-1.1-pro';
-          const optimizedPrompt = await this.optimizeForModel(prompt, model);
+          // Optimize for a specific model
+          const model = context.task?.model || "black-forest-labs/flux-1.1-pro";
           
-          // Generate model parameters
-          const modelParams = await this.suggestModelParameters(optimizedPrompt, model);
-          
-          result = {
-            prompt: optimizedPrompt,
-            modelParams
-          };
+          // Check if this is a Magritte-style prompt with art direction
+          if (context.task?.artDirection && this.isMagrittePrompt(context.prompt || '')) {
+            AgentLogger.logAgentAction(this, 'Magritte Art Direction', 
+              'Processing with Magritte art direction data');
+            
+            // Use art direction to further enhance the prompt
+            const artDirection = context.task.artDirection;
+            let enhancedPrompt = context.prompt || '';
+            
+            // Add art direction elements if not already in the prompt
+            if (artDirection.visualElement && 
+                !enhancedPrompt.toLowerCase().includes(artDirection.visualElement.toLowerCase())) {
+              enhancedPrompt += `, with ${artDirection.visualElement}`;
+            }
+            
+            if (artDirection.composition && 
+                !enhancedPrompt.toLowerCase().includes(artDirection.composition.toLowerCase())) {
+              enhancedPrompt += `, ${artDirection.composition}`;
+            }
+            
+            if (artDirection.technique && 
+                !enhancedPrompt.toLowerCase().includes(artDirection.technique.toLowerCase())) {
+              enhancedPrompt += `, ${artDirection.technique}`;
+            }
+            
+            // Optimize the enhanced prompt
+            const optimizedPrompt = await this.optimizeForModel(enhancedPrompt, model);
+            
+            // Generate negative prompt
+            const negativePrompt = await this.generateMagritteNegativePrompt();
+            
+            // Suggest parameters
+            const parameters = await this.suggestModelParameters(optimizedPrompt, model);
+            
+            result = {
+              prompt: optimizedPrompt,
+              negativePrompt,
+              parameters
+            };
+          } else {
+            // Standard optimization
+            const optimizedPrompt = await this.optimizeForModel(context.prompt || '', model);
+            
+            // Generate negative prompt
+            const negativePrompt = await this.generateNegativePrompt(optimizedPrompt, model);
+            
+            // Suggest parameters
+            const parameters = await this.suggestModelParameters(optimizedPrompt, model);
+            
+            result = {
+              prompt: optimizedPrompt,
+              negativePrompt,
+              parameters
+            };
+          }
           break;
           
         default:

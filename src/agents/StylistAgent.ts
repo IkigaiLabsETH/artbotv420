@@ -8,6 +8,7 @@ import { Agent, AgentContext, AgentMessage, AgentResult, AgentRole, AgentStatus,
 import { AgentLogger } from '../utils/agentLogger';
 import { AIService } from '../services/ai/index';
 import { StyleConfig, defaultGenerationConfig } from '../config/generationConfig';
+import { MagritteStyleEvaluator } from '../services/style/MagritteStyleEvaluator';
 
 /**
  * Stylist Agent implementation
@@ -20,6 +21,7 @@ export class StylistAgent implements IStylistAgent {
   private aiService: AIService;
   private messages: AgentMessage[];
   private styles: Record<string, StyleConfig>;
+  private magritteEvaluator: MagritteStyleEvaluator;
   
   /**
    * Constructor
@@ -31,8 +33,9 @@ export class StylistAgent implements IStylistAgent {
     this.aiService = aiService;
     this.messages = [];
     this.styles = defaultGenerationConfig.styles;
+    this.magritteEvaluator = new MagritteStyleEvaluator();
     
-    AgentLogger.logAgentAction(this, 'Initialize', 'Stylist agent created');
+    AgentLogger.logAgentAction(this, 'Initialize', 'Stylist agent created with Magritte style capabilities');
   }
   
   /**
@@ -58,6 +61,32 @@ export class StylistAgent implements IStylistAgent {
         throw new Error(`Style "${style}" not found and no default style available`);
       }
       
+      // Check if this is Magritte style and apply special handling
+      if (style === 'magritte' || style === 'bear_pfp' || styleConfig.name.toLowerCase().includes('magritte')) {
+        AgentLogger.logAgentAction(this, 'Magritte Style', 'Using specialized Magritte style evaluator');
+        
+        // First apply standard style prefix/suffix
+        let styledPrompt = prompt;
+        
+        if (styleConfig.promptPrefix) {
+          styledPrompt = `${styleConfig.promptPrefix}${styledPrompt}`;
+        }
+        
+        if (styleConfig.promptSuffix) {
+          styledPrompt = `${styledPrompt}${styleConfig.promptSuffix}`;
+        }
+        
+        // Then apply Magritte-specific enhancements
+        const enhancedPrompt = this.magritteEvaluator.enhancePrompt(styledPrompt);
+        
+        this.status = AgentStatus.SUCCESS;
+        AgentLogger.logAgentAction(this, 'Magritte Style Applied', 
+          `Applied Magritte style: ${enhancedPrompt.substring(0, 100)}...`);
+        
+        return enhancedPrompt;
+      }
+      
+      // For non-Magritte styles, use the standard approach
       // Use the style's prefix and suffix if available
       let styledPrompt = prompt;
       
@@ -119,6 +148,29 @@ export class StylistAgent implements IStylistAgent {
     AgentLogger.logAgentAction(this, 'Suggest Enhancements', `Suggesting style enhancements for "${style}" style`);
     
     try {
+      // Special handling for Magritte style
+      if (style === 'magritte' || style === 'bear_pfp' || style.toLowerCase().includes('magritte')) {
+        AgentLogger.logAgentAction(this, 'Magritte Style', 'Using specialized Magritte style evaluator for suggestions');
+        
+        // Evaluate the prompt using the Magritte evaluator
+        const evaluation = this.magritteEvaluator.evaluatePrompt(prompt);
+        
+        // Generate structure for the enhancement suggestions
+        const enhancements = {
+          visualElements: this.generateMagritteVisualElementSuggestions(evaluation),
+          composition: this.generateMagritteCompositionSuggestions(evaluation),
+          colorPalette: this.generateMagritteColorSuggestions(evaluation),
+          lighting: this.generateMagritteLightingSuggestions(evaluation),
+          technicalDetails: this.generateMagritteTechnicalSuggestions(evaluation),
+          philosophicalConcepts: this.generateMagritteConceptSuggestions(evaluation)
+        };
+        
+        this.status = AgentStatus.SUCCESS;
+        AgentLogger.logAgentAction(this, 'Enhancements Suggested', `Suggested Magritte style enhancements`);
+        
+        return enhancements;
+      }
+      
       // Get the style configuration
       const styleConfig = this.styles[style] || this.styles[defaultGenerationConfig.defaultStyle];
       
@@ -265,6 +317,97 @@ export class StylistAgent implements IStylistAgent {
         messages: [errorMessage]
       };
     }
+  }
+  
+  /**
+   * Generate Magritte-specific visual element suggestions
+   */
+  private generateMagritteVisualElementSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
+    // Import relevant visual elements from magrittePatterns if needed
+    const visualElements = [
+      "Add a floating bowler hat",
+      "Include a green apple as a focal point",
+      "Feature a pipe with the caption 'This is not a pipe'",
+      "Add a window frame that reveals a surreal view",
+      "Include a businessman in formal attire as silhouette"
+    ];
+    
+    return visualElements;
+  }
+  
+  /**
+   * Generate Magritte-specific composition suggestions
+   */
+  private generateMagritteCompositionSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
+    const compositions = [
+      "Center the main subject against a plain, unmodulated background",
+      "Create a theatrical staging with precise object placement",
+      "Present the subject in profile against a Belgian blue sky",
+      "Use distinct foreground and background separation",
+      "Arrange objects in impossible but visually balanced configuration"
+    ];
+    
+    return compositions;
+  }
+  
+  /**
+   * Generate Magritte-specific color suggestions
+   */
+  private generateMagritteColorSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
+    const colors = [
+      "Use Magritte's signature Belgian sky blue for backgrounds",
+      "Create clean color separations with minimal blending",
+      "Employ a limited color palette with high contrast",
+      "Use matte, flat color fields with minimal variation",
+      "Apply cool shadows with precise edges"
+    ];
+    
+    return colors;
+  }
+  
+  /**
+   * Generate Magritte-specific lighting suggestions
+   */
+  private generateMagritteLightingSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
+    const lighting = [
+      "Use diffused, sourceless lighting without harsh shadows",
+      "Create the Empire of Light effect with day-night paradox",
+      "Apply consistent lighting across all elements",
+      "Use soft shadows with clear definition",
+      "Maintain naturalistic lighting despite surreal context"
+    ];
+    
+    return lighting;
+  }
+  
+  /**
+   * Generate Magritte-specific technical suggestions
+   */
+  private generateMagritteTechnicalSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
+    const technical = [
+      "Render with perfectly smooth, matte finish surfaces",
+      "Create crystal-clear, precise boundaries between elements",
+      "Use clean edge definition with minimal softness",
+      "Apply photorealistic detail to surreal compositions",
+      "Use consistent scale and proportion despite surreal context"
+    ];
+    
+    return technical;
+  }
+  
+  /**
+   * Generate Magritte-specific philosophical concept suggestions
+   */
+  private generateMagritteConceptSuggestions(evaluation: { score: number; feedback: string[] }): string[] {
+    const concepts = [
+      "Question the nature of representation with visual paradoxes",
+      "Incorporate the tension between image and reality",
+      "Explore the limitations of visual language",
+      "Include philosophical puzzles through object relationships",
+      "Create dissonance between what is seen and what is real"
+    ];
+    
+    return concepts;
   }
   
   /**
