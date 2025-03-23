@@ -62,21 +62,25 @@ export const defaultGenerationConfig: GenerationConfig = {
   },
   models: {
     "black-forest-labs/flux-1.1-pro": {
-      inferenceSteps: 35,
-      guidanceScale: 4,
+      inferenceSteps: 45,
+      guidanceScale: 4.5,
       dimensions: {
         width: 2048,
         height: 2048
       },
       scheduler: "DPMSolverMultistep",
-      denoisingStrength: 0.65
+      denoisingStrength: 0.75,
+      customParams: {
+        controlnet_conditioning_scale: 0.8,
+        clip_skip: 2
+      }
     },
     "adirik/flux-cinestill": {
-      inferenceSteps: 30,
-      guidanceScale: 5,
+      inferenceSteps: 35,
+      guidanceScale: 5.5,
       dimensions: {
-        width: 1024,
-        height: 1024
+        width: 1536,
+        height: 1536
       },
       scheduler: "DPMSolverMultistep"
     },
@@ -96,31 +100,30 @@ export const defaultGenerationConfig: GenerationConfig = {
       promptPrefix: "Create a portrait in René Magritte's distinctive painting style, perfectly centered for a PFP (Profile Picture). The image should embody Magritte's precise yet painterly technique that captures ",
       promptSuffix: `. Render with Magritte's signature artistic elements:
 - Painting Style: 
-  * Magritte's characteristic smooth, matte finish
-  * Subtle visible brushwork in flat color areas
-  * Soft edges with precise control
-  * Deliberate paint application with minimal texture
-  * Careful gradients reminiscent of Belgian sky
-  * Oil painting technique with minimal impasto
+  * Magritte's characteristic perfectly smooth, matte finish
+  * Invisible brushwork in flat color areas
+  * Crisp, mathematically precise edges
+  * Meticulous paint application with no visible texture
+  * Immaculate gradients reminiscent of Belgian sky
+  * Oil painting technique with zero impasto
 - Artistic Elements:
-  * Clean, unmodulated color fields
-  * Subtle tonal transitions
-  * Precise yet painterly edges
-  * Careful attention to light and shadow
-  * Magritte's characteristic surface quality
+  * Pure, unmodulated color fields
+  * Perfect tonal transitions
+  * Hyper-precise edge definition
+  * Sourceless ambient lighting
+  * Magritte's characteristic glass-like surface quality
 - Composition Guidelines:
-  * Perfectly balanced surreal elements
-  * Mathematically precise staging
-  * Golden ratio compositions
+  * Mathematically balanced surreal elements
+  * Perfect golden ratio compositions
   * Classical painting structure
   * Traditional profile view
   * Museum-quality presentation
 - Color Treatment:
-  * Cerulean sky blue with deep shadow grey
+  * Pure cerulean sky blue with deep shadow grey
   * Twilight purple with pristine cloud white
   * Deep night blue with pale morning light
-  * Unmodulated color fields with perfect transitions
-  * Traditional matte surfaces with subtle tonal variation
+  * Immaculate color fields with perfect transitions
+  * Matte surfaces with porcelain-like finish
 Must maintain the artist's distinctive painting style while being perfectly centered for profile picture use.`,
       negativePrompt: [
         "photorealistic", "hyperrealistic", "camera photo", "photograph", "DSLR", "studio lighting",
@@ -130,29 +133,29 @@ Must maintain the artist's distinctive painting style while being perfectly cent
         "full body shot", "landscape format", "action poses", "busy backgrounds",
         "natural wilderness", "full face view", "messy composition", "cluttered elements",
         "informal poses", "casual style", "modern clothing", "contemporary fashion",
-        "sports wear", "casual accessories"
+        "sports wear", "casual accessories", "low quality", "blurry", "grainy", "pixelated"
       ],
       styleEmphasis: [
-        "Magritte's characteristic smooth, matte finish",
-        "Subtle visible brushwork in flat areas",
-        "Precise yet painterly edges",
-        "Careful oil paint application",
-        "Minimal surface texture",
-        "Controlled tonal transitions",
-        "Clean color fields",
-        "Belgian surrealist painting style",
+        "Magritte's characteristic perfectly smooth, matte finish",
+        "Invisible brushwork in flat areas",
+        "Hyper-precise edges",
+        "Meticulous oil paint application",
+        "Zero surface texture",
+        "Mathematically precise tonal transitions",
+        "Pure, unmodulated color fields",
+        "Belgian surrealist painting technique",
         "Traditional oil painting method",
-        "Deliberate artistic technique"
+        "Museum-quality execution"
       ],
       colorPalette: [
-        "Belgian sky blue (smooth gradient)",
-        "Magritte cloud white (unmodulated)",
-        "Son of Man apple green (matte finish)",
-        "Empire of Light blue (careful transition)",
-        "Golconda grey (precise tone)",
+        "Belgian sky blue (flawless gradient)",
+        "Magritte cloud white (pure, unmodulated)",
+        "Son of Man apple green (perfect matte)",
+        "Empire of Light blue (mathematically precise transition)",
+        "Golconda grey (precise, even tone)",
         "Deep shadow grey (controlled darkness)",
         "Twilight purple (mysterious glow)",
-        "Pristine cloud white (atmospheric effect)",
+        "Pristine cloud white (atmospheric perfection)",
         "Deep night blue (metaphysical depth)",
         "Pale morning light (subtle luminosity)"
       ],
@@ -166,11 +169,11 @@ Must maintain the artist's distinctive painting style while being perfectly cent
         "Objects arranged in impossible but harmonious configuration"
       ],
       customStyleParams: {
-        surfaceQuality: 0.9,
-        edgePrecision: 0.85,
-        colorPurity: 0.8,
-        lightingControl: 0.9,
-        shadowQuality: 0.85
+        surfaceQuality: 0.95,
+        edgePrecision: 0.95,
+        colorPurity: 0.9,
+        lightingControl: 0.95,
+        shadowQuality: 0.95
       }
     },
     "bear_pfp": {
@@ -179,20 +182,20 @@ Must maintain the artist's distinctive painting style while being perfectly cent
       promptPrefix: "Create a portrait of a distinguished bear in René Magritte's distinctive painting style, perfectly centered for a PFP (Profile Picture). The bear portrait should feature ",
       promptSuffix: `. Render with Magritte's signature artistic elements:
 - Painting Style: 
-  * Magritte's characteristic smooth, matte finish
-  * Subtle visible brushwork in flat color areas
-  * Soft edges with precise control
-  * Deliberate paint application with minimal texture
-  * Careful gradients reminiscent of Belgian sky
-  * Oil painting technique with minimal impasto
+  * Magritte's characteristic perfectly smooth, matte finish
+  * Invisible brushwork in flat color areas
+  * Crisp, mathematically precise edges
+  * Meticulous paint application with no visible texture
+  * Immaculate gradients reminiscent of Belgian sky
+  * Oil painting technique with zero impasto
 - Bear Portrait Elements:
   * Distinguished bear facial features with perfect symmetry
   * Formal portrait composition with mathematical precision
   * Professional attire and accessories rendered with painterly realism
-  * Clean, unmodulated color fields with perfect transitions
-  * Subtle tonal transitions with optical precision
-  * Precise yet painterly edges with perfect control
-  * Careful attention to light and shadow with sourceless illumination
+  * Pure, unmodulated color fields with flawless transitions
+  * Perfect tonal transitions with optical precision
+  * Hyper-precise yet painterly edges with complete control
+  * Carefully controlled light and shadow with sourceless illumination
 - Color Palette:
   * Belgian cerulean sky blue with deep Prussian shadow
   * Rich mahogany brown with amber highlights
@@ -209,26 +212,27 @@ Must maintain Magritte's distinctive painting style while being perfectly center
         "natural wilderness", "full face view", "messy composition", "cluttered elements",
         "informal poses", "casual style", "modern clothing", "contemporary fashion",
         "sports wear", "casual accessories", "cute", "childish", "anime", "cartoon bear",
-        "fuzzy", "blurry", "low quality", "deformed", "disfigured", "mutated", "extra limbs"
+        "fuzzy", "blurry", "low quality", "deformed", "disfigured", "mutated", "extra limbs", 
+        "watermark", "signature", "realistic fur texture", "3D render", "photograph"
       ],
       styleEmphasis: [
-        "Magritte's characteristic smooth, matte finish",
-        "Subtle visible brushwork in flat areas",
-        "Precise yet painterly edges",
-        "Careful oil paint application",
-        "Minimal surface texture",
-        "Controlled tonal transitions",
-        "Clean color fields",
-        "Belgian surrealist painting style",
+        "Magritte's characteristic perfectly smooth, matte finish",
+        "Invisible brushwork in flat areas",
+        "Hyper-precise edges",
+        "Meticulous oil paint application",
+        "Zero surface texture",
+        "Mathematically precise tonal transitions",
+        "Pure, unmodulated color fields",
+        "Belgian surrealist painting technique",
         "Traditional oil painting method",
-        "Deliberate artistic technique",
+        "Museum-quality execution",
         "Distinguished bear character",
         "Philosophical surrealism"
       ],
       colorPalette: [
-        "Belgian sky blue (smooth gradient)",
-        "Magritte cloud white (unmodulated)",
-        "Distinguished bear brown (carefully rendered)",
+        "Belgian sky blue (flawless gradient)",
+        "Magritte cloud white (pure, unmodulated)",
+        "Distinguished bear brown (perfectly rendered)",
         "Deep shadow grey (controlled darkness)",
         "Twilight purple (mysterious glow)",
         "Pristine collar white (atmospheric effect)",
@@ -245,11 +249,11 @@ Must maintain Magritte's distinctive painting style while being perfectly center
         "Objects arranged in impossible but harmonious configuration"
       ],
       customStyleParams: {
-        surfaceQuality: 0.95,
-        edgePrecision: 0.9,
-        colorPurity: 0.85,
+        surfaceQuality: 0.97,
+        edgePrecision: 0.95,
+        colorPurity: 0.9,
         lightingControl: 0.95,
-        shadowQuality: 0.9
+        shadowQuality: 0.95
       }
     }
   },

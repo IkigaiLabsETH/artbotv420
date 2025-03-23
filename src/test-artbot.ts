@@ -58,8 +58,8 @@ async function main() {
       defaultModel: 'black-forest-labs/flux-1.1-pro', 
       defaultWidth: 2048,
       defaultHeight: 2048,
-      defaultNumInferenceSteps: 35,
-      defaultGuidanceScale: 4.0
+      defaultNumInferenceSteps: 45,
+      defaultGuidanceScale: 4.5
     });
     
     // Initialize services
@@ -112,8 +112,8 @@ async function main() {
     const options = {
       useDefault: process.argv.includes('--default'),
       forceBowlerHat: process.argv.includes('--bowler'),
-      enhanceMagritte: process.argv.includes('--enhance'),
-      highQuality: process.argv.includes('--hq'),
+      enhanceMagritte: process.argv.includes('--enhance') || true, // Enable enhanced Magritte mode by default
+      highQuality: process.argv.includes('--hq') || true, // Enable high quality by default
       randomCombinations: process.argv.includes('--random'),
       useSeries: !process.argv.includes('--no-series'),
       useCategories: !process.argv.includes('--no-categories'),
@@ -125,7 +125,7 @@ async function main() {
     // Generate concept based on options
     let concept;
     if (options.useDefault) {
-      concept = 'a distinguished bear portrait with a bowler hat in the style of René Magritte, with careful attention to surface quality and precise edge control';
+      concept = 'a distinguished bear portrait with a bowler hat in the style of René Magritte, with perfect smooth matte finish, immaculate edge control, and pristine surface quality';
       console.log('Using default concept');
     } else if (options.concept) {
       concept = options.concept;
@@ -151,11 +151,11 @@ async function main() {
       style: 'bear_pfp',
       outputFilename: `magritte_bear_${Date.now()}`,
       requirements: [
-        'Generate high-quality Magritte-style image',
-        'Follow surrealist style guidelines',
-        'Create a visually appealing composition with philosophical elements',
-        'Maintain painterly precision and surface quality',
-        'Ensure proper composition for profile use'
+        'Generate museum-quality Magritte-style image',
+        'Follow surrealist style guidelines with mathematical precision',
+        'Create a visually compelling composition with philosophical elements',
+        'Render with perfectly smooth matte finish and hyper-precise edge control',
+        'Ensure proper compositional balance for profile use'
       ],
       // Pass character generation options
       characterOptions: {
@@ -164,13 +164,20 @@ async function main() {
         allowAiEnhancement: true
       },
       artDirection: {
-        enhanceMagritte: options.enhanceMagritte,
+        enhanceMagritte: true,
         focusOnSurfaceQuality: true,
-        preferredColors: ['Belgian sky blue', 'deep prussian', 'rich mahogany'],
-        highQuality: options.highQuality,
+        preferredColors: [
+          'Belgian sky blue',
+          'deep prussian blue',
+          'rich mahogany brown', 
+          'twilight purple'
+        ],
+        highQuality: true,
         modelParams: {
-          inferenceSteps: options.highQuality ? 40 : 35,
-          guidanceScale: options.highQuality ? 4.5 : 4.0
+          inferenceSteps: 45,
+          guidanceScale: 4.5,
+          controlnet_conditioning_scale: 0.8,
+          clip_skip: 2
         }
       }
     };

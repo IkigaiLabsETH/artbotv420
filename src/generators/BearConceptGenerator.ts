@@ -53,7 +53,7 @@ export class BearConceptGenerator {
     const strategies = [
       this.generateFromSeries.bind(this),
       this.generateFromCategories.bind(this),
-      this.generateRandomCombination.bind(this)
+      this.generateFromRandomCombination.bind(this)
     ];
 
     // Filter strategies based on options
@@ -66,7 +66,7 @@ export class BearConceptGenerator {
 
     // If no strategies are enabled, default to random combinations
     if (enabledStrategies.length === 0) {
-      return this.generateRandomCombination(forceBowlerHat);
+      return this.generateFromRandomCombination(forceBowlerHat);
     }
 
     // Select a random strategy and generate concept
@@ -95,8 +95,35 @@ export class BearConceptGenerator {
       "cap"
     ]);
     
-    // Generate concept
-    return `A distinguished bear portrait in the style of René Magritte, featuring a ${series.id.replace('_', ' ')} bear wearing a ${headwear} and ${accessory}, ${enhancer}, with ${magritteElement}`;
+    // Select random color palette
+    const colorPalette = getRandomElement([
+      "Belgian sky blue with deep prussian shadow",
+      "twilight hues with perfectly smooth transitions",
+      "immaculate cerulean with pristine highlights",
+      "classic Magritte color scheme",
+      "perfectly balanced warm and cool tones"
+    ]);
+    
+    // Add composition element
+    const composition = getRandomElement([
+      "perfectly centered portrait composition",
+      "mathematically balanced profile view",
+      "classic golden ratio arrangement",
+      "formal exhibition-quality portrait",
+      "museum-quality portrait composition"
+    ]);
+    
+    // Add surface quality emphasis
+    const surfaceQuality = getRandomElement([
+      "with perfectly smooth matte finish",
+      "with immaculate surface quality",
+      "with invisible brushwork and pristine edges",
+      "with flawless painterly execution",
+      "with hyper-precise edge control"
+    ]);
+    
+    // Generate concept with refined wording
+    return `A distinguished bear portrait in the style of René Magritte, featuring a ${series.id.replace('_', ' ')} bear wearing a ${headwear} and ${accessory}, ${enhancer}, with ${magritteElement}, rendered with ${colorPalette}, ${composition}, ${surfaceQuality}`;
   }
 
   /**
@@ -119,14 +146,35 @@ export class BearConceptGenerator {
     // Add a Magritte element
     const magritteElement = getRandomElement(magrittePatterns.visualElements);
     
-    // Generate concept
-    return `A distinguished bear portrait in profile wearing a ${headwear} and carrying ${accessory}, dressed in ${clothing}, with ${tool} and ${magritteElement}, in the style of René Magritte`;
+    // Select a personality trait to inform the portrait
+    const personalityTrait = getRandomElement(category.personalityTraits);
+    
+    // Add surface quality emphasis
+    const surfaceQuality = getRandomElement([
+      "with perfectly smooth matte finish characteristic of Magritte",
+      "with immaculate surface quality and flawless edge definition",
+      "with invisible brushwork and pristine painted surfaces",
+      "with mathematically precise edge control and surface quality",
+      "with museum-quality painterly execution"
+    ]);
+    
+    // Add composition element
+    const composition = getRandomElement([
+      "in perfect profile against an immaculate Belgian sky background",
+      "perfectly posed with mathematical balance and precision",
+      "rendered in meticulous detail with optical precision",
+      "composed with formal portrait arrangement and sourceless lighting",
+      "with classical compositional balance and surrealist sensibility"
+    ]);
+    
+    // Generate concept with improved wording for better results
+    return `A distinguished bear portrait with a ${personalityTrait.toLowerCase()} expression, wearing a ${headwear} and carrying ${accessory}, dressed in ${clothing}, with ${tool} and ${magritteElement}, ${composition}, ${surfaceQuality}, in the style of René Magritte's pristine oil painting technique`;
   }
 
   /**
    * Generate a completely random combination
    */
-  private generateRandomCombination(forceBowlerHat: boolean): string {
+  private generateFromRandomCombination(forceBowlerHat: boolean): string {
     // Create arrays of possible elements
     const primaryAccessories = [
       "bowler hat",
@@ -191,6 +239,20 @@ export class BearConceptGenerator {
       "mathematically perfect surreal compositions"
     ];
 
+    // Painting techniques specific to Magritte
+    const paintingTechniques = [
+      "perfectly smooth matte surfaces with invisible brushwork",
+      "hyper-precise edge control with mathematically perfect transitions",
+      "flawless painterly execution with museum-quality finish",
+      "immaculate color fields with no visible brushstrokes",
+      "pristine surface quality with sourceless illumination",
+      "René Magritte's characteristic glass-like surface quality",
+      "optical precision with phenomenal attention to detail",
+      "perfect oil painting technique with zero impasto",
+      "porcelain-like surface finish with crystalline clarity",
+      "mathematically perfect gradations of tone and color"
+    ];
+
     // Color palettes inspired by Magritte
     const colorPalettes = [
       "Belgian sky blue with twilight grey transitions",
@@ -201,6 +263,17 @@ export class BearConceptGenerator {
       "precise shadow rendering without defined light source"
     ];
 
+    // Compositions inspired by Magritte
+    const compositions = [
+      "perfectly centered profile view",
+      "formal portrait arrangement with philosophical intent",
+      "classical composition with surrealist elements",
+      "balanced asymmetry with perfect weight distribution",
+      "precisely calculated negative space",
+      "mathematically harmonious proportions",
+      "golden ratio arrangement of visual elements"
+    ];
+
     // Get headwear - use bowler hat if forced, otherwise random from primaryAccessories
     const headwear = forceBowlerHat ? "bowler hat" : getRandomElement(primaryAccessories);
     
@@ -209,9 +282,11 @@ export class BearConceptGenerator {
     const attire = getRandomElement(clothing);
     const magritteElement = getRandomElement(magritteElements);
     const colorPalette = getRandomElement(colorPalettes);
+    const technique = getRandomElement(paintingTechniques);
+    const composition = getRandomElement(compositions);
     
     // Generate concept with more precise Magritte technique description
-    return `A distinguished bear portrait in the style of René Magritte, with mathematical precision and philosophical surrealism, featuring a bear wearing a ${headwear} and carrying ${accessory}, dressed in ${attire}, with ${magritteElement}, rendered using ${colorPalette}, with perfectly smooth matte paint application and precisely controlled edges`;
+    return `A distinguished bear portrait in the style of René Magritte, with mathematical precision and philosophical surrealism, featuring a bear wearing a ${headwear} and carrying ${accessory}, dressed in ${attire}, with ${magritteElement}, rendered using ${colorPalette}, with ${technique}, in ${composition}`;
   }
 
   /**

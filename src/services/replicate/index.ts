@@ -219,6 +219,9 @@ export class ReplicateService {
     throw new Error(`Prediction ${id} timed out after ${maxAttempts} attempts`);
   }
 
+  /**
+   * Generate an image using the selected model
+   */
   async generateImage(prompt: string, options: Record<string, any> = {}): Promise<string | null> {
     try {
       console.log(`🎨 Using model for image generation: ${this.defaultModel}`);
@@ -227,17 +230,45 @@ export class ReplicateService {
       const isFluxModel = this.defaultModel.includes('flux');
       
       // For FLUX model, enhance the prompt with IKIGAI keyword
-      if (isFluxModel && !prompt.includes('IKIGAI')) {
-        prompt = `IKIGAI ${prompt}`;
+      if (isFluxModel && !prompt.trim().startsWith('IKIGAI')) {
+        prompt = `IKIGAI ${prompt.trim()}`;
       }
       
+      console.log(`📝 Prompt: ${prompt.substring(0, 100)}...`);
+      
       // Ensure dimensions are within limits
-      options.width = Math.min(options.width || this.defaultWidth, 1440);
-      options.height = Math.min(options.height || this.defaultHeight, 1440);
+      options.width = Math.min(options.width || this.defaultWidth, 2048); // Increased max dimensions
+      options.height = Math.min(options.height || this.defaultHeight, 2048);
+      
+      console.log(`📏 Dimensions: ${options.width}x${options.height}`);
+      
+      // If this is Flux, set optimal inference steps if not specified
+      if (isFluxModel && !options.num_inference_steps) {
+        options.num_inference_steps = 45; // Increased from 28 for better quality
+      }
+      
+      // If this is Flux, set optimal guidance scale if not specified
+      if (isFluxModel && !options.guidance_scale) {
+        options.guidance_scale = 4.5; // Increased from 3.0 for better quality
+      }
       
       // Add negative prompt if not provided
       if (!options.negative_prompt) {
-        options.negative_prompt = "low quality, bad anatomy, blurry, pixelated, watermark";
+        if (isFluxModel) {
+          options.negative_prompt = "low quality, blurry, grainy, pixelated, watermark, signature, deformed, disfigured, low resolution, amateur, bad anatomy, cartoon, anime, illustration, 3d render, sketch";
+        } else {
+          options.negative_prompt = "low quality, bad anatomy, blurry, pixelated, watermark";
+        }
+      }
+      
+      // Add clip_skip for flux models if not specified (helps with detail)
+      if (isFluxModel && !options.clip_skip) {
+        options.clip_skip = 2;
+      }
+      
+      // Set controlnet conditioning scale for more precise control
+      if (isFluxModel && !options.controlnet_conditioning_scale) {
+        options.controlnet_conditioning_scale = 0.8;
       }
       
       // Prepare input for the model
@@ -246,72 +277,78 @@ export class ReplicateService {
         ...options
       };
       
+      // Log all parameters being used for the generation
+      console.log('╭───────────────────────────────────────────╮');
+      console.log('│ Generation Parameters:                    │');
+      console.log(`│ - Model: ${this.defaultModel.substring(0, 30).padEnd(30)} │`);
+      console.log(`│ - Dimensions: ${options.width}x${options.height.toString().padEnd(24)} │`);
+      console.log(`│ - Steps: ${options.num_inference_steps || this.defaultNumInferenceSteps}                                │`);
+      console.log(`│ - Guidance: ${options.guidance_scale || this.defaultGuidanceScale}                              │`);
+      console.log('╰───────────────────────────────────────────╯');
+      
       // Try the default model first
       try {
-        const prediction = await this.runPrediction(this.defaultModel, input);
+        const prediction = await this.runPrediction(undefined, input);
         
-        // Get the image URL from the prediction output
         if (prediction.status === 'succeeded' && prediction.output) {
-          let imageUrl: string | null = this.extractImageUrl(prediction.output);
-          if (imageUrl) return imageUrl;
+          const imageUrl = this.extractImageUrl(prediction.output);
+          if (imageUrl) {
+            return imageUrl;
+          }
         }
         
-        throw new Error('No output from default model');
+        throw new Error(`Image generation failed: ${prediction.status !== 'succeeded' ? prediction.status : 'No output'}`);
       } catch (error) {
-        console.warn(`⚠️ ${this.defaultModel} model failed, trying Stability model`);
+        console.error(`Error generating image with primary model: ${error}`);
         
-        // Retry with Stability model
-        try {
-          // Adjust parameters for Stability model
-          const stabilityInput = { ...input };
+        // Try a fallback model if the primary fails
+        if (this.defaultModel !== FALLBACK_MODEL) {
+          console.log(`⚠️ Falling back to ${FALLBACK_MODEL}`);
           
-          // Convert specific parameters
-          if (stabilityInput.guidance_scale) {
-            stabilityInput.guidance = stabilityInput.guidance_scale;
-            delete stabilityInput.guidance_scale;
+          // Adjust parameters for the fallback model
+          const fallbackInput = { ...input };
+          
+          // Update parameters for the fallback model
+          if (fallbackInput.guidance_scale) {
+            fallbackInput.guidance = fallbackInput.guidance_scale;
+            delete fallbackInput.guidance_scale;
           }
           
-          if (stabilityInput.num_inference_steps) {
-            stabilityInput.num_steps = stabilityInput.num_inference_steps;
-            delete stabilityInput.num_inference_steps;
+          if (fallbackInput.num_inference_steps) {
+            fallbackInput.num_steps = fallbackInput.num_inference_steps;
+            delete fallbackInput.num_inference_steps;
           }
           
-          const prediction = await this.runPrediction(STABILITY_MODEL, stabilityInput);
-          
-          // Get the image URL from the prediction output
-          if (prediction.status === 'succeeded' && prediction.output) {
-            let imageUrl: string | null = this.extractImageUrl(prediction.output);
-            if (imageUrl) return imageUrl;
-          }
-          
-          throw new Error('No output from Stability model');
-        } catch (error) {
-          console.warn(`⚠️ Stability model failed, trying fallback model`);
-          
-          // Try fallback model
+          // Try with fallback model
           try {
-            const fallbackPrediction = await this.runPrediction(FALLBACK_MODEL, input);
+            const fallbackPrediction = await this.runPrediction(FALLBACK_MODEL, fallbackInput);
             
-            // Get the image URL from the prediction output
             if (fallbackPrediction.status === 'succeeded' && fallbackPrediction.output) {
-              let imageUrl: string | null = this.extractImageUrl(fallbackPrediction.output);
-              if (imageUrl) return imageUrl;
+              const imageUrl = this.extractImageUrl(fallbackPrediction.output);
+              if (imageUrl) {
+                return imageUrl;
+              }
             }
             
-            throw new Error('No output from fallback model');
+            throw new Error(`Fallback image generation failed: ${fallbackPrediction.status !== 'succeeded' ? fallbackPrediction.status : 'No output'}`);
           } catch (fallbackError) {
-            console.error(`❌ All Replicate models failed. Last error: ${fallbackError}`);
-            // Fallback to DALL-E as a last resort
-            return await this.fallbackToDALLE(prompt, options);
+            console.error(`Error generating image with fallback model: ${fallbackError}`);
+            // Fall through to DALL-E fallback if applicable
           }
         }
+        
+        // If all Replicate models fail, try DALL-E if we have OpenAI API key
+        if (process.env.OPENAI_API_KEY) {
+          console.log(`⚠️ Falling back to DALL-E`);
+          return this.fallbackToDALLE(prompt, options);
+        }
+        
+        // If we reach here, all attempts failed
+        throw new Error(`All image generation attempts failed`);
       }
     } catch (error) {
       console.error(`Error generating image: ${error}`);
-      
-      // Try falling back to DALL-E
-      console.log('🎨 Falling back to OpenAI DALL-E for image generation');
-      return await this.fallbackToDALLE(prompt, options);
+      throw error;
     }
   }
 
