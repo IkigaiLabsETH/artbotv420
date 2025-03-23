@@ -1,20 +1,21 @@
 {
-  "id": "d6e36c00-1528-491c-b9f5-960882b19902",
+  "id": "f04467fe-f625-49ca-bfb0-9405c5b57e97",
   "title": "Test Bear Portrait",
   "description": "A test of the ArtBot multi-agent system",
-  "prompt": "Create a formal portrait of a distinguished bear wearing a black bowler hat, rendered in the distinctive style of René Magritte. The composition should be centered and framed closely on the bear's face and upper body against a simple background.\n\nPainting Style:\n- Smooth, matte finish with subtle visible brushwork in flat color areas\n- Soft, precise edges with careful gradients reminiscent of Belgian skies\n- Oil painting technique with minimal texture or impasto\n- Deliberate, controlled paint application with unmodulated color fields\n\nBear Portrait Elements:\n- Dignified, anthropomorphized bear facial features with a stern yet pensive expression\n- Formal, centered portrait composition with the bear's gaze meeting the viewer\n- Black bowler hat as the sole human clothing accessory, positioned naturally\n- Clean lines and shapes with precise yet painterly edges\n- Careful attention to realistic light, shadow, and subtle tonal transitions\n- Simple, uncluttered background in a muted, desaturated color\n\nThe overall piece should capture Magritte's surreal juxtaposition of the natural and human-made while maintaining his signature smooth, realistic painting style. The portrait format and close framing are optimized for a profile picture.",
+  "prompt": "Render a formal portrait of a distinguished brown bear wearing a black bowler hat, in the distinctive style of René Magritte. The bear should have an impassive, slightly quizzical expression. Compose the image as a tight bust portrait, with the bear's face and hat filling most of the frame, centered for use as a profile picture.\n\nEmploy Magritte's signature elements:\n- Smooth, matte finish with subtle visible brushwork in flat color areas\n- Soft yet precise edges with careful gradients reminiscent of Belgian skies\n- Deliberate, controlled paint application with minimal texture or impasto\n- Clean, unmodulated color fields with subtle tonal transitions\n- Precise yet painterly rendering of details like fur and hat textures\n- Careful attention to realistic light and shadow on the bear's form\n\nThe overall style should evoke Magritte's Surrealist sensibilities, juxtaposing the natural bear with the man-made hat in an unsettling yet whimsical way that provokes deeper contemplation.",
   "style": "bear_pfp",
-  "imageUrl": "https://replicate.delivery/xezq/RviR1j6xgNIeUKJhDfzuFs2teoGQEbDV4i1fOgVepKueZK2GF/tmpzqbz2iai.png",
+  "imageUrl": "https://replicate.delivery/xezq/yUbhr7dY3fRsM6h6BCSbTFYDHlUiIawGKYmoQpeRDFOYsYbUA/tmp1v3uxc7q.png",
   "character": {
-    "name": "Reginald P. Bearpington, Esq.",
-    "title": "The Distinguished Sophisticate",
+    "name": "Reginald C. Bearlsworth, Esq.",
+    "title": "The Distinguished Gentleman",
     "personality": [
-      "Distinguished",
+      "Discerning",
+      "Refined",
+      "Scholarly",
       "Dignified",
-      "Contemplative",
-      "Precise"
+      "Sagacious"
     ],
-    "backstory": "Descended from a long line of ursine aristocrats, Sir Reginald Bearnard overcame the preconceptions of high society through sheer force of erudition and gravitas, earning the admiration of peers and monarchs alike with his groundbreaking theories on the interconnectedness of all existence -- a revelation he claimed came to him in a vision whilst donning his signature bowler for the first time. Ever since, the distinguished hat has served as both sartorial flourish and philosophical talisman, symbolizing his transcendence of the corporeal into the metaphysical realms of enlightened consciousness."
+    "backstory": "Reginald Ursington III ascended to prominence through an unwavering commitment to the study of ursine metaphysics, his seminal treatise \"On the Unbearable Lightness of Being a Bear\" earning him global renown. Yet it was his daring reconciliation of the paradoxes of Zeno's dichotomy that solidified his legacy, an achievement all the more remarkable given his sartorial adherence to the bowler hat -- a whimsical nod to the inherent absurdity underpinning existence itself."
   },
-  "createdAt": "2025-03-23T09:46:16.802Z"
+  "createdAt": "2025-03-23T09:49:13.868Z"
 }

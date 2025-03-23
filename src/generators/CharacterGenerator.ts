@@ -191,23 +191,42 @@ export class CharacterGenerator {
     The traits should be distinguished, sophisticated qualities that reflect the character's professional role and appearance.
     Examples: "Meticulous", "Contemplative", "Erudite", "Patient", "Perceptive"
     
-    Return the traits as a JSON array of strings.
+    Return the traits as a simple JSON array of strings like: ["Trait1", "Trait2", "Trait3", "Trait4"]
     `;
 
     try {
       const response = await this.aiService.getCompletion({
         messages: [
-          { role: 'system', content: 'You are a character trait specialist who creates personality profiles for bear portraits.' },
+          { role: 'system', content: 'You are a character trait specialist who creates personality profiles for bear portraits. Return responses as plain JSON arrays without markdown formatting.' },
           { role: 'user', content: prompt }
         ],
         temperature: 0.6
       });
 
-      // Parse the response
-      const traits = JSON.parse(response.content);
+      // Extract JSON from the response, handling potential markdown code blocks
+      let jsonContent = response.content.trim();
+      
+      // Check if the response is wrapped in markdown code blocks
+      const jsonRegex = /```(?:json)?\s*(\[[\s\S]*?\])\s*```/;
+      const match = jsonContent.match(jsonRegex);
+      
+      if (match && match[1]) {
+        // Extract the JSON part from the code block
+        jsonContent = match[1];
+      } else {
+        // Try to find array brackets if not in code block
+        const arrayMatch = jsonContent.match(/\[([\s\S]*?)\]/);
+        if (arrayMatch && arrayMatch[0]) {
+          jsonContent = arrayMatch[0];
+        }
+      }
+      
+      // Parse the extracted JSON
+      const traits = JSON.parse(jsonContent);
+      
       if (Array.isArray(traits)) {
         return traits.slice(0, 5);
-      } else if (Array.isArray(traits.traits)) {
+      } else if (traits && typeof traits === 'object' && Array.isArray(traits.traits)) {
         return traits.traits.slice(0, 5);
       }
       
