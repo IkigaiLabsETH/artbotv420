@@ -160,7 +160,7 @@ export class BearConceptGenerator {
     
     // Add composition element
     const composition = getRandomElement([
-      "in perfect profile against a Belgian sky blue background",
+      "against a Belgian sky blue background",
       "perfectly posed with mathematical balance and precision",
       "rendered in meticulous detail with optical precision",
       "composed with formal portrait arrangement and sourceless lighting",

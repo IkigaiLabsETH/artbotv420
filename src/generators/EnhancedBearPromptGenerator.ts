@@ -340,7 +340,7 @@ export class EnhancedBearPromptGenerator {
    */
   private constructPrompt(elements: BearPortraitPrompt): string {
     // Visual elements section
-    const visualSection = `A distinguished bear portrait in perfect profile wearing a ${elements.headwear}, ${elements.neckwear}${
+    const visualSection = `A distinguished bear portrait wearing a ${elements.headwear}, ${elements.neckwear}${
       elements.facialElement ? `, with ${elements.facialElement}` : ''
     }, dressed in a ${elements.attire}, carrying ${elements.accessory}${
       elements.secondaryAccessory ? ` and accompanied by ${elements.secondaryAccessory}` : ''
