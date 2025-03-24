@@ -11,10 +11,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { AgentLogger, LogLevel } from './utils/agentLogger';
 import { AgentRole } from './agents/types';
-import { IdeatorAgent } from './agents/IdeatorAgent';
-import { RefinerAgentFactory, RefinerAgentType } from './agents/RefinerAgentFactory';
-import { MetadataGeneratorAgent } from './agents/MetadataGeneratorAgent';
-import { StylistAgent } from './agents/StylistAgent';
+// We no longer need to import specific agent implementations
+// as they will be automatically registered
 
 // Create enhanced prompt generator
 const promptGenerator = new EnhancedBearPromptGenerator();
@@ -61,14 +59,14 @@ async function main() {
     fs.mkdirSync(options.outputDir, { recursive: true });
   }
   
-  // Initialize the system
+  // Initialize the system with automatic agent registration
   await artBot.initialize();
   
-  // Register required agents
-  artBot.registerAgent(new IdeatorAgent(aiService));
-  artBot.registerAgent(new StylistAgent(aiService));
-  artBot.registerAgent(RefinerAgentFactory.createRefinerAgent(RefinerAgentType.ENHANCED, aiService));
-  artBot.registerAgent(new MetadataGeneratorAgent(aiService));
+  // Log all registered agents
+  console.log('\nRegistered Agents:');
+  artBot.getAllAgents().forEach(agent => {
+    console.log(`- ${agent.role} (${agent.id.substring(0, 8)})`);
+  });
   
   // Generate prompt using our enhanced generator
   console.log('\nGenerating enhanced bear portrait prompt...');

@@ -8,18 +8,13 @@
 import { ArtBotMultiAgentSystem } from '../../artbot-multiagent-system';
 import { AIService } from '../../services/ai';
 import { ReplicateService } from '../../services/replicate';
-import { IdeatorAgent } from '../../agents/IdeatorAgent';
-import { StylistAgent } from '../../agents/StylistAgent';
-import { EnhancedRefinerAgent } from '../../agents/EnhancedRefinerAgent';
-import { CharacterGeneratorAgent } from '../../agents/CharacterGeneratorAgent';
-import { CriticAgent } from '../../agents/CriticAgent';
-import { MetadataGeneratorAgent } from '../../agents/MetadataGeneratorAgent';
 import { StyleIntegrationService } from '../../services/style/StyleIntegrationService';
 import { EnhancedBearPromptGenerator } from '../../generators/EnhancedBearPromptGenerator';
 import { TerminalPreview } from './index';
 import chalk from 'chalk';
 import path from 'path';
 import * as dotenv from 'dotenv';
+// We don't need to import specific agent types since they'll be auto-registered
 
 // Load environment variables
 dotenv.config();
@@ -77,36 +72,19 @@ async function initializeSystem() {
     outputDir
   });
   
-  // Create and register the Ideator agent
-  const ideatorAgent = new IdeatorAgent(aiService);
-  system.registerAgent(ideatorAgent);
-  
-  // Create and register the Stylist agent
-  const stylistAgent = new StylistAgent(aiService);
-  system.registerAgent(stylistAgent);
-  
-  // Create and register the Enhanced Refiner agent instead of basic Refiner
-  const refinerAgent = new EnhancedRefinerAgent(aiService);
-  system.registerAgent(refinerAgent);
-  
-  // Create and register the Character Generator agent
-  const characterGeneratorAgent = new CharacterGeneratorAgent(aiService);
-  system.registerAgent(characterGeneratorAgent);
-  
-  // Create and register the Critic agent
-  const criticAgent = new CriticAgent(aiService);
-  system.registerAgent(criticAgent);
-  
-  // Create and register the Metadata Generator agent
-  const metadataGeneratorAgent = new MetadataGeneratorAgent(aiService);
-  system.registerAgent(metadataGeneratorAgent);
-  
-  // Initialize the system
+  // Initialize the system - this will automatically register all required agents
   await system.initialize();
-
+  
+  // Log registered agents
+  console.log(chalk.cyan('\nRegistered Agents:'));
+  system.getAllAgents().forEach(agent => {
+    console.log(chalk.cyan(`- ${agent.role} (${agent.id.substring(0, 8)})`));
+  });
+  
   return {
     system,
-    enhancedPromptGenerator
+    enhancedPromptGenerator,
+    styleService
   };
 }
 
@@ -123,7 +101,7 @@ async function generateBatch() {
   console.log(chalk.cyan(`✨ Output directory: ${outputDir}`));
   
   // Initialize the system
-  const { system, enhancedPromptGenerator } = await initializeSystem();
+  const { system, enhancedPromptGenerator, styleService } = await initializeSystem();
   
   // Create a preview instance
   const preview = new TerminalPreview({

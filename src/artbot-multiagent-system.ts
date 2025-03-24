@@ -11,6 +11,7 @@ import { AgentLogger, LogLevel } from './utils/agentLogger';
 import { defaultGenerationConfig, GenerationConfig } from './config/generationConfig';
 import { ReplicateService } from './services/replicate';
 import { StyleIntegrationService } from './services/style/StyleIntegrationService';
+import { ensureRequiredAgentsRegistered } from './utils/ensureAgentRegistration';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -71,6 +72,16 @@ export class ArtBotMultiAgentSystem {
     // Ensure output directory exists
     if (!fs.existsSync(this.outputDir)) {
       fs.mkdirSync(this.outputDir, { recursive: true });
+    }
+    
+    // Ensure all required agents are registered
+    if (this.config.aiService) {
+      const allAgentsRegistered = ensureRequiredAgentsRegistered(this, this.config.aiService);
+      if (!allAgentsRegistered) {
+        throw new Error('Failed to register all required agents');
+      }
+    } else {
+      AgentLogger.log('No AIService provided, skipping automatic agent registration', LogLevel.WARNING);
     }
     
     // Initialize all registered agents

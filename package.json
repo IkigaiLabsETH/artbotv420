@@ -15,7 +15,8 @@
     "prebuild": "npm run clean",
     "prepare": "npm run build",
     "test": "jest",
-    "start": "node dist/test-artbot.js --enhance",
+    "start": "node src/test-artbot-common.cjs",
+    "start:register": "ts-node src/test-artbot-register.ts",
     "preview": "ts-node src/plugins/terminal-preview/preview-cli.ts",
     "batch": "ts-node src/plugins/terminal-preview/batch-generate.ts",
     "batch:5": "ts-node src/plugins/terminal-preview/batch-generate.ts --count=5",
@@ -36,7 +37,11 @@
     "generate:enhanced-bear:bowler": "ts-node src/test-enhanced-bear-art.ts --bowler",
     "generate:enhanced-bear:academic": "ts-node src/test-enhanced-bear-art.ts --series=academic",
     "generate:enhanced-bear:batch": "ts-node src/test-enhanced-bear-art.ts --count=3",
-    "generate:enhanced-bear:prompt-only": "ts-node src/test-enhanced-bear-art.ts --skip-generation"
+    "generate:enhanced-bear:prompt-only": "ts-node src/test-enhanced-bear-art.ts --skip-generation",
+    "concept": "node src/test-bear-concept.cjs",
+    "verify:agents": "ts-node src/verify-agent-registration.ts",
+    "check:agents": "ts-node src/check-agent-registration.ts",
+    "build:agents": "ts-node src/build-agents.ts"
   },
   "author": "ArtBot Team",
   "license": "MIT",

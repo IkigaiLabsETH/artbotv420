@@ -9,19 +9,14 @@ import { ArtBotMultiAgentSystem } from './artbot-multiagent-system';
 import { ElizaLogger, LogLevel } from './utils/elizaLogger';
 import { AIService } from './services/ai';
 import { ReplicateService } from './services/replicate';
-import { IdeatorAgent } from './agents/IdeatorAgent';
-import { StylistAgent } from './agents/StylistAgent';
-import { RefinerAgent } from './agents/RefinerAgent';
-import { CharacterGeneratorAgent } from './agents/CharacterGeneratorAgent';
-import { BearConceptGenerator } from './generators/BearConceptGenerator';
-import { EnhancedRefinerAgent } from './agents/EnhancedRefinerAgent';
-import { CriticAgent } from './agents/CriticAgent';
-import { MetadataGeneratorAgent } from './agents/MetadataGeneratorAgent';
-import { EnhancedBearPromptGenerator } from './generators/EnhancedBearPromptGenerator';
 import { StyleIntegrationService } from './services/style/StyleIntegrationService';
+import { EnhancedBearPromptGenerator } from './generators/EnhancedBearPromptGenerator';
+import { BearConceptGenerator } from './generators/BearConceptGenerator';
 import { AgentRole } from './agents/types';
 import { AgentLogger } from './utils/agentLogger';
 import { EnhancedLogger } from './utils/enhancedLogger';
+// The ensureRequiredAgentsRegistered function will be used by the ArtBotMultiAgentSystem
+// on initialization, so we don't need to import it here anymore
 
 // Load environment variables
 dotenv.config();
@@ -146,6 +141,7 @@ async function main() {
     const enhancedPromptGenerator = new EnhancedBearPromptGenerator();
     
     // Create the multi-agent system
+    // The automatic agent registration will happen during system.initialize()
     const system = new ArtBotMultiAgentSystem({
       aiService, 
       replicateService,
@@ -153,38 +149,14 @@ async function main() {
       outputDir: path.join(process.cwd(), 'output', 'magritte-bears')
     });
     
-    // Create and register the Ideator agent
-    const ideatorAgent = new IdeatorAgent(aiService);
-    system.registerAgent(ideatorAgent);
-    
-    // Create and register the Stylist agent
-    const stylistAgent = new StylistAgent(aiService);
-    system.registerAgent(stylistAgent);
-    
-    // Create and register the Enhanced Refiner agent instead of basic Refiner
-    const refinerAgent = new EnhancedRefinerAgent(aiService);
-    system.registerAgent(refinerAgent);
-    
-    // Create and register the Character Generator agent
-    const characterGeneratorAgent = new CharacterGeneratorAgent(aiService);
-    system.registerAgent(characterGeneratorAgent);
-    
-    // Create and register the Critic agent
-    const criticAgent = new CriticAgent(aiService);
-    system.registerAgent(criticAgent);
-    
-    // Create and register the Metadata Generator agent
-    const metadataGeneratorAgent = new MetadataGeneratorAgent(aiService);
-    system.registerAgent(metadataGeneratorAgent);
+    // Initialize the system - this will now automatically register all required agents
+    await system.initialize();
     
     // Log registered agents
     EnhancedLogger.printSection('Registered Agents');
     system.getAllAgents().forEach(agent => {
       EnhancedLogger.log(`${agent.role} (${agent.id.substring(0, 8)})`, LogLevel.INFO);
     });
-    
-    // Initialize the system
-    await system.initialize();
     
     // Flag to track if we're using the enhanced generator
     let useEnhancedGenerator = !options.legacy;
@@ -264,7 +236,8 @@ async function main() {
     EnhancedLogger.log(`Image: ${result.artwork.imageUrl}`, LogLevel.INFO);
     EnhancedLogger.log(`Saved to: ${result.artwork.files.image}`, LogLevel.INFO);
   } catch (error) {
-    console.error('Error running test:', error);
+    console.error('❌ Art generation failed:');
+    console.error(error);
   }
 }
 
