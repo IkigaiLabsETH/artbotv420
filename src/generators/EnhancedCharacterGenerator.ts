@@ -107,17 +107,26 @@ export class EnhancedCharacterGenerator {
    * Select a category based on options or concept content
    */
   private async selectCategory(concept: string, options?: CharacterGenerationOptions): Promise<CategoryDefinition | undefined> {
-    // If a specific category is requested, use that
+    // Define allowed series
+    const allowedSeries = [SeriesType.ADVENTURE, SeriesType.ARTISTIC, SeriesType.HIPSTER];
+    
+    // If a specific category is requested, check if it's from allowed series
     if (options?.categoryId) {
       const category = getCategoryById(options.categoryId);
-      if (category) {
+      if (category && allowedSeries.includes(category.series as SeriesType)) {
         return category;
       }
     }
     
-    // If a series is specified, get a random category from that series
+    // If a series is specified, check if it's allowed
     if (options?.seriesType) {
-      return getRandomCategoryFromSeries(options.seriesType);
+      if (allowedSeries.includes(options.seriesType)) {
+        return getRandomCategoryFromSeries(options.seriesType);
+      } else {
+        // If requested series isn't allowed, use a random allowed series instead
+        const randomAllowedSeries = allowedSeries[Math.floor(Math.random() * allowedSeries.length)];
+        return getRandomCategoryFromSeries(randomAllowedSeries);
+      }
     }
     
     // Try to extract category from concept
@@ -126,7 +135,7 @@ export class EnhancedCharacterGenerator {
       if (categoryMatches && categoryMatches[1]) {
         const categoryId = `bear_pfp_${categoryMatches[1].toLowerCase()}`;
         const category = getCategoryById(categoryId);
-        if (category) {
+        if (category && allowedSeries.includes(category.series as SeriesType)) {
           return category;
         }
       }
@@ -135,16 +144,16 @@ export class EnhancedCharacterGenerator {
     // Try to detect series or category based on keywords in the concept
     const conceptLower = concept.toLowerCase();
     
-    // Check for series keywords
+    // Check for series keywords - but only for allowed series
     const seriesKeywords: Record<SeriesType, string[]> = {
       [SeriesType.ADVENTURE]: ['pilot', 'explorer', 'adventure', 'journey', 'expedition', 'sailor', 'mountaineer', 'climber', 'diver'],
       [SeriesType.ARTISTIC]: ['artist', 'painter', 'sculptor', 'creative', 'artistic', 'designer', 'composer', 'musician'],
       [SeriesType.HIPSTER]: ['barista', 'artisanal', 'craft', 'vintage', 'coffee', 'vinyl', 'organic', 'sustainable'],
-      [SeriesType.BLOCKCHAIN]: ['blockchain', 'crypto', 'nft', 'token', 'defi', 'web3', 'dao', 'validator'],
-      [SeriesType.SUSTAINABLE]: ['sustainable', 'eco', 'green', 'organic', 'environmental', 'recycled', 'renewable']
+      [SeriesType.BLOCKCHAIN]: [], // Empty array since we don't want to match this series
+      [SeriesType.SUSTAINABLE]: [] // Empty array since we don't want to match this series
     };
     
-    // Check for series matches
+    // Check for series matches in allowed series
     for (const [series, keywords] of Object.entries(seriesKeywords)) {
       for (const keyword of keywords) {
         if (conceptLower.includes(keyword)) {
@@ -153,8 +162,9 @@ export class EnhancedCharacterGenerator {
       }
     }
     
-    // If no specific category or series was found, return a random category
-    return getRandomCategory();
+    // If no specific category or series was found, return a random category from allowed series
+    const randomAllowedSeries = allowedSeries[Math.floor(Math.random() * allowedSeries.length)];
+    return getRandomCategoryFromSeries(randomAllowedSeries);
   }
   
   /**
@@ -164,7 +174,7 @@ export class EnhancedCharacterGenerator {
     // Start with default elements
     const elements: any = {
       accessories: ["bowler hat"],
-      clothing: "formal suit",
+      clothing: "artistic attire",
       profession: null,
       attributes: ["distinguished", "dignified"],
       style: "magritte",
@@ -188,7 +198,18 @@ export class EnhancedCharacterGenerator {
       }
       
       if (category.clothing.length > 0) {
-        elements.clothing = category.clothing[Math.floor(Math.random() * category.clothing.length)];
+        // Filter out any clothing with "suit" in the name
+        const allowedClothing = category.clothing.filter(clothing => 
+          !clothing.toLowerCase().includes('suit')
+        );
+        
+        // Only proceed if we have clothing options after filtering
+        if (allowedClothing.length > 0) {
+          elements.clothing = allowedClothing[Math.floor(Math.random() * allowedClothing.length)];
+        } else {
+          // If no suitable clothing remains, use a default from the allowed series
+          elements.clothing = "distinctive artistic attire";
+        }
       }
       
       if (category.tools.length > 0) {
@@ -226,7 +247,11 @@ export class EnhancedCharacterGenerator {
     // Extract clothing from prompt
     const clothingMatch = prompt.match(/wearing ([^,.]+)/i);
     if (clothingMatch && clothingMatch[1]) {
-      elements.clothing = clothingMatch[1].trim();
+      const extractedClothing = clothingMatch[1].trim();
+      // Don't allow clothing with "suit" in the name
+      if (!extractedClothing.toLowerCase().includes('suit')) {
+        elements.clothing = extractedClothing;
+      }
     }
     
     // Extract attributes from common dignified attributes
@@ -280,9 +305,7 @@ export class EnhancedCharacterGenerator {
         case SeriesType.HIPSTER:
           return `Monsieur ${middleNames[Math.floor(Math.random() * middleNames.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`;
           
-        case SeriesType.BLOCKCHAIN:
-          const cryptoNames = ["Satoshi", "Vitalik", "Nakamoto", "Blockchain", "Cipher"];
-          return `${cryptoNames[Math.floor(Math.random() * cryptoNames.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`;
+        // Other series will use the default name generation below
       }
     }
     
@@ -349,12 +372,7 @@ export class EnhancedCharacterGenerator {
         case SeriesType.HIPSTER:
           domains = ["Barista", "Artisanal", "Craft", "Vintage", "Coffee", "Vinyl", "Organic", "Sustainable"];
           break;
-        case SeriesType.BLOCKCHAIN:
-          domains = ["Decentralized", "Distributed", "Tokenized", "On-Chain", "Cryptographic"];
-          break;
-        case SeriesType.SUSTAINABLE:
-          domains = ["Sustainable", "Regenerative", "Ecological", "Environmental", "Harmony"];
-          break;
+        // Default domains remain as ["Surrealist", "Philosophical", "Metaphysical", "Conceptual", "Artistic"]
       }
     }
     
@@ -446,8 +464,8 @@ export class EnhancedCharacterGenerator {
         case SeriesType.ARTISTIC:
           domains = ["Creative", "Artistic", "Expressive", "Visionary", "Inspired"];
           break;
-        case SeriesType.BLOCKCHAIN:
-          domains = ["Decentralized", "Distributed", "Tokenized", "Digital", "Crypto"];
+        case SeriesType.HIPSTER:
+          domains = ["Artisanal", "Vintage", "Organic", "Handcrafted", "Curated"];
           break;
       }
     }
@@ -556,7 +574,7 @@ Create a brief, sophisticated backstory (2-3 sentences) for a character with the
 - Name: ${name}
 - Title: ${title}
 - Profession: ${elements.profession || this.deriveOccupation(category) || 'Unknown'}
-- Wearing: ${elements.clothing || 'formal attire'}
+- Wearing: ${elements.clothing || 'artistic attire'}
 - Accessories: ${elements.accessories?.join(', ') || 'various distinguished items'}
 - Personality traits: ${elements.attributes?.join(', ') || 'distinguished, dignified'}
 ${category ? `- Category: ${categoryDescription} ${seriesDescription}` : ''}
@@ -631,14 +649,8 @@ Limit to 2-3 concise sentences that capture the essence of the character.
           
         case SeriesType.HIPSTER:
           beginning = "After years of dedicated study and practice,";
-          middle = `became renowned for her expertise in`;
-          ending = "continues to inspire admirers across the globe.";
-          break;
-          
-        case SeriesType.BLOCKCHAIN:
-          beginning = "After witnessing the early days of digital transformation,";
-          middle = `pioneered innovative approaches to ${this.deriveOccupation(category).toLowerCase()}`;
-          ending = "maintains a balance between technological advancement and philosophical contemplation.";
+          middle = `became renowned for expertise in artisanal ${this.deriveOccupation(category).toLowerCase()}`;
+          ending = "continues to inspire admirers with authentic and mindful creations.";
           break;
       }
     }
